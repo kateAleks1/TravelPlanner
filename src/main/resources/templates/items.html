@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users List</title>
+    <style>
+        .pagination-link {
+            display: inline-block;
+            padding: 10px 15px;
+            font-size: 16px;
+            color: #007bff;
+            text-decoration: none;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            background-color: #fff;
+            transition: background-color 0.3s ease;
+        }
+        .pagination-link:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+#divTokenColumnBlock{
+    margin-left: 30px;
+}
+#divTokenColumnBlock2{
+    margin-left: 30px;
+}
+        #block-list{
+display: flex;
+            gap: 20px;
+        }
+       #tokenBlockUl{
+           padding: 0;
+       }
+        .span-text {
+            color: #0a0808;
+        }
+    </style>
+</head>
+<body>
+<h1>Users List</h1>
+    <div id="block-list">
+        <ul id="users-list"></ul>
+        <ul id="login-list">
+            <li>*</li>
+
+        </ul>
+        <div id="emailBlock">
+            <a href="#" class="btn" id="btnClick" >Click</a>
+            <ul id="email-list">
+                <li>*</li>
+            </ul>
+        </div>
+<div class="TokenBlockDiv">
+    <div id="divTokenColumnBlock">
+        <a href="#" class="btn" id="tokenBlock" >Click</a>
+        <ul id="tokenBlockUl">Token expiratrionTime
+            <li>@</li>
+        </ul>
+    </div>
+    <div id="divTokenColumnBlock2">
+        <ul id="tokenBlockUl2">
+            <li>@</li>
+        </ul>
+    </div>
+</div>
+
+
+    </div>
+
+
+<!-- Пагинация -->
+<div>
+    <a href="#" class="pagination-link" id="prev-page" onclick="changePage(-1)">Previous</a>
+    <a href="#" class="pagination-link" id="next-page" onclick="changePage(1)">Next</a>
+</div>
+
+<script>
+    let currentPage = 1;
+    function loadUsers(page) {
+        fetch(`http://localhost:8080/api/items?page=${page}&size=20`)
+            .then(response => response.json())
+            .then(users => {
+                const usersList = document.getElementById('users-list');
+                usersList.innerHTML = '';
+                users.forEach(user => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<span class="span-text">${user.email}</span> | <span class="span-text">${user.login}</span>`;
+                    usersList.appendChild(li);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching users:', error);
+            });
+    }
+    function loadUserLogin(){
+        fetch(`http://localhost:8080/api/user-login`)
+            .then(response=>response.json())
+            .then(users=>{
+                const usersList=document.getElementById("login-list");
+                usersList.innerHTML='';
+                users.forEach(user=>{
+                    const li=document.createElement('li');
+                    li.innerHTML=`<span class="span-text">${user}</span>`;
+                    usersList.appendChild(li);
+                })
+
+            }).catch(error => {
+            console.error('Error fetching users:', error);
+        });
+    }
+    function changePage(direction) {
+        currentPage += direction;
+        loadUsers(currentPage);
+    }
+    document.getElementById("btnClick").addEventListener("click", async function () {
+        const emailList = document.getElementById("email-list");
+
+        if (emailList.style.display === "none" || emailList.style.display === "") {
+            emailList.style.display = "block";
+
+            try {
+                const users = await fetchWithToken('http://localhost:8080/api/protectedResources');
+
+                if (Array.isArray(users)) {
+                    users.forEach(user => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `<span class="span-text">${user}</span>`;
+                        emailList.appendChild(li);
+                    });
+                } else {
+                    console.warn('Ожидался массив пользователей, но получены другие данные:', users);
+                }
+
+
+            } catch (error) {
+                console.error('Ошибка при получении защищённых данных:', error);
+                emailList.style.display = "none";
+            }
+
+            // Скрыть список через 2 минуты
+            setTimeout(() => {
+                emailList.style.display = "none";
+            }, 2 * 60 * 1000);
+        } else {
+            emailList.style.display = "none";
+        }
+    });
+async function fetchWithToken(url, options = {}) {
+    const accessToken = localStorage.getItem('AccessToken');
+// получение токена
+    //get получение данных с бд
+    // protectedResources у нас есть  токен мы его берем с фронта отправляем на бек в заголовке Bearer Token далее на бекенде мы извлекаем
+    // из этого заголовка токен мы в нашем TOKENSERVICE мы проверяем наш токен мы его
+    const requestOptions = {
+        ...options,
+        headers: {
+            ...options.headers,
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+        }
+    };
+
+    try {
+        let response = await fetch(url, requestOptions);
+        if (response.status === 401) {
+            console.warn('Access token expired. Refreshing...');
+            const newAccessToken = await refreshAccessToken();
+
+            if (!newAccessToken) {
+                alert("Session has been expired");
+                window.location.href = 'login.html';
+                return;
+            }
+            requestOptions.headers['Authorization'] = `Bearer ${newAccessToken}`;
+            response = await fetch(url, requestOptions);
+        }
+        if (response.ok) {
+            return response.json();
+        }
+
+
+    } catch (error) {
+        console.error('Ошибка запроса:');
+    }
+}
+    async function refreshAccessToken() {
+        const refreshToken = getCookie('refreshToken');
+        const response = await fetch('http://localhost:8080/api/refresh-token', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({refreshToken})
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            localStorage.setItem('AccessToken', data.AccessToken);
+            return data.AccessToken;
+        } else {
+            console.error('Не удалось обновить токен');
+            return null;
+        }
+    }
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+    loadUserLogin();
+    loadUsers(currentPage);
+    document.getElementById('tokenBlock').addEventListener("click", function loadToken() {
+        const emailList = document.getElementById("tokenBlockUl");
+        emailList.innerText = "Hello the text is set";
+
+        let token = localStorage.getItem("AccessToken");
+
+        const accessToken = localStorage.getItem('AccessToken');
+
+        fetch('http://localhost:8080/api/tokenIot', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            window.alert(JSON.stringify(response))
+                return response.json();
+            })
+            .then(data => {
+
+                const tokenList = document.getElementById('tokenBlockUl2');
+                Object.entries(data).forEach(([key, value]) => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<span class="requestResponse">${key}: ${value}</span>`;
+                    tokenList.appendChild(li);
+                });
+            });
+
+
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="span-text">${token}</span>`;
+        emailList.appendChild(li);
+    });
+
+
+</script>
+</body>
+</html>

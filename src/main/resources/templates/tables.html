@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tables</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px; /
+            text-align: left;
+        }
+        th {
+            background-color: lightgray;
+        }
+        td:nth-child(2) {
+            background-color: yellow;
+        }
+        .mainDiv{
+            display: flex;
+        }
+        .div1{
+
+            margin-right: auto;
+        }
+        .div1:first-child{
+
+            margin-left: 10%;
+        }
+    </style>
+</head>
+<body>
+<div class="mainDiv">
+    <div class="div1">
+        <table class="tableUsers">
+            <thead>
+            <tr class="stringLine">
+                <th>Id</th>
+                <th>Login</th>
+                <th>Email</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+    <div class="div1">
+        <table id="tableUsers">
+            <thead>
+            <tr class="stringLine">
+                <th>Id</th>
+                <th>Login</th>
+                <th>Email</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+    <div class="div1">
+        <table class="tableUsers">
+            <thead>
+            <tr class="stringLine">
+                <th>Id</th>
+                <th>Login</th>
+                <th>Email</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        loadTableLines();
+    });
+
+    function loadTableLines() {
+        const tableBody = document.getElementsByClassName('tableUsers').querySelector('tbody');
+
+        fetch('http://localhost:8080/api/users', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+              window.alert('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                window.alert('bad');
+                data.forEach(user => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                <td>${user.id}</td>
+                <td>${user.login}</td>
+                <td>${user.email}</td>
+            `;
+                    tableBody.appendChild(tr);
+                });
+            })
+
+    }
+
+</script>
+</html>
+
