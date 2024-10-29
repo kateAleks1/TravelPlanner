@@ -1,12 +1,16 @@
 package org.example.Service;
 
 import org.example.DTO.TripDto;
+import org.example.entity.Trip;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface TripService {
-    Optional<TripDto> createTrip(TripDto tripDto);
-boolean updateTrip(TripDto tripDto);
-void deleteTrip(int TripId);
-Optional<TripDto> findTripbyId(int TripId);
+   void createTrip(TripDto tripDto);
+    boolean updateTrip(Trip trip);
+    List<Trip> getAllTrips();
+    void deleteTrip(int tripId);
+    Optional<Trip> findTripById(int tripId);
+    boolean ifTripExistsWithSuchId(int tripId);
 }

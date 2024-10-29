@@ -4,10 +4,9 @@ package org.example.Controller;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
-import org.example.DTO.RefreshTokenRequest;
+import org.example.Response.RefreshTokenRequest;
 import org.example.DTO.UserDto;
-import org.example.DTO.TokenResponse;
+import org.example.Response.TokenResponse;
 import org.example.Service.TokenService;
 import org.example.Service.UserService;
 import org.example.entity.User;
@@ -21,7 +20,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.crypto.SecretKey;
-import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 @Controller
@@ -33,21 +31,26 @@ public class UserController {
     private TokenService tokenService;
     private final SecretKey secretKey;
 
-
     @Autowired
-    public UserController(UserService userService, TokenService tokenService, BCryptPasswordEncoder passwordEncoder, SecretKey secretKey) {
-        this.userService = userService;
+    public UserController(SecretKey secretKey, TokenService tokenService, BCryptPasswordEncoder passwordEncoder, UserService userService) {
+        this.secretKey = secretKey;
         this.tokenService = tokenService;
         this.passwordEncoder = passwordEncoder;
-        this.secretKey = secretKey;
+        this.userService = userService;
     }
-    @CrossOrigin(origins = "http://localhost:63342")
-    @GetMapping("/users")
-    public ResponseEntity<?> getAllUsers() {
-        List<User> users = userService.getAllUsers();
 
-        return ResponseEntity.ok(users);
-    }
+
+
+
+
+
+        @CrossOrigin(origins = "http://localhost:63342")
+        @GetMapping("/users")
+        public ResponseEntity<?> getAllUsers() {
+            List<User> users = userService.getAllUsers();
+
+            return ResponseEntity.ok(users);
+        }
 
 
     @PostMapping("/register")
@@ -88,6 +91,24 @@ public class UserController {
         }
     }
 
+    @PostMapping("/getLogin")
+public ResponseEntity<?> getUserLogin(@RequestHeader("Authorization") String accessTokenHeader){
+if(accessTokenHeader.startsWith("Bearer ")){
+    String accessToken=accessTokenHeader.substring(7);
+    Claims claims=Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(accessToken).getBody();
+    HashMap<String,Object> map=new HashMap<>();
+    String login=claims.getSubject();
+ if(userService.findUserByLogin(login).isPresent()){
+     int userId=userService.findUserByLogin(login).get().getId();
+     map.put("login",login);
+     map.put("id",userId);
+     return ResponseEntity.ok(map);
+ }
+
+
+}
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Authorization header missing or incorrect"));
+    }
     @GetMapping("/mainPage")
     public String showSuccessPage() {
 
@@ -215,7 +236,7 @@ map.put("creatAt",claims.getIssuedAt().toString());
                String accessToken = Jwts.builder()
                         .setSubject(login)
                         .setIssuedAt(new Date(System.currentTimeMillis()))
-                        .setExpiration(new Date(System.currentTimeMillis() + 40L))
+                        .setExpiration(new Date(System.currentTimeMillis() + 24*60*7*1000))
                        .signWith(secretKey, SignatureAlgorithm.HS512)
                         .compact();
                 response.put("AccessToken", accessToken);

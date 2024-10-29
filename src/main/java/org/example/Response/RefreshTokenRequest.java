@@ -1,4 +1,4 @@
-package org.example.DTO;
+package org.example.Response;
 
 public class RefreshTokenRequest {
     private String refreshToken;

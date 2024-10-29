@@ -1,10 +1,13 @@
 package org.example.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -21,6 +24,7 @@ public class Trip_Status {
     @Column(name = "status_name")
     private String statusName;
 
-    @OneToOne(mappedBy = "statusTrip", cascade = CascadeType.ALL)
-    private Trip trip;  // Это поле указывает, что Trip_Status связан с Trip
+    @OneToMany(mappedBy = "statusTrip", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Trip> trip;
 }

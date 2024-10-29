@@ -23,14 +23,21 @@
         }
         .mainDiv{
             display: flex;
-        }
-        .div1{
+            justify-content: space-between;
 
-            margin-right: auto;
         }
-        .div1:first-child{
 
-            margin-left: 10%;
+        .tableUsers{
+            width: 30%;
+            margin: 0 10px;
+        }
+        .tableTrips{
+            width: 30%;
+            margin: 0 10px;
+        }
+        .tableTripStatus{
+            width: 30%;
+            margin: 0 10px;
         }
     </style>
 </head>
@@ -51,12 +58,13 @@
         </table>
     </div>
     <div class="div1">
-        <table id="tableUsers">
+        <table class="tableTrips">
             <thead>
             <tr class="stringLine">
-                <th>Id</th>
-                <th>Login</th>
-                <th>Email</th>
+                <th>Trip_Id</th>
+                <th>StartDate</th>
+                <th>EndDate</th>
+                <th>User_id</th>
             </tr>
             </thead>
             <tbody>
@@ -65,12 +73,11 @@
         </table>
     </div>
     <div class="div1">
-        <table class="tableUsers">
+        <table class="tableTripStatus">
             <thead>
             <tr class="stringLine">
-                <th>Id</th>
-                <th>Login</th>
-                <th>Email</th>
+                <th>status_id</th>
+                <th>status_name</th>
             </tr>
             </thead>
             <tbody>
@@ -85,10 +92,13 @@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         loadTableLines();
+        loadTripTableRows();
+        loadStatusTable();
     });
 
     function loadTableLines() {
-        const tableBody = document.getElementsByClassName('tableUsers').querySelector('tbody');
+        const tableBody = document.getElementsByClassName('tableUsers')[0].querySelector('tbody');
+
 
         fetch('http://localhost:8080/api/users', {
             method: 'GET',
@@ -103,7 +113,7 @@
                 return response.json();
             })
             .then(data => {
-                window.alert('bad');
+                window.alert('dataSource');
                 data.forEach(user => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
@@ -115,6 +125,61 @@
                 });
             })
 
+    }
+    function loadTripTableRows(){
+        const tableTrips=document.getElementsByClassName('tableTrips')[0].querySelector('tbody');
+        fetch('http://localhost:8080/api/trip/getAllTrips',{
+            method:'GET',
+            headers:{
+               'content-type': 'application/json'
+            }
+        }).then(
+            response=>{
+                if(!response.ok){
+                    window.alert('Network response was not ok');
+                }
+                return response.json()
+            }
+        ).then(data=>{
+            window.alert("dataTrip")
+                data.forEach(trip=>{
+                    const tr=document.createElement('tr');
+                    tr.innerHTML=`
+                    <td>${trip.tripId}</td>
+                     <td>${trip.startDate}</td>
+                      <td>${trip.endDate}</td>
+                    <td>${trip.user.id}</td>
+                    `;
+                    tableTrips.appendChild(tr);
+                })
+
+            }
+        )
+    }
+    function loadStatusTable(){
+        const statusTable=document.getElementsByClassName('tableTripStatus')[0].querySelector('tbody');
+        fetch('http://localhost:8080/api/trip_status/getStatusTrip',{
+            method:'GET',
+            headers:{
+                'Content-Type':'application/json'
+            }
+        }).then(response=>{
+            if(!response.ok){
+                window.alert('Error')
+            }
+            return response.json();
+        }).then(data=>{
+            window.alert('TripStataus')
+            data.forEach(statusTrip=>{
+                const tr=document.createElement('tr');
+                tr.innerHTML=`
+<td>${statusTrip.statusId}</td>
+<td>${statusTrip.statusName}</td>
+`;
+                statusTable.appendChild(tr)
+            })
+
+        })
     }
 
 </script>

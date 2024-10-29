@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .error {
+            color: red;
+            margin: 10px 0;
+        }
+        .MainDivBlock{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #Token {
+            display: block;  /* Делает label блочным элементом */
+            white-space: pre-wrap; /* Переносит текст на новую строку, сохраняя пробелы */
+            word-wrap: break-word; /* Переносит длинные слова, чтобы они не выходили за пределы контейнера */
+            max-width: 500px; /* Задаёт максимальную ширину блока */
+            border: 1px solid #ccc; /* Добавление границы для лучшей видимости */
+            padding: 5px; /* Добавление отступа для красоты */
+        }
+    </style>
+</head>
+
+<body>
+<h1>Create New Trip</h1>
+
+<form id="Create Trip">
+    <div class="MainDivBlock">
+        <div class="LeftyBlock">
+            <label for="startDate">StartDate:</label>
+            <input type="datetime-local" id="startDate" name="startDate" required />
+
+            <label for="endDate">EndDate:</label>
+            <input type="datetime-local" id="endDate" name="endDate" required />
+
+            <label for="budget">Budget:</label>
+            <input type="text" id="budget" name="budget" required />
+
+            <button type="submit" id="createBtn">Create</button>
+            <button type="submit">Login</button>
+            <button type="button" id="registerBtn">Register</button>
+        </div>
+        <div class="RightBlock">
+            <h1 >UserName</h1>
+            <label id="userName">no login</label>
+            <h1 >Token</h1>
+            <label id="Token">Token</label>
+            <h1 >UserId</h1>
+            <label id="UserId">UserId</label>
+        </div>
+    </div>
+
+
+
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        getLogin();
+    });
+
+document.getElementById('createBtn').addEventListener("click",function (event) {
+    event.preventDefault();
+    const token=localStorage.getItem('AccessToken');
+    const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
+    const budget = document.getElementById('budget').value;
+    const user_id = document.getElementById('UserId').value;
+
+    if (!startDateInput || !endDateInput) {
+        console.error("StartDate or EndDate input is missing.");
+    }
+
+    const start_date = new Date(startDateInput.value).toISOString();
+    const end_date = new Date(endDateInput.value).toISOString();
+
+    const data = {
+        trip_id: 0,
+        start_date: start_date,
+        end_date: end_date,
+        status_id: 1,
+        idDestination: 1,
+        user_id: user_id
+    };
+    fetch('http://localhost:8080/api/trip/createNewTrip', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    }).then(response=>{
+
+        return response.json();
+    }).then(data=>{
+            console.log(data.message);
+            window.location.href = 'tables.html';
+    })
+
+})
+
+
+function  getLogin(){
+    const  userName= document.getElementById('userName');
+
+    const AccessToken=document.getElementById('Token');
+ const token=localStorage.getItem('AccessToken');
+ const userId=document.getElementById('UserId');
+ fetch('http://localhost:8080/api/getLogin',{
+     method:'POST',
+     headers:{
+         'Authorization': `Bearer ${token}`,
+         'Content-Type': 'application/json'
+     }
+
+ }).then(response=>{
+     return response.json();
+ }).then(data=>{
+     window.alert(data.id)
+     userName.innerHTML=data.login || 'no name';
+     userId.innerHTML=data.id;
+     AccessToken.innerText=token;
+     if(data.id){
+         localStorage.setItem('id', data.id);
+     }
+
+ })
+}
+
+</script>
+
+</body>
+</html>

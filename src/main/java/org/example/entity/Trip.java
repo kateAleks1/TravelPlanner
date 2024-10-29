@@ -1,5 +1,7 @@
 package org.example.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,19 +18,23 @@ import java.util.List;
 @Entity
 @Table(name = "trips")
 public class Trip {
-    @Id
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "trip_id")
-    private Integer tripId;
+    @Id
+    private int tripId;
 
-    @Column(name = "startDate", nullable = false)
+    @Column(name = "start_date", nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date startDate;
 
-    @Column(name = "endDate", nullable = false)
+    @Column(name = "end_date", nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date endDate;
 
-    @OneToOne
-    @JoinColumn(name = "status_id", unique = true)
+    @ManyToOne
+    @JoinColumn(name = "status_id")
+    @JsonIgnore
     private Trip_Status statusTrip;
 
     @ManyToMany

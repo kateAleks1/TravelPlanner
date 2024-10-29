@@ -22,6 +22,6 @@ public class Trip_Destination {
     private Trip trip;
     @ManyToOne
     @JoinColumn(name = "destination_id", nullable = false)
-    private Destination destination_Id;
+    private Destination destination;
 
 }
