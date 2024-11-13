@@ -1,43 +1,68 @@
 package org.example.Service.ServiceImpl;
 
-import lombok.RequiredArgsConstructor;
 import org.example.DTO.TripDto;
 import org.example.Dal.Repository.TripRepository;
+import org.example.Dal.Repository.TripStatusRepository;
 import org.example.Dal.Repository.UserRepository;
 import org.example.Service.TripService;
+import org.example.entity.Destination;
 import org.example.entity.Trip;
 import org.example.entity.Trip_Status;
 import org.example.entity.User;
-import org.example.mapper.TripMapper;
+
 import org.example.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
+
+import java.util.*;
 
 @Service
-
 public class TripServiceImpl implements TripService {
 
 
     private final TripRepository tripRepository;
     private final UserRepository userRepository;
+    private final TripStatusRepository tripStatusRepository;
     private  UserMapper userMapper;
-    private  TripMapper tripMapper;
-@Autowired
-    public TripServiceImpl(TripRepository tripRepository, UserRepository userRepository) {
+
+    @Autowired
+    public TripServiceImpl(TripRepository tripRepository, UserRepository userRepository, TripStatusRepository tripStatusRepository) {
         this.tripRepository = tripRepository;
         this.userRepository = userRepository;
+        this.tripStatusRepository = tripStatusRepository;
     }
 
 
+
+
+
+
     @Override
-    public boolean updateTrip(Trip trip) {
-        return false; // Логика обновления будет добавлена позже
+    public void updateTrip(int tripId, TripDto tripDto) {
+
+        Optional<Trip> existingTrip = tripRepository.findById(tripId);
+
+            Trip trip = existingTrip.get();
+
+        userRepository.findById(tripDto.getUsers()).ifPresent(user -> {
+            trip.getUsers().add(user);
+        });
+            if (tripDto.getStart_date() != null) {
+                trip.setStartDate(tripDto.getStart_date());
+            } else {
+                System.out.println("Start date is null, not updating.");
+            }
+            if (tripDto.getEnd_date() != null) {
+                trip.setEndDate(tripDto.getEnd_date());
+            } else {
+                System.out.println("End date is null, not updating.");
+            }
+
+            tripStatusRepository.findById(tripDto.getStatus_id()).ifPresent(trip::setStatusTrip);
+
+            tripRepository.save(trip);
+
     }
 
     @Override
@@ -47,14 +72,30 @@ public class TripServiceImpl implements TripService {
 
     @Override
     public void deleteTrip(int tripId) {
-        // Логика удаления будет добавлена позже
+       if(tripRepository.findById(tripId).isPresent()){
+           tripRepository.delete(tripRepository.findById(tripId).get());
+       }
     }
     @Override
     public void createTrip(TripDto tripDto) {
         Trip trip = new Trip();
-        trip.setStartDate(Timestamp.valueOf(tripDto.getStart_date()));
-        trip.setEndDate(Timestamp.valueOf(tripDto.getEnd_date()));
-        trip.setUser(userRepository.findUserById(tripDto.getUser_id()).get());
+        trip.setStartDate(tripDto.getStart_date());
+        trip.setEndDate(tripDto.getEnd_date());
+
+        // Set the status of the trip
+        Trip_Status tripStatus = tripStatusRepository.findById(tripDto.getStatus_id())
+                .orElseThrow(() -> new RuntimeException("Status ID not found"));
+        trip.setStatusTrip(tripStatus);
+
+        // Find the user and add to trip participants
+        User user = userRepository.findById(tripDto.getUsers())
+                .orElseThrow(() -> new RuntimeException("User with ID " + tripDto.getUsers() + " not found"));
+        trip.getUsers().add(user);
+
+        // Set other fields, like destination and price
+        trip.setDestinations(List.of(new Destination().builder().destinationId(tripDto.getIdDestination()).build()));
+        trip.setPrice(tripDto.getPrice());
+
         tripRepository.save(trip);
     }
     @Override

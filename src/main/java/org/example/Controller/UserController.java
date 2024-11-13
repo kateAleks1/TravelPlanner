@@ -4,6 +4,7 @@ package org.example.Controller;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.example.Dal.Repository.UserRepository;
 import org.example.Response.RefreshTokenRequest;
 import org.example.DTO.UserDto;
 import org.example.Response.TokenResponse;
@@ -27,30 +28,47 @@ import java.util.*;
 
 public class UserController {
     private final UserService userService;
+    private final UserRepository userRepository;
     private BCryptPasswordEncoder passwordEncoder;
     private TokenService tokenService;
     private final SecretKey secretKey;
 
     @Autowired
-    public UserController(SecretKey secretKey, TokenService tokenService, BCryptPasswordEncoder passwordEncoder, UserService userService) {
+    public UserController(SecretKey secretKey, TokenService tokenService, BCryptPasswordEncoder passwordEncoder, UserService userService, UserRepository userRepository) {
         this.secretKey = secretKey;
         this.tokenService = tokenService;
         this.passwordEncoder = passwordEncoder;
         this.userService = userService;
+        this.userRepository = userRepository;
     }
 
 
 
-
-
+@DeleteMapping("/deleteUser/{userId}")
+public ResponseEntity<?> deleteUser(@PathVariable int userId){
+        userService.deleteUser(userId);
+        return ResponseEntity.ok().build();
+}
 
         @CrossOrigin(origins = "http://localhost:63342")
         @GetMapping("/users")
         public ResponseEntity<?> getAllUsers() {
             List<User> users = userService.getAllUsers();
-
             return ResponseEntity.ok(users);
         }
+    @CrossOrigin(origins = "http://localhost:63342")
+    @PutMapping("/updateUser/{userId}")
+    public ResponseEntity<?> updateUser(@PathVariable int userId,@RequestBody UserDto userDto) {
+        if(userRepository.findUserByEmail(userDto.getEmail()).isPresent()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "such email exists"));
+        }
+        if(userRepository.findUserByLogin((userDto.getLogin())).isPresent()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "such login exists"));
+        }
+        User user = userService.updateUser(userId,userDto).get();
+        return ResponseEntity.ok(user);
+    }
+
 
 
     @PostMapping("/register")
@@ -142,17 +160,6 @@ if(accessTokenHeader.startsWith("Bearer ")){
 
         return ResponseEntity.ok("Success!");
     }
-//    @GetMapping("/items")
-//    public String getItems(@RequestParam(defaultValue = "0") int page,
-//                           @RequestParam(defaultValue = "5") int size,
-//                           Model model) {
-//        Page<UserDto> usersPage = userService.getUsers(PageRequest.of(page, size));
-//        model.addAttribute("users", usersPage.getContent());
-//        model.addAttribute("currentPage", usersPage.getNumber());
-//        model.addAttribute("totalPages", usersPage.getTotalPages());
-//        model.addAttribute("name", "Users List");
-//        return "items";
-//    }
 
     @GetMapping("/protectedResources")
     public ResponseEntity<?> protectedResources(@RequestHeader("Authorization") String authorizationHeader) {
@@ -221,31 +228,30 @@ map.put("creatAt",claims.getIssuedAt().toString());
         Page<UserDto> usersPage = userService.getUsers(PageRequest.of(page, size));
         return ResponseEntity.ok(usersPage.getContent());
     }
-
     @PostMapping("/login/{login}")
-    public ResponseEntity<Map<String, String>> getUsers(@RequestBody UserDto userDto, @PathVariable String login) {
+    public ResponseEntity<?> getUsers(@RequestBody UserDto userDto, @PathVariable String login) {
         Optional<User> user = userService.findUserByLogin(login);
         Map<String, String> response = new HashMap<>();
 
         if (user.isPresent()) {
-            boolean passwordMatches = new BCryptPasswordEncoder().matches(userDto.getPassword(), user.get().getPassword());
+            boolean passwordMatches = passwordEncoder.matches(userDto.getPassword(), user.get().getPassword());
             if (passwordMatches) {
-
-
-
-               String accessToken = Jwts.builder()
+                String accessToken = Jwts.builder()
                         .setSubject(login)
                         .setIssuedAt(new Date(System.currentTimeMillis()))
-                        .setExpiration(new Date(System.currentTimeMillis() + 24*60*7*1000))
-                       .signWith(secretKey, SignatureAlgorithm.HS512)
+                        .setExpiration(new Date(System.currentTimeMillis() + 24 * 60 * 7 * 1000))
+                        .signWith(secretKey, SignatureAlgorithm.HS512)
                         .compact();
                 response.put("AccessToken", accessToken);
                 return ResponseEntity.ok(response);
             } else {
+                response.put("error", "Invalid password");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
+        } else {
+            response.put("error", "User not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
-        return ResponseEntity.ok(response);
     }
 
 //    @PostMapping("/loginUser")

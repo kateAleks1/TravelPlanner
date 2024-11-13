@@ -14,14 +14,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Component
@@ -42,6 +41,13 @@ public class UserService  implements UserDetailsService {
     public Optional<User> chechIfUserEmailExists(UserDto userDto){
      return  userRepository.findUserByEmail(userDto.getEmail());
     }
+    public Optional<User> chechIfUserIdExists(int id){
+        return  userRepository.findUserById(id);
+    }
+    public Optional<User> findUserByLogin(String login){
+        return userRepository.findUserByLogin(login);
+    }
+
     public void registerNewUser(UserDto userDto) throws UserAlreadyExistsException {
 
 
@@ -52,11 +58,18 @@ public class UserService  implements UserDetailsService {
            user.setLogin(userDto.getLogin());
            user.setPassword(encodePassword(userDto.getPassword()));
            userRepository.save(user);
-
-
-
     }
-
+public Optional<User> findUserById(int id){
+        return userRepository.findUserById(id);
+}
+    public Optional<List<User>> findListUserById(List<Integer> usersIds){
+        List<User> users = usersIds.stream()
+                .map(userRepository::findUserById) // Вернет Optional<User>
+                .filter(Optional::isPresent)       // Отфильтруем только присутствующие значения
+                .map(Optional::get)                // Получим объект User из Optional
+                .collect(Collectors.toList());
+        return users.isEmpty()?Optional.empty():Optional.of(users);
+    }
     private String encodePassword(String password) {
         BCryptPasswordEncoder encoder=new BCryptPasswordEncoder();
         return encoder.encode(password);
@@ -66,13 +79,9 @@ public class UserService  implements UserDetailsService {
         BCryptPasswordEncoder encoder=new BCryptPasswordEncoder();
         return encoder.matches(rawPassword,encodedPassword);
     }
-    public Optional<User> findUserByLogin(String login){
-        return userRepository.findUserByLogin(login);
-    }
 
-//public boolean PasswordChecker(String password){
-//
-//}
+
+
     public List<User> getAllUsers(){
         return userRepository.findAll();
     }
@@ -102,6 +111,22 @@ public Page<UserDto> getUsers(Pageable pageable) {
                 user.getLogin(),
                 user.getPassword()
         );
+    }
+
+    public Optional<User> updateUser(int userId, UserDto userDto){
+        if(userRepository.findUserById(userId).isPresent()){
+           User user = userRepository.findUserById(userId).get();
+           user.setLogin(userDto.getLogin());
+           user.setEmail(userDto.getEmail());
+            return Optional.of(userRepository.save(user));
+        }
+        return Optional.empty();
+    }
+    public void deleteUser(int userId){
+        if(userRepository.findUserById(userId).isPresent()){
+            User user = userRepository.findUserById(userId).get();
+            userRepository.delete(user);
+        }
     }
 
     @Override

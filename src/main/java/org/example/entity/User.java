@@ -2,6 +2,7 @@
 
 
 
+    import com.fasterxml.jackson.annotation.JsonBackReference;
     import com.fasterxml.jackson.annotation.JsonIgnore;
     import com.fasterxml.jackson.annotation.JsonProperty;
     import jakarta.persistence.*;
@@ -29,6 +30,7 @@
         private String login;
         private String password;
         @JsonIgnore
-        @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,orphanRemoval = true)
+        @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL)
+        @JsonBackReference
         private List<Trip> trips;
     }

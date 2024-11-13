@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface TripService {
    void createTrip(TripDto tripDto);
-    boolean updateTrip(Trip trip);
+void updateTrip(int tripId, TripDto trip);
     List<Trip> getAllTrips();
     void deleteTrip(int tripId);
     Optional<Trip> findTripById(int tripId);

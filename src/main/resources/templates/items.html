@@ -67,7 +67,8 @@ display: flex;
     </div>
 </div>
 
-        <button type="button" id="TableRedirect">TablePage</button>
+        <button type="button" id="TableRedirect">Create Table Trip</button>
+        <button type="button" id="AllTables">AllTables</button>
     </div>
 
 
@@ -82,6 +83,9 @@ display: flex;
 
     document.getElementById("TableRedirect").addEventListener("click",function (){
         window.location.href="addTableData.html";
+    });
+    document.getElementById("AllTables").addEventListener("click",function (){
+        window.location.href="tables.html";
     });
     function loadUsers(page) {
         fetch(`http://localhost:8080/api/items?page=${page}&size=20`)

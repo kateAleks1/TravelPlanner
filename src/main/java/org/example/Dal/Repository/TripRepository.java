@@ -6,13 +6,14 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface TripRepository extends JpaRepository<Trip,Integer> {
 
 
-Optional<Trip> findById(Integer id);
-    Optional<List<Trip>> findByUserId(Integer userId);
+
+    Optional<Set<Trip>> findByUsers_Id(Integer id);
 
 
 }

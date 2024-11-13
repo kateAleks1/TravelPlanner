@@ -31,6 +31,7 @@
             border-radius: 3px;
         }
         button {
+
             background-color: #28a745;
             color: white;
             border: none;
@@ -52,12 +53,28 @@
         }
 
         #Token {
-            display: block;  /* Делает label блочным элементом */
-            white-space: pre-wrap; /* Переносит текст на новую строку, сохраняя пробелы */
-            word-wrap: break-word; /* Переносит длинные слова, чтобы они не выходили за пределы контейнера */
-            max-width: 500px; /* Задаёт максимальную ширину блока */
-            border: 1px solid #ccc; /* Добавление границы для лучшей видимости */
-            padding: 5px; /* Добавление отступа для красоты */
+            display: block;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-width: 500px;
+            border: 1px solid #ccc;
+            padding: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px; /
+        text-align: left;
+        }
+        th {
+            background-color: lightgray;
+        }
+        .BtnBlock{
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -74,12 +91,18 @@
             <label for="endDate">EndDate:</label>
             <input type="datetime-local" id="endDate" name="endDate" required />
 
-            <label for="budget">Budget:</label>
-            <input type="text" id="budget" name="budget" required />
+            <label for="status_id">status_id:</label>
+            <select id="status_id" required>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+            </select>
+<div class="BtnBlock">
+    <button type="submit" id="createBtn">Create</button>
+    <button type="submit" id="loginBtn">Login</button>
+    <button type="button" id="registerBtn">Register</button>
+</div>
 
-            <button type="submit" id="createBtn">Create</button>
-            <button type="submit">Login</button>
-            <button type="button" id="registerBtn">Register</button>
         </div>
         <div class="RightBlock">
             <h1 >UserName</h1>
@@ -88,6 +111,20 @@
             <label id="Token">Token</label>
             <h1 >UserId</h1>
             <label id="UserId">UserId</label>
+
+        </div>
+        <div class="StatusTrip">
+            <table class="StatusTripTable">
+                <thead>
+                <tr class="stringLine">
+                    <th>Status_id</th>
+                    <th>status_name</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -98,47 +135,91 @@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         getLogin();
+        loadStatusTable();
     });
+    document.getElementById('loginBtn').addEventListener('click',function () {
+        window.location.href='login.html';
+    })
+    document.getElementById('registerBtn').addEventListener('click',function () {
+        window.location.href='register.html';
+    })
+    function loadStatusTable(){
+        const statusTable=document.getElementsByClassName('StatusTripTable')[0].querySelector('tbody');
+        fetch('http://localhost:8080/api/trip_status/getStatusTrip',{
+            method:'GET',
+            headers:{
+                'Content-Type':'application/json'
+            }
+        }).then(response=>{
+            if(!response.ok){
+                window.alert('Error')
+            }
+            return response.json();
+        }).then(data=>{
 
-document.getElementById('createBtn').addEventListener("click",function (event) {
-    event.preventDefault();
-    const token=localStorage.getItem('AccessToken');
-    const startDateInput = document.getElementById('startDate');
-    const endDateInput = document.getElementById('endDate');
-    const budget = document.getElementById('budget').value;
-    const user_id = document.getElementById('UserId').value;
+            data.forEach(statusTrip=>{
+                const tr=document.createElement('tr');
+                tr.innerHTML=`
+<td>${statusTrip.statusId}</td>
+<td>${statusTrip.statusName}</td>
+`;
+                statusTable.appendChild(tr)
+            })
 
-    if (!startDateInput || !endDateInput) {
-        console.error("StartDate or EndDate input is missing.");
+        })
     }
 
-    const start_date = new Date(startDateInput.value).toISOString();
-    const end_date = new Date(endDateInput.value).toISOString();
+    document.getElementById('createBtn').addEventListener("click", function (event) {
+        event.preventDefault();
+        const token = localStorage.getItem('AccessToken');
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+        const status_id = parseInt(document.getElementById('status_id').value, 10);
+        const users = localStorage.getItem('id');
 
-    const data = {
-        trip_id: 0,
-        start_date: start_date,
-        end_date: end_date,
-        status_id: 1,
-        idDestination: 1,
-        user_id: user_id
-    };
-    fetch('http://localhost:8080/api/trip/createNewTrip', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    }).then(response=>{
+        if (!startDateInput || !endDateInput) {
+            console.error("StartDate or EndDate input is missing.");
+            return;
+        }
 
-        return response.json();
-    }).then(data=>{
-            console.log(data.message);
-            window.location.href = 'tables.html';
-    })
+        const start_date = formatDate(startDateInput.value);
+        const end_date = formatDate(endDateInput.value);
 
-})
+        const data = {
+            trip_id: 2,
+            start_date: start_date,
+            end_date: end_date,
+            status_id: status_id,
+            price:100,
+            idDestination: 1,
+            users: users
+        };
+
+        fetch('http://localhost:8080/api/trip/createNewTrip', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.message);
+                window.location.href = 'tables.html';
+            })
+            .catch(error => console.error('Error:', error));
+    });
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${year}-${month}-${day} ${hours}:${minutes}:00`;
+    }
 
 
 function  getLogin(){
@@ -157,8 +238,8 @@ function  getLogin(){
  }).then(response=>{
      return response.json();
  }).then(data=>{
-     window.alert(data.id)
-     userName.innerHTML=data.login || 'no name';
+
+     userName.innerHTML=data.login;
      userId.innerHTML=data.id;
      AccessToken.innerText=token;
      if(data.id){
