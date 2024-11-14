@@ -48,18 +48,9 @@ public class TripServiceImpl implements TripService {
         userRepository.findById(tripDto.getUsers()).ifPresent(user -> {
             trip.getUsers().add(user);
         });
-            if (tripDto.getStart_date() != null) {
-                trip.setStartDate(tripDto.getStart_date());
-            } else {
-                System.out.println("Start date is null, not updating.");
-            }
-            if (tripDto.getEnd_date() != null) {
-                trip.setEndDate(tripDto.getEnd_date());
-            } else {
-                System.out.println("End date is null, not updating.");
-            }
 
-            tripStatusRepository.findById(tripDto.getStatus_id()).ifPresent(trip::setStatusTrip);
+
+
 
             tripRepository.save(trip);
 
@@ -82,7 +73,7 @@ public class TripServiceImpl implements TripService {
         trip.setStartDate(tripDto.getStart_date());
         trip.setEndDate(tripDto.getEnd_date());
 
-        // Set the status of the trip
+
         Trip_Status tripStatus = tripStatusRepository.findById(tripDto.getStatus_id())
                 .orElseThrow(() -> new RuntimeException("Status ID not found"));
         trip.setStatusTrip(tripStatus);

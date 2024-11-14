@@ -19,6 +19,7 @@
     <mapping class="org.example.entity.Trip_Status"/>
     <mapping class="org.example.entity.Countries"/>
     <mapping class="org.example.entity.TripPartcipants"/>
+    <mapping class="org.example.entity.Cities"/>
     <mapping class="org.example.entity.Destination"/>
   </session-factory>
 </hibernate-configuration>

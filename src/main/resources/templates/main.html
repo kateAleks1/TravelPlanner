@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 260px;
+            background: #11101d;
+            z-index: 100;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar.close {
+            width: 78px;
+        }
+
+        .sidebar .logo-details {
+            height: 60px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar .logo-details i {
+            font-size: 30px;
+            color: #fff;
+            height: 50px;
+            min-width: 78px;
+            text-align: center;
+            line-height: 50px;
+        }
+
+        .sidebar .logo-details .logo_name{
+            font-size: 22px;
+            color: #fff;
+            font-weight: 600;
+margin-left: 40px;
+            margin-top: 40px;
+            transition: 0.2s ease;
+            transition-delay: 0.3s;
+        }
+        .sidebar.close .logo-details .logo_name{
+            transition-delay: 0s;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .sidebar .nav-links {
+            height: 100%;
+            padding: 30px 0 150px 0;
+            overflow: auto;
+        }
+
+        .sidebar.close .nav-links {
+            overflow: visible;
+        }
+
+        .sidebar .nav-links::-webkit-scrollbar {
+            display: none;
+        }
+
+        .sidebar .nav-links li {
+            position: relative;
+            list-style: none;
+            transition: all 0.4s ease;
+        }
+
+        .sidebar .nav-links li:hover {
+            background: #1d1b31;
+        }
+
+        .sidebar .nav-links li .iocn-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sidebar.close .nav-links li .iocn-link {
+            display: block;
+        }
+
+        .sidebar .nav-links li i {
+            height: 50px;
+            min-width: 78px;
+            text-align: center;
+            line-height: 50px;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar .nav-links li.showMenu i.arrow {
+            transform: rotate(-180deg);
+        }
+
+        .sidebar.close .nav-links i.arrow {
+            display: none;
+        }
+
+        .sidebar .nav-links li a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .sidebar .nav-links li a .link_name {
+            font-size: 18px;
+            font-weight: 400;
+            color: #fff;
+            transition: all 0.4s ease;
+        }
+
+        .sidebar.close .nav-links li a .link_name {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .sidebar .nav-links li .sub-menu {
+            padding: 6px 6px 14px 80px;
+            margin-top: -10px;
+            background: #1d1b31;
+            display: none;
+        }
+
+        .sidebar .nav-links li.showMenu .sub-menu {
+            display: block;
+        }
+
+        .sidebar .nav-links li .sub-menu a {
+            color: #fff;
+            font-size: 15px;
+            padding: 5px 0;
+            white-space: nowrap;
+            opacity: 0.6;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar .nav-links li .sub-menu a:hover {
+            opacity: 1;
+        }
+
+        .sidebar.close .nav-links li .sub-menu {
+            position: absolute;
+            left: 100%;
+            top: -10px;
+            margin-top: 0;
+            padding: 10px 20px;
+            border-radius: 0 6px 6px 0;
+            opacity: 0;
+            display: block;
+            pointer-events: none;
+            transition: 0s;
+        }
+
+        .sidebar.close .nav-links li:hover .sub-menu {
+            top: 0;
+            opacity: 1;
+            pointer-events: auto;
+            transition: all 0.4s ease;
+        }
+
+        .sidebar .nav-links li .sub-menu .link_name {
+            display: none;
+        }
+
+        .sidebar.close .nav-links li .sub-menu .link_name {
+            font-size: 18px;
+            opacity: 1;
+            display: block;
+        }
+
+        .sidebar .nav-links li .sub-menu.blank {
+            opacity: 1;
+            pointer-events: auto;
+            padding: 3px 20px 6px 16px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .sidebar .nav-links li:hover .sub-menu.blank {
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .sidebar .profile-details {
+            position: fixed;
+            bottom: 0;
+            width: 260px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #1d1b31;
+            padding: 12px 0;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar.close .profile-details {
+            background: none;
+        }
+
+        .sidebar.close .profile-details {
+            width: 78px;
+        }
+
+        .sidebar .profile-details .profile-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar .profile-details img {
+            height: 52px;
+            width: 52px;
+            object-fit: cover;
+            border-radius: 16px;
+            margin: 0 14px 0 12px;
+            background: #1d1b31;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar.close .profile-details img {
+            padding: 10px;
+        }
+
+        .sidebar .profile-details .profile_name,
+        .sidebar .profile-details .job {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .sidebar.close .profile-details i,
+        .sidebar.close .profile-details .profile_name,
+        .sidebar.close .profile-details .job {
+            display: none;
+        }
+
+        .sidebar .profile-details .job {
+            font-size: 12px;
+        }
+
+        .home-section {
+            position: relative;
+            background: #E4E9F7;
+            height: 100%;
+            left: 260px;
+            padding: 20px;
+            min-height: 100vh;
+            width: calc(100% - 260px); /* Ширина на 260px меньше от общего размера экрана */
+            transition: all 0.5s ease;
+            box-sizing: border-box; /* Убедитесь, что padding не увеличивает размеры */
+        }
+        .main-section {
+
+            position: relative;
+            background: #f1f1f1; /* Тёмный фон для внутреннего блока */
+            width: 100%;
+            border-radius: 20px;
+            padding: 15px;
+            height: auto;
+            min-height: 100%;
+            box-sizing: border-box
+        }
+        .main-filter-search-block{
+            background: #bababa;
+            width: 100%;
+            height: 20%;
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            border-radius: 20px;
+        }
+        .section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            flex: 1;
+        }
+        .sidebar.close ~ .home-section {
+            left: 78px;
+            width: calc(100% - 78px);
+        }
+
+        .home-section .home-content {
+            height: 60px;
+            display: flex;
+            align-items: center;
+        }
+
+        .home-section .home-content .bx-menu,
+        .home-section .home-content .text {
+            color: #11101d;
+            font-size: 35px;
+        }
+
+        .home-section .home-content .bx-menu {
+            margin: 0 15px;
+            cursor: pointer;
+        }
+
+        .home-section .home-content .text {
+            font-size: 26px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 400px) {
+            .sidebar.close .nav-links li .sub-menu {
+                display: none;
+            }
+
+            .sidebar {
+                width: 78px;
+            }
+
+            .sidebar.close {
+                width: 0;
+            }
+
+            .home-section {
+                left: 78px;
+                width: calc(100% - 78px);
+                z-index: 100;
+            }
+
+            .sidebar.close ~ .home-section {
+                width: 100%;
+                left: 0;
+            }
+
+            /* Новый стиль для бургер-меню */
+            .home-section .home-content .bx-menu {
+                display: block;
+                margin: 0 15px;
+                font-size: 30px; /* Размер иконки меню */
+                transition: all 0.3s ease;
+            }
+
+            .sidebar.close .home-section .bx-menu {
+                display: block;
+                cursor: pointer;
+            }
+        }
+        .separator {
+            width: 1px;
+            height: 100%;
+            background-color: #000; /* The color of the vertical line */
+        }
+
+        .text {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .left, .middle, .right {
+            padding: 0 20px;
+        }
+
+        .home-content-wrapper{
+         display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .home-content-user-profile{
+            background: #0a0808;
+            height: 40px;
+            width: 40px;
+            border-radius: 50%;
+
+        }
+        .home-content-user-profile img{
+          margin: 30%;
+        }
+        .main-panel-desc {
+            display: flex;
+            flex-direction: column;
+            align-items: center/* Stack elements vertically */
+        }
+        .main-panel-desc .text-bold{
+          font-size: 20px;
+            font-weight: 500;
+
+        }
+        .section left{
+            justify-content: space-between;
+            align-items: center;
+
+        }
+        .section-icon{
+padding: 15px;
+        }
+        input{
+background: #ffffff;
+            width: 80%;
+            height: 80%;
+            border-radius: 20px;
+            border-style: none;
+        }
+        .search-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input {
+            padding-left: 30px;
+            padding-right: 10px;
+            height: 50px;
+            width: 100%;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+        }
+
+        .search-container i {
+            position: absolute;
+            left: 10px;
+            font-size: 20px;
+            color: #aaa;
+        }
+        .card-block{
+            display: flex;
+            justify-content: space-between;
+
+        }
+
+        .card-country:hover {
+            background-color: rgba(0, 0, 0, 0.1); /* Подсветка фоном при наведении */
+            transform: scale(1.05); /* Немного увеличиваем размер для эффекта выбора */
+        }
+        .card-country {
+            position: relative;
+            width: 270px;
+            height: 230px;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            margin: 30px;
+        }
+
+        .card-country img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 20px;
+            transition: all 0.5s ease;
+        }
+        .card-country .text {
+            position: absolute;
+            bottom: 10px; /* Отступ от нижней границы */
+            left: 10px; /* Отступ от левой границы */
+            color: white; /* Цвет текста */
+            font-size: 18px; /* Размер шрифта */
+            font-weight: bold; /* Сделать текст жирным */
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px; /* Отступы вокруг текста */
+            border-radius: 5px; /* Скругление фона текста */
+        }
+        .city-dropdown {
+            width: 200px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            cursor: pointer;
+            margin-left: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .city-dropdown:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .city-dropdown option {
+
+            padding: 10px;
+        }
+        .section-icon .bx-filter{
+            border-style: none;
+            background: none;
+            height: 40px;
+            width: 40px;
+        }
+    </style>
+</head>
+<body>
+<div class="sidebar close">
+    <div class="logo-details">
+
+        <span class="logo_name">Trip Planner</span>
+    </div>
+    <ul class="nav-links">
+        <li>
+            <a href="#">
+                <i class='bx bx-grid-alt' ></i>
+                <span class="link_name">Dashboard</span>
+            </a>
+            <ul class="sub-menu blank">
+                <li><a class="link_name" href="#">Category</a></li>
+            </ul>
+        </li>
+        <li>
+            <div class="iocn-link">
+                <a href="#">
+                    <i class='bx bx-collection' ></i>
+                    <span class="link_name">Category</span>
+                </a>
+                <i class='bx bxs-chevron-down arrow' ></i>
+            </div>
+            <ul class="sub-menu">
+                <li><a class="link_name" href="#">Category</a></li>
+                <li><a href="#">HTML & CSS</a></li>
+                <li><a href="#">JavaScript</a></li>
+                <li><a href="#">PHP & MySQL</a></li>
+            </ul>
+        </li>
+        <li>
+            <div class="iocn-link">
+                <a href="#">
+                    <i class='bx bx-book-alt' ></i>
+                    <span class="link_name">Posts</span>
+                </a>
+                <i class='bx bxs-chevron-down arrow' ></i>
+            </div>
+            <ul class="sub-menu">
+                <li><a class="link_name" href="#">Posts</a></li>
+                <li><a href="#">Web Design</a></li>
+                <li><a href="#">Login Form</a></li>
+                <li><a href="#">Card Design</a></li>
+            </ul>
+        </li>
+
+        <li>
+            <div class="iocn-link">
+                <a href="#">
+                    <i class='bx bx-heart' ></i>
+                    <span class="link_name">Plugins</span>
+                </a>
+                <i class='bx bxs-chevron-down arrow' ></i>
+            </div>
+            <ul class="sub-menu">
+                <li><a class="link_name" href="#">Plugins</a></li>
+                <li><a href="#">UI Face</a></li>
+                <li><a href="#">Pigments</a></li>
+                <li><a href="#">Box Icons</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#">
+                <i class='bx bx-compass' ></i>
+                <span class="link_name">Explore</span>
+            </a>
+            <ul class="sub-menu blank">
+                <li><a class="link_name" href="#">Explore</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#">
+                <i class='bx bx-history'></i>
+                <span class="link_name">History</span>
+            </a>
+            <ul class="sub-menu blank">
+                <li><a class="link_name" href="#">History</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#">
+                <i class='bx bx-cog' ></i>
+                <span class="link_name">Setting</span>
+            </a>
+            <ul class="sub-menu blank">
+                <li><a class="link_name" href="#">Setting</a></li>
+            </ul>
+        </li>
+        <li>
+            <div class="profile-details">
+                <div class="profile-content">
+                    <img src="http://localhost:8080/images/PlannerTripLogo21.png" alt="profileImg">
+                </div>
+                <div class="name-job">
+                    <div class="profile_name">Lisa</div>
+                    <div class="job">Web Desginer</div>
+                </div>
+                <i class='bx bx-log-out' ></i>
+            </div>
+        </li>
+    </ul>
+</div>
+<section class="home-section">
+    <div class="home-content-wrapper">
+        <div class="home-content">
+            <i class='bx bx-menu'></i>
+            <span class="text">Hello, Username</span>
+        </div>
+        <div class="home-content-user-profile">
+            <img src="#">
+        </div>
+    </div>
+
+    <div class="main-section">
+        <div class="main-filter-search-block">
+            <div class="section left">
+                <div class="section-icon">
+                    <i class='bx bx-map-pin' ></i>
+                </div>
+                <div class="main-panel-desc">
+                    <span class="text-bold">Destination</span>
+                    <span class="text">Select City</span>
+                </div>
+                <select  class="city-dropdown">
+                    <option value="" disabled selected>Select a city</option>
+
+                </select>
+            </div>
+            <div class="separator"></div>
+            <div class="section middle">
+                <div class="section-icon">
+                    <button class='bx bx-filter'></button>
+                </div>
+                <div class="main-panel-desc">
+                    <span class="text-bold">Filters</span>
+                </div>
+                <select  class="city-dropdown">
+                <option value="" disabled selected>Filters</option>
+                    <option value="Most popular" >Most popular</option>
+                    <option value="Most popular" >Europe</option>
+                    <option value="Most popular" >Asia</option>
+            </select>
+            </div>
+            <div class="separator"></div>
+            <div class="section right">
+                <div class="search-container">
+                    <i class='bx bx-user'></i>
+                    <input class="search-input" type="text" placeholder="Search">
+                </div>
+            </div>
+        </div>
+        <div class="card-block">
+            <div class="card-country">
+                <img src="http://localhost:8080/images/spain.jpg" alt="Spain">
+                <span class="text">Spain</span>
+            </div>
+            <div class="card-country">
+                <img src="http://localhost:8080/images/france.jpg" alt="Spain">
+                <span class="text">France</span>
+            </div>
+            <div class="card-country">
+                <img src="http://localhost:8080/images/italy.jpg" alt="Spain">
+                <span class="text">Italy</span>
+
+            </div>
+            <div class="card-country">
+                <img src="http://localhost:8080/images/japan.jpg" alt="Spain">
+                <span class="text">Japan</span>
+            </div>
+            <div class="card-country">
+                <img src="http://localhost:8080/images/netherlands.jpg" alt="Spain">
+                <span class="text">Netherlands</span>
+            </div>
+
+        </div>
+        <div class="card-block">
+            <div class="card-country">
+                <img src="http://localhost:8080/images/norway.jpg" alt="Spain">
+                <span class="text">Norway</span>
+            </div>
+            <div class="card-country">
+                <img src="http://localhost:8080/images/tailand.jpg" alt="Spain">
+                <span class="text">Thailand</span>
+            </div>
+            <div class="card-country">
+                <img src="http://localhost:8080/images/portugal.jpg" alt="Spain">
+                <span class="text">Portugal</span>
+
+            </div>
+            <div class="card-country">
+                <img src="http://localhost:8080/images/CzechRepublic.jpg" alt="Spain">
+                <span class="text">Czech Republic</span>
+            </div>
+            <div class="card-country">
+                <img src="http://localhost:8080/images/austria.jpg" alt="Spain">
+                <span class="text">Austria</span>
+            </div>
+        </div>
+
+
+    </div>
+</section>
+<script >
+    let arrow = document.querySelectorAll(".arrow");
+    for (var i = 0; i < arrow.length; i++) {
+        arrow[i].addEventListener("click", (e)=>{
+            let arrowParent = e.target.parentElement.parentElement;
+            arrowParent.classList.toggle("showMenu");
+        });
+    }
+    let sidebar = document.querySelector(".sidebar");
+    let sidebarBtn = document.querySelector(".bx-menu");
+    console.log(sidebarBtn);
+    sidebarBtn.addEventListener("click", ()=>{
+        sidebar.classList.toggle("close");
+    });
+
+    document.getElementsByClassName('bx bx-log-out')[0].addEventListener("click",function () {
+        window.location.href = 'login.html';
+    })
+    document.addEventListener('DOMContentLoaded', function () {
+        const cityDropdown = document.getElementById('city-dropdown');
+
+        // Пример использования Fetch для загрузки списка городов с сервера
+        fetch('http://localhost:8080/api/cities') // Замените URL на ваш API для загрузки данных
+            .then(response => response.json()) // Получаем список городов в формате JSON
+            .then(cities => {
+                cities.forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city.id; // Идентификатор города
+                    option.textContent = city.name; // Название города
+                    cityDropdown.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching cities:', error);
+            });
+    });
+    let cardCountry=document.getElementsByClassName('card-country');
+    document.addEventListener("click",()=>{
+        const countrySelected=document.getElementsByClassName('card-country');
+       Array.from(countrySelected).forEach(card=>{
+           card.addEventListener("click",()=>{
+               const country=card.querySelector('.text').innerHTML;
+               localStorage.setItem('country',country);
+               window.location.href='addTableData.html';
+           })
+       })
+
+
+    })
+</script>
+</body>
+</html>

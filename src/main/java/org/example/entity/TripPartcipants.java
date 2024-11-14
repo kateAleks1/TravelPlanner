@@ -25,14 +25,6 @@ public class TripPartcipants {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-    @Column(name = "StartDate")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date startDate;
-    @Column(name = "EndDate")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date endDate;
-    @ManyToOne
-    @JoinColumn(name = "status_trip")
-    private Trip_Status statusTrip;
+
 
 }

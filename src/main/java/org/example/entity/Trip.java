@@ -23,15 +23,7 @@ public class Trip {
     @Column(name = "trip_id")
     @Id
     private int tripId;
-    @Column(name = "start_date", nullable = false)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date startDate;
-    @Column(name = "end_date", nullable = false)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date endDate;
-    @ManyToOne
-    @JoinColumn(name = "status_id")
-    private Trip_Status statusTrip;
+
 private Integer price;
     @ManyToMany
     @JoinTable(name = "trip_destinations",
@@ -39,11 +31,24 @@ private Integer price;
             inverseJoinColumns = @JoinColumn(name = "destination_id"))
     @JsonManagedReference
     private List<Destination> destinations = new ArrayList<>();
-
+    @Column(name = "start_date")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date startDate;
+    @Column(name = "end_date")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date endDate;
+    @ManyToOne
+    @JoinColumn(name = "status_id")
+    private Trip_Status statusTrip;
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "trip_participants",
             joinColumns = @JoinColumn(name = "trip_id"), // Исправьте здесь
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     @JsonManagedReference
     private Set<User> users = new HashSet<>();
+
+    @ManyToOne  // Связь с городом "многие к одному"
+    @JoinColumn(name = "city_id")  // Добавляем внешний ключ для связи с таблицей cities
+    @JsonManagedReference
+    private Cities city;
 }

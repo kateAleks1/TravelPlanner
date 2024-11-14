@@ -52,6 +52,9 @@
         .QueryField{
             margin-bottom: 30px;
         }
+        .div1 .tabletTripParticipants{
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -100,7 +103,19 @@
                     </thead>
                     <tbody></tbody>
                 </table>
-            </div> </div>
+            </div>
+            <div class="div1">
+<table class="tabletTripParticipants">
+    <thead>
+    <tr class="stringLine">
+        <th>User_Id</th>
+        <th>Trip_Id</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+            </div>
+        </div>
 
     </div>
 </div>
@@ -121,6 +136,11 @@
     function isValidLogin(login) {
         const loginPattern = /^[a-zA-Z0-9._-]{3,20}$/;
         return loginPattern.test(login);
+    }
+    function  loadTripParticantsTable(){
+        const tableBody=document.querySelector('tabletTripParticipants tbody');
+        tableBody.innerHTML='';
+
     }
     function loadUsersTable() {
         const tableBody = document.querySelector('.tableUsers tbody');

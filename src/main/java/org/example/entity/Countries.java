@@ -1,5 +1,6 @@
 package org.example.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,11 +22,10 @@ public class Countries {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Integer countryId;
-
     @Column(name = "country_name")
     private String countryName;
-
-    @OneToMany(mappedBy = "country", cascade = CascadeType.ALL)
-    private List<Destination> destinations;
+    @JsonIgnore
+    @OneToMany(mappedBy = "countryId", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private  List<Cities> cities;
 
 }
