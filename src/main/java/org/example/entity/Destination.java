@@ -22,16 +22,13 @@ public class Destination {
     @Column(name = "destination_id")
     private Integer destinationId;
     private String name;
-    private String city;
     @ManyToOne
-    @JoinColumn(name = "country_id", nullable = false)
-    private Countries country;
+    @JoinColumn(name = "city_id", nullable = false)
+    private Cities cities;
     private String description;
     @JsonIgnore
     @ManyToMany(mappedBy = "destinations", cascade = CascadeType.ALL)
     @JsonBackReference
     private List<Trip> trips;
-
-
 }
 

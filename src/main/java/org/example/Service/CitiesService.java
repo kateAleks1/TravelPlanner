@@ -9,4 +9,5 @@ public interface CitiesService {
     List<Cities> getCities();
     Optional<Cities> getCitiesById(int id);
     Optional<List<Cities>> getCitiesByCountryId(int id);
+    Optional<List<Cities>> getCitiesByCountryName(String countryName);
 }

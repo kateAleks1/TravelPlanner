@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -35,8 +36,11 @@ private final UserService userService;
 
     @PostMapping("/createNewTrip")
     public ResponseEntity<?> createNewTrip(@RequestBody TripDto tripDto) {
-        tripService.createTrip(tripDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "Поездка успешно создана"));
+        if(tripDto.getStart_date().after(tripDto.getEnd_date()) || tripDto.getStart_date().before(Date.from(Instant.now())) || tripDto.getEnd_date().before(Date.from(Instant.now()) )){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message","wrong dates"));
+        }
+       Trip trip= tripService.createTrip(tripDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("tripId", trip.getTripId()));
 
     }
     @GetMapping("/getAllTrips")
@@ -48,6 +52,22 @@ private final UserService userService;
     public ResponseEntity<?> deleteTrip(@PathVariable int tripId){
         tripService.deleteTrip(tripId);
         return ResponseEntity.ok().build();
+    }
+    @GetMapping("/getDestinations/{tripId}")
+    public ResponseEntity<?> getAllDestinationsFromTrip(@PathVariable int tripId){
+        return ResponseEntity.ok(tripService.getAllDestinationsByTripId(tripId));
+    }
+    @PutMapping("/{tripId}/addDestination/{destinationId}")
+    public ResponseEntity<?> addDestinationToTrip(@PathVariable int tripId, @PathVariable int destinationId){
+return ResponseEntity.ok(tripService.addDestinationToTrip(tripId,destinationId));
+    }
+    @DeleteMapping("/{tripId}/deleteDestinationById/{destinationId}")
+    public ResponseEntity<?> deleteDestinationById(@PathVariable int tripId, @PathVariable int destinationId){
+        return ResponseEntity.ok(tripService.addDestinationToTrip(tripId,destinationId));
+    }
+    @GetMapping("/getTripById/{tripId}")
+    public ResponseEntity<?> getTripById(@PathVariable int tripId){
+        return ResponseEntity.ok(tripService.findTripById(tripId));
     }
 //    @PutMapping("/updateTrips/{tripsId}")
 //    public ResponseEntity<?> updateTrios(@PathVariable int tripsId, @RequestBody TripDto tripDto){
@@ -111,6 +131,8 @@ private final UserService userService;
 //            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid user ID format");
      //   }
     }
+
+
 //    @RequestMapping("/error")
 //
 //    @GetMapping("/getAllTripsFromSpecificUserLogin/{userLogin}")

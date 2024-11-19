@@ -9,7 +9,8 @@ import java.util.Optional;
 
 public interface CountriesService{
     List<Countries> getAllCountries();
-    Optional<Countries> getCountryIdByCountryName(String countryName);
-    Optional<Countries> getCountryNamebyCountryId(int countryId);
+    Optional<Integer> getCountryIdByCountryName(String countryName);
+    Optional<Countries> getCountryCountryId(int countryId);
     boolean ifCountryExistsWithSuchId(int CountryId);
+    Optional<String> getCountryNameByCountryId(int CountryId);
 }

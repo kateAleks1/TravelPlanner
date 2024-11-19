@@ -25,17 +25,36 @@ public class CountryServiceImpl implements CountriesService {
     }
 
     @Override
-    public Optional<Countries> getCountryIdByCountryName(String countryName) {
-        return Optional.empty();
+    public Optional<Integer> getCountryIdByCountryName(String countryName) {
+        int countryId=0;
+        if(countriesRepository.getCountryIdByCountryName(countryName).isPresent()){
+           countryId=countriesRepository.getCountryIdByCountryName(countryName).get();
+        }
+        return Optional.of(countryId);
     }
 
     @Override
-    public Optional<Countries> getCountryNamebyCountryId(int countryId) {
-        return Optional.empty();
+    public Optional<Countries> getCountryCountryId(int countryId) {
+        if(countriesRepository.findByCountryId(countryId).isPresent()){
+            Countries countries=countriesRepository.findByCountryId(countryId).get();
+            return Optional.of(countries);
+        }
+       return Optional.empty();
     }
 
     @Override
     public boolean ifCountryExistsWithSuchId(int CountryId) {
         return false;
+    }
+
+    @Override
+    public Optional<String> getCountryNameByCountryId(int CountryId) {
+        // получение названия страны по id
+        String countryName = "";
+     if(countriesRepository.findByCountryId(CountryId).isPresent()){
+         Countries countries=countriesRepository.findByCountryId(CountryId).get();
+         countryName= countries.getCountryName();
+     }
+      return Optional.of(countryName);
     }
 }

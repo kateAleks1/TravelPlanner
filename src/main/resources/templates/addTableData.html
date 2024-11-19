@@ -1,304 +1,459 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
-<head>
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-    <meta charset="UTF-8">
-    <title>Регистрация</title>
-    <style>
-        * {
-
-            font-family: 'Poppins', sans-serif;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #E4E9F7;
+    <!DOCTYPE html>
+    <html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+    <head>
+        <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+        <meta charset="UTF-8">
+        <title>Регистрация</title>
+        <style>
+                    * {
             margin: 0;
-            padding: 20px;
-        }
-        h1 {
-            color: #333;
-        }
-        form {
-            background: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        label {
-            display: block;
-            margin: 10px 0 5px;
-        }
-        input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-        }
-        button {
+                        padding: 0;
 
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #218838;
-        }
-        .error {
-            color: red;
-            margin: 10px 0;
-        }
-        .MainDivBlock{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+                    }
+            body {
+                font-family: 'Poppins', sans-serif;
+                background-color: #371b1b;
+              background-image: url('http://localhost:8080/images/spain.jpg');
 
-        #Token {
-            display: block;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            max-width: 500px;
-            border: 1px solid #ccc;
-            padding: 5px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px; /
-        text-align: left;
-        }
-        th {
-            background-color: lightgray;
-        }
-        .BtnBlock{
-            margin-top: 20px;
-        }
-        .CountryName{
-            font-size: 20px;
-            font-style: oblique;
-            font-weight: 600;
-        }
+                background-size: cover; /* Убедитесь, что изображение покрывает весь экран */
+                background-repeat: no-repeat; /* Предотвращает повторение изображения */
+                background-position: center; /* Центрирует изображение */
+                margin: 0;
+                display: flex;
+                flex-direction: column;
+            }
 
-        .countryClassDestination{
-            margin-left: 10px;
-        }
-        .section-icon{
-            margin-bottom: 30px;
-        }
-        .text-bold{
-            font-size: 20px;
-            font-style: oblique;
-            font-weight: 600;
-        }
-    </style>
-</head>
+            .MainDivBlock {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                flex-wrap: wrap; /* Для корректного отображения на маленьких экранах */
+            }
+            .formWrapper{
 
-<body>
-<h1>Create New Trip</h1>
+            }
+            h1 {
+                margin-left: 40%    ;
 
-<form id="Create Trip">
-    <div class="MainDivBlock">
-        <div class="LeftyBlock">
-            <div class="section-icon">
-                <i class='bx bx-map-pin' ></i>
-                <span class="CountryName">Country:</span>
-                <span class="countryClassDestination">Country</span>
+                color: #333;
+            }
+            form {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+
+                max-width: 100%;
+                padding: 20px;
+                background: white;
+                border-radius: 40px 40px 0 0; /* Радиус верхних углов формы */
+                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+                box-sizing: border-box;
+            }
+
+            label {
+                display: block;
+                margin: 10px 0 5px;
+            }
+            input {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 15px;
+                border: 1px solid #ccc;
+                border-radius: 3px;
+            }
+            button {
+
+                background-color: #28a745;
+                color: white;
+                border: none;
+                padding: 10px;
+                border-radius: 3px;
+                cursor: pointer;
+            }
+            button:hover {
+                background-color: #218838;
+            }
+            .error {
+                color: red;
+                margin: 10px 0;
+            }
+            .MainDivBlock{
+
+                display: flex;
+               position: relative;
+                align-items: center;
+                justify-content: center;
+
+            }
+
+            #Token {
+                display: block;
+                white-space: pre-wrap;
+                word-wrap: break-word;
+                max-width: 500px;
+                border: 1px solid #ccc;
+                padding: 5px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 20px;
+            }
+            th, td {
+                border: 1px solid black;
+                padding: 8px; /
+            text-align: left;
+            }
+            th {
+                background-color: lightgray;
+            }
+
+            .BtnBlock{
+                margin-top: 20px;
+            }
+            .CountryName{
+                font-size: 20px;
+                font-style: oblique;
+                font-weight: 600;
+            }
+
+            .countryClassDestination{
+                margin-left: 10px;
+            }
+            .section-icon{
+                margin-bottom: 30px;
+            }
+            .text-bold{
+                font-size: 20px;
+                font-style: oblique;
+                font-weight: 600;
+            }
+            .error-text{
+                display: none;
+                color: crimson;
+            }
+            .error-style {
+                border: 2px solid crimson;
+                background-color: #ffe6e6;
+            }
+                    #Create Trip {
+                        overflow: hidden; /* Скрывает содержимое, пока окно свернуто */
+                        max-height: 0; /* Сжатое состояние */
+                        opacity: 0; /* Прозрачность в свернутом состоянии */
+                        transition: max-height 0.5s ease, opacity 0.5s ease; /* Анимация разворачивания */
+                        background-color: #f9f9f9;
+                        padding: 20px;
+                        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+                        border-radius: 10px;
+                    }
+
+                    /* Развёрнутое состояние */
+                    #Create Trip.expanded {
+                        max-height: 300px; /* Максимальная высота для развёрнутой формы */
+                        opacity: 1; /* Полная видимость */
+                        padding: 40px; /* Добавляем отступы при разворачивании */
+                    }
+            .error-text {
+                display: none;
+                color: crimson;
+                font-size: 0.9rem;
+                margin-top: 5px;
+            }
+                    .animation-arrow {
+                        position: absolute; /* Абсолютное позиционирование относительно формы */
+                        top: -20px; /* Поднимите стрелку вверх над формой */
+                        left: 50%; /* Смещаем на середину формы */
+                        transform: translateX(-50%); /* Центруем по горизонтали */
+                        background-color: white; /* Цвет фона, чтобы стрелка выделялась */
+                        border-radius: 50%; /* Закругление для декоративного круга */
+                        padding: 10px; /* Отступы для стрелки */
+                     /* Легкая тень */
+                    }
+
+                    .animation-arrow i {
+                        font-size: 24px; /* Размер иконки */
+                        color: #333; /* Цвет иконки */
+                    }
+        </style>
+    </head>
+
+    <body>
+
+
+
+    <div class="formWrapper">
+        <form id="Create Trip" class="collapsed">
+            <div class="animation-arrow" id="toggleArrow">
+                <i class='bx bx-chevron-up'></i>
+
+            </div>
+
+            <h1>Create New Trip</h1>
+
+            <div class="MainDivBlock">
+                <div class="LeftyBlock">
+                    <div class="section-icon">
+                        <i class='bx bx-map-pin' ></i>
+                        <span class="CountryName">Country:</span>
+                        <span class="countryClassDestination">Country</span>
+                    </div>
+
+
+                    <div class="main-panel-desc">
+                        <span class="text-bold">Destination</span>
+                        <span class="text">Select City</span>
+                        <select id="city-dropdown" class="city-dropdown">
+
+                        </select>
+                    </div>
+
+                    <label for="startDate">StartDate:</label>
+                    <input type="datetime-local" id="startDate" name="startDate" required />
+                    <span class="error-text">StartDate must be before endDate</span>
+                    <label for="endDate">EndDate:</label>
+                    <input type="datetime-local" id="endDate" name="endDate" required />
+
+
+                    <!--  <label for="status_id">status_id:</label>
+                      <select id="status_id" required>
+                          <option>1</option>
+                          <option>2</option>
+                          <option>3</option>-->
+
+                    </select>
+                    <div class="BtnBlock">
+                        <button type="submit" id="createBtn">Create</button>
+                        <!--<button type="submit" id="loginBtn">Login</button>
+                        <button type="button" id="registerBtn">Register</button>-->
+                    </div>
+
+                </div>
+            <!--    <div class="RightBlock">
+                    <h1 >UserName</h1>
+                    <label id="userName">no login</label>
+                    <h1 >Token</h1>
+                    <label id="Token">Token</label>
+                    <h1 >UserId</h1>
+                    <label id="UserId">UserId</label>
+
+                </div>-->
+                <!--   <div class="StatusTrip">
+                       <table class="StatusTripTable">
+                           <thead>
+                           <tr class="stringLine">
+                               <th>Status_id</th>
+                               <th>status_name</th>
+                           </tr>
+                           </thead>
+                           <tbody>
+
+                           </tbody>
+                       </table>
+                   </div>-->
             </div>
 
 
-            <div class="main-panel-desc">
-                <span class="text-bold">Destination</span>
-                <span class="text">Select City</span>
-                <select id="city-dropdown" class="city-dropdown">
-                <option value="1">Oslo</option>
-            </select>
-            </div>
 
-            <label for="startDate">StartDate:</label>
-            <input type="datetime-local" id="startDate" name="startDate" required />
-
-            <label for="endDate">EndDate:</label>
-            <input type="datetime-local" id="endDate" name="endDate" required />
-
-          <!--  <label for="status_id">status_id:</label>
-            <select id="status_id" required>
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>-->
-
-            </select>
-<div class="BtnBlock">
-    <button type="submit" id="createBtn">Create</button>
-    <button type="submit" id="loginBtn">Login</button>
-    <button type="button" id="registerBtn">Register</button>
-</div>
-
-        </div>
-        <div class="RightBlock">
-            <h1 >UserName</h1>
-            <label id="userName">no login</label>
-            <h1 >Token</h1>
-            <label id="Token">Token</label>
-            <h1 >UserId</h1>
-            <label id="UserId">UserId</label>
-
-        </div>
-     <!--   <div class="StatusTrip">
-            <table class="StatusTripTable">
-                <thead>
-                <tr class="stringLine">
-                    <th>Status_id</th>
-                    <th>status_name</th>
-                </tr>
-                </thead>
-                <tbody>
-
-                </tbody>
-            </table>
-        </div>-->
+        </form>
     </div>
 
 
+    <script>
+        const toggleArrow = document.getElementById('toggleArrow');
+        const createTrip = document.getElementById('Create Trip');
+        const formId = document.getElementById('Create Trip');
 
-</form>
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        getLogin();
+        toggleArrow.addEventListener('click', () => {
 
-        loadTripCountryDestination();
-    });
- function loadTripCountryDestination(){
-     const country = localStorage.getItem('country');
-     const countryDestinationElement = document.getElementsByClassName('countryClassDestination')[0];
-     countryDestinationElement.innerText = country;
- }
-    document.getElementById('loginBtn').addEventListener('click',function () {
-        window.location.href='login.html';
-    })
-    document.getElementById('registerBtn').addEventListener('click',function () {
-        window.location.href='register.html';
-    })
-    function loadStatusTable(){
-        const statusTable=document.getElementsByClassName('StatusTripTable')[0].querySelector('tbody');
-        fetch('http://localhost:8080/api/trip_status/getStatusTrip',{
-            method:'GET',
-            headers:{
-                'Content-Type':'application/json'
+            createTrip.classList.toggle('expanded');
+
+            const icon = toggleArrow.querySelector('i');
+            if (createTrip.classList.contains('expanded')) {
+                icon.classList.remove('bx-chevron-down');
+                icon.classList.add('bx-chevron-up');
+            } else {
+                icon.classList.remove('bx-chevron-up');
+                icon.classList.add('bx-chevron-down');
             }
-        }).then(response=>{
-            if(!response.ok){
-                window.alert('Error')
-            }
-            return response.json();
-        }).then(data=>{
+        });
+        document.addEventListener('DOMContentLoaded', () => {
 
-            data.forEach(statusTrip=>{
-                const tr=document.createElement('tr');
-                tr.innerHTML=`
-<td>${statusTrip.statusId}</td>
-<td>${statusTrip.statusName}</td>
-`;
-                statusTable.appendChild(tr)
+            getCitiesFromSelectedCountry();
+            loadTripCountryDestination();
+        });
+     function loadTripCountryDestination(){
+         const country = localStorage.getItem('country');
+         const countryDestinationElement = document.getElementsByClassName('countryClassDestination')[0];
+         countryDestinationElement.innerText = country;
+     }
+
+        function loadStatusTable(){
+            const statusTable=document.getElementsByClassName('StatusTripTable')[0].querySelector('tbody');
+            fetch('http://localhost:8080/api/trip_status/getStatusTrip',{
+                method:'GET',
+                headers:{
+                    'Content-Type':'application/json'
+                }
+            }).then(response=>{
+                if(!response.ok){
+                    window.alert('Error')
+                }
+                return response.json();
+            }).then(data=>{
+
+                data.forEach(statusTrip=>{
+                    const tr=document.createElement('tr');
+                    tr.innerHTML=`
+    <td>${statusTrip.statusId}</td>
+    <td>${statusTrip.statusName}</td>
+    `;
+                    statusTable.appendChild(tr)
+                })
+
             })
-
-        })
-    }
-
-    document.getElementById('createBtn').addEventListener("click", function (event) {
-        event.preventDefault();
-        const token = localStorage.getItem('AccessToken');
-        const startDateInput = document.getElementById('startDate');
-        const endDateInput = document.getElementById('endDate');
-        const status_id = parseInt(document.getElementById('status_id').value, 10);
-        const users = localStorage.getItem('id');
-
-        if (!startDateInput || !endDateInput) {
-            console.error("StartDate or EndDate input is missing.");
-            return;
         }
 
-        const start_date = formatDate(startDateInput.value);
-        const end_date = formatDate(endDateInput.value);
+        document.getElementById('createBtn').addEventListener("click", function (event) {
+            event.preventDefault();
 
-        const data = {
-            trip_id: 2,
-            start_date: start_date,
-            end_date: end_date,
-            status_id: status_id,
-            price:100,
-            idDestination: 1,
-            users: users
-        };
+            const token = localStorage.getItem('AccessToken');
+            const startDateInput = document.getElementById('startDate');
+            const endDateInput = document.getElementById('endDate');
+            const users = localStorage.getItem('id');
+            const errorTextElement = document.querySelector('.error-text');
+            const dropDownMenu = document.querySelector('.city-dropdown').value;
+            localStorage.setItem('city-option-dropdown',dropDownMenu);
+            if (!startDateInput || !endDateInput) {
+                console.error("StartDate or EndDate input is missing.");
+                return;
+            }
 
-        fetch('http://localhost:8080/api/trip/createNewTrip', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data.message);
-                window.location.href = 'tables.html';
+            const start_date = formatDate(startDateInput.value);
+            const end_date = formatDate(endDateInput.value);
+
+            const data = {
+                trip_id: 2,
+                start_date: start_date,
+                end_date: end_date,
+                price: 100,
+                users: users,
+                cityId:dropDownMenu
+            };
+
+            fetch('http://localhost:8080/api/trip/createNewTrip', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
             })
-            .catch(error => console.error('Error:', error));
-    });
+                .then(response => {
+                    if (!response.ok) {
+                        resetFields(startDateInput, endDateInput);
+                        window.alert(`Error: ${response.status}`);
 
-    function formatDate(dateString) {
-        const date = new Date(dateString);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        return `${year}-${month}-${day} ${hours}:${minutes}:00`;
+                        throw new Error(`Request failed with status ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data =>{
+localStorage.setItem("tripId",data.tripId)
+                    window.location.href = 'CardDestinations.html';
+                })
+
+        });
+
+
+        function resetFields(startDateInput, endDateInput) {
+            startDateInput.value = ""; // Очистить значение
+            endDateInput.value = "";  // Очистить значение
+
+            // Вернуть поля в первоначальное состояние, например, если есть кастомные стили
+            startDateInput.classList.remove('error-style'); // Пример класса для ошибок
+            endDateInput.classList.remove('error-style');
+        }
+        function resetStartDate() {
+            if (startDate && endDate && errorTextElement) {
+                startDate.value = '';
+                endDate.value = '';
+                errorTextElement.style.display = 'none';// Очистка поля
+            }
+        }
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${year}-${month}-${day} ${hours}:${minutes}:00`;
+        }
+
+        function getCitiesFromSelectedCountry() {
+            const country = localStorage.getItem('country');
+            const dropDownMenu = document.querySelector('.city-dropdown');
+
+            if (!country) {
+                window.alert('Country not selected');
+                return;
+            }
+
+            fetch(`http://localhost:8080/api/cities/getCitiesByCountryName/${country}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        window.alert(`Error: ${response.status}`);
+                        throw new Error('Failed to fetch cities');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+
+                    dropDownMenu.innerHTML = '';
+
+                    data.forEach(city => {
+                        const optionCity = document.createElement('option');
+                        optionCity.value = city.cityId;
+                        optionCity.textContent = city.cityName;
+                        dropDownMenu.appendChild(optionCity);
+                    });
+                })
+
+        }
+
+  function  getLogin(){
+        const  userName= document.getElementById('userName');
+
+        const AccessToken=document.getElementById('Token');
+     const token=localStorage.getItem('AccessToken');
+     const userId=document.getElementById('UserId');
+     fetch('http://localhost:8080/api/getLogin',{
+         method:'POST',
+         headers:{
+             'Authorization': `Bearer ${token}`,
+             'Content-Type': 'application/json'
+         }
+
+     }).then(response=>{
+         return response.json();
+     }).then(data=>{
+
+         userName.innerHTML=data.login;
+         userId.innerHTML=data.id;
+         AccessToken.innerText=token;
+         if(data.id){
+             localStorage.setItem('id', data.id);
+         }
+
+     })
     }
 
-function getCitiesFromSelectedCountry(){
-    const country = localStorage.getItem('country');
-    const dropDownMenu=document.getElementsByClassName('city-dropdown');
-    fetch('')
+    </script>
 
-}
-function  getLogin(){
-    const  userName= document.getElementById('userName');
-
-    const AccessToken=document.getElementById('Token');
- const token=localStorage.getItem('AccessToken');
- const userId=document.getElementById('UserId');
- fetch('http://localhost:8080/api/getLogin',{
-     method:'POST',
-     headers:{
-         'Authorization': `Bearer ${token}`,
-         'Content-Type': 'application/json'
-     }
-
- }).then(response=>{
-     return response.json();
- }).then(data=>{
-
-     userName.innerHTML=data.login;
-     userId.innerHTML=data.id;
-     AccessToken.innerText=token;
-     if(data.id){
-         localStorage.setItem('id', data.id);
-     }
-
- })
-}
-
-</script>
-
-</body>
-</html>
+    </body>
+    </html>

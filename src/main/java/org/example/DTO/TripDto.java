@@ -23,4 +23,5 @@ import java.util.Date;
             private int  status_id;
             private int idDestination;
             private int users;
+            private int cityId;
         }

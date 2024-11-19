@@ -48,7 +48,7 @@ private Integer price;
     private Set<User> users = new HashSet<>();
 
     @ManyToOne  // Связь с городом "многие к одному"
-    @JoinColumn(name = "city_id")  // Добавляем внешний ключ для связи с таблицей cities
+    @JoinColumn(name = "city_id")
     @JsonManagedReference
     private Cities city;
 }

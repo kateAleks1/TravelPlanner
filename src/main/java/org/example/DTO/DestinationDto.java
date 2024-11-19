@@ -13,8 +13,8 @@ public class DestinationDto {
     @JsonProperty("destination_id")
     private Integer destinationId;
     private String name;
-    private String country;
-    private String city;
+    private int city;
     private String description;
     private int country_id;
+    private String image_url;
 }

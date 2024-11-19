@@ -1,6 +1,7 @@
 package org.example.Service.ServiceImpl;
 
 import org.example.Dal.Repository.CitiesRepository;
+import org.example.Dal.Repository.CountriesRepository;
 import org.example.Service.CitiesService;
 import org.example.entity.Cities;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +14,13 @@ import java.util.Optional;
 public class CitiesServiceImpl implements CitiesService {
 
     private final CitiesRepository citiesRepository;
-    @Autowired
-    public CitiesServiceImpl(CitiesRepository citiesRepository) {
+    private final CountryServiceImpl countryService;
+    private final CountriesRepository countriesRepository;
+@Autowired
+    public CitiesServiceImpl(CitiesRepository citiesRepository, CountryServiceImpl countryService, CountriesRepository countriesRepository) {
         this.citiesRepository = citiesRepository;
+        this.countryService = countryService;
+        this.countriesRepository = countriesRepository;
     }
 
     @Override
@@ -25,11 +30,22 @@ public class CitiesServiceImpl implements CitiesService {
 
     @Override
     public Optional<Cities> getCitiesById(int id) {
-        return Optional.empty();
+        Optional<Cities> city = citiesRepository.findById(id);
+        return city;  // Возвращаем Optional, не вызывая .get()
     }
 
+
+    public Optional<List<Cities>> getCitiesByCountryName(String countryName) {
+        Optional<Integer> countryIdOpt = countriesRepository.getCountryIdByCountryName(countryName);
+        if (countryIdOpt.isPresent()) {
+            int countryId = countryIdOpt.get();
+            return citiesRepository.findAllCitiesFromCountryId(countryId);
+        }
+        return Optional.empty();
+    }
     @Override
     public Optional<List<Cities>> getCitiesByCountryId(int id) {
+
         return Optional.empty();
     }
 }

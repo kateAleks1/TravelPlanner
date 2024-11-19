@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Main Page</title>
+    <title>Card Destinations</title>
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 
     <style>
@@ -12,6 +12,7 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
+            user-select: none;
         }
 
         .sidebar {
@@ -49,10 +50,14 @@
             font-size: 22px;
             color: #fff;
             font-weight: 600;
-margin-left: 40px;
+            margin-left: 40px;
             margin-top: 40px;
             transition: 0.2s ease;
             transition-delay: 0.3s;
+        }
+        .sidebar *:not(input, button, textarea, a) {
+            outline: none;  /* Убирает обводку при клике */
+            pointer-events: none; /* Убирает возможность фокусировки */
         }
         .sidebar.close .logo-details .logo_name{
             transition-delay: 0s;
@@ -282,7 +287,7 @@ margin-left: 40px;
             width: 100%;
             height: 20%;
             display: flex;
-            justify-content: space-between;
+
             padding: 15px;
             border-radius: 20px;
         }
@@ -367,13 +372,16 @@ margin-left: 40px;
             font-size: 16px;
             color: #333;
         }
-
+        .city-dropdown-text{
+            font-size: 16px;
+            color: #333;
+        }
         .left, .middle, .right {
             padding: 0 20px;
         }
 
         .home-content-wrapper{
-         display: flex;
+            display: flex;
             justify-content: space-between;
             align-items: center;
         }
@@ -385,7 +393,7 @@ margin-left: 40px;
 
         }
         .home-content-user-profile img{
-          margin: 30%;
+            margin: 30%;
         }
         .main-panel-desc {
             display: flex;
@@ -393,7 +401,7 @@ margin-left: 40px;
             align-items: center/* Stack elements vertically */
         }
         .main-panel-desc .text-bold{
-          font-size: 20px;
+            font-size: 20px;
             font-weight: 500;
 
         }
@@ -403,10 +411,10 @@ margin-left: 40px;
 
         }
         .section-icon{
-padding: 15px;
+            padding: 15px;
         }
         input{
-background: #ffffff;
+            background: #ffffff;
             width: 80%;
             height: 80%;
             border-radius: 20px;
@@ -417,7 +425,27 @@ background: #ffffff;
             display: flex;
             align-items: center;
         }
+        .card-country i {
+            position: absolute;
+            top: 10px; /* Отступ от верхней границы */
+            right: 10px; /* Отступ от правой границы */
+            font-size: 24px; /* Размер иконки */
+            color: white; /* Цвет иконки */
+            background-color: rgba(0, 0, 0, 0.5); /* Фон для читаемости */
+            padding: 5px; /* Отступы вокруг иконки */
+            border-radius: 50%; /* Круглый фон */
+            cursor: pointer; /* Указатель при наведении */
+            transition: all 0.3s ease; /* Анимация при наведении */
+        }
 
+        .card-country i:hover {
+            color: red; /* Цвет иконки при наведении */
+            background-color: rgba(255, 255, 255, 0.8); /* Фон при наведении */
+        }
+        .card-country i.selected {
+            color: white; /* Текст (иконка) белая */
+            background-color: red; /* Фон полностью красный */
+        }
         .search-input {
             padding-left: 30px;
             padding-right: 10px;
@@ -607,7 +635,8 @@ background: #ffffff;
     <div class="home-content-wrapper">
         <div class="home-content">
             <i class='bx bx-menu'></i>
-            <span class="text">Hello, Username</span>
+            <span class="text">Trip City:  </span>
+            <span class="city-dropdown-text">Trip</span>
         </div>
         <div class="home-content-user-profile">
             <img src="#">
@@ -616,18 +645,11 @@ background: #ffffff;
 
     <div class="main-section">
         <div class="main-filter-search-block">
-            <div class="section left">
-                <div class="section-icon">
-                    <i class='bx bx-map-pin' ></i>
+            <div class="section right">
+                <div class="search-container">
+                    <i class='bx bx-user'></i>
+                    <input class="search-input" type="text" placeholder="Search">
                 </div>
-                <div class="main-panel-desc">
-                    <span class="text-bold">Destination</span>
-                    <span class="text">Select City</span>
-                </div>
-                <select  class="city-dropdown">
-                    <option value="" disabled selected>Select a city</option>
-
-                </select>
             </div>
             <div class="separator"></div>
             <div class="section middle">
@@ -638,73 +660,156 @@ background: #ffffff;
                     <span class="text-bold">Filters</span>
                 </div>
                 <select  class="city-dropdown">
-                <option value="" disabled selected>Filters</option>
+                    <option value="" disabled selected>Filters</option>
                     <option value="Most popular" >Most popular</option>
                     <option value="Most popular" >Europe</option>
                     <option value="Most popular" >Asia</option>
-            </select>
+                </select>
             </div>
             <div class="separator"></div>
-            <div class="section right">
-                <div class="search-container">
-                    <i class='bx bx-user'></i>
-                    <input class="search-input" type="text" placeholder="Search">
+            <div class="section left">
+                <div class="section-icon">
+                    <i class='bx bx-map-pin' ></i>
+                </div>
+                <div class="main-panel-desc">
+                    <span class="text-bold">Destination:</span>
+                </div>
+                <div class="main-panel-desc">
+                    <span class="text-dest">Destination:</span>
                 </div>
             </div>
         </div>
         <div class="card-block">
-            <div class="card-country">
-                <img src="http://localhost:8080/images/spain.jpg" alt="Spain">
-                <span class="text">Spain</span>
-            </div>
-            <div class="card-country">
-                <img src="http://localhost:8080/images/france.jpg" alt="Spain">
-                <span class="text">France</span>
-            </div>
-            <div class="card-country">
-                <img src="http://localhost:8080/images/italy.jpg" alt="Spain">
-                <span class="text">Italy</span>
 
-            </div>
-            <div class="card-country">
-                <img src="http://localhost:8080/images/japan.jpg" alt="Spain">
-                <span class="text">Japan</span>
-            </div>
-            <div class="card-country">
-                <img src="http://localhost:8080/images/netherlands.jpg" alt="Spain">
-                <span class="text">Netherlands</span>
-            </div>
+
+
 
         </div>
-        <div class="card-block">
-            <div class="card-country">
-                <img src="http://localhost:8080/images/norway.jpg" alt="Spain">
-                <span class="text">Norway</span>
-            </div>
-            <div class="card-country">
-                <img src="http://localhost:8080/images/tailand.jpg" alt="Spain">
-                <span class="text">Thailand</span>
-            </div>
-            <div class="card-country">
-                <img src="http://localhost:8080/images/portugal.jpg" alt="Spain">
-                <span class="text">Portugal</span>
 
-            </div>
-            <div class="card-country">
-                <img src="http://localhost:8080/images/CzechRepublic.jpg" alt="Spain">
-                <span class="text">Czech Republic</span>
-            </div>
-            <div class="card-country">
-                <img src="http://localhost:8080/images/austria.jpg" alt="Spain">
-                <span class="text">Austria</span>
-            </div>
-        </div>
 
 
     </div>
 </section>
 <script >
     let arrow = document.querySelectorAll(".arrow");
+    cityName();
+    loadDestinationsCard();
+    function loadDestinationsCard() {
+        const tripId = localStorage.getItem("tripId");
+        const block = document.querySelector('.card-block');
+
+        fetch(`http://localhost:8080/api/trip/getDestinations/${tripId}`, {
+            method: 'GET',
+            headers: {'Content-Type': 'application/json'}
+        })
+            .then(response => {
+                if (!response.ok) {
+                    window.alert(`Error: ${response.status}`);
+                    return;
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Очистить блок перед добавлением новых карточек
+                block.innerHTML = '';
+
+                data.forEach(cardDestination => {
+                    // Создание карточки
+                    const card = document.createElement('div');
+                    card.classList.add('card-country');
+
+
+
+                    // Создание иконки
+                    const icon = document.createElement('i');
+                    icon.classList.add('bx', 'bx-heart');
+                    card.appendChild(icon);
+
+                    // Создание текста
+                    const text = document.createElement('span');
+                    text.classList.add('text');
+                    text.textContent = cardDestination.name; // Название направления
+                    card.appendChild(text);
+
+                    // Добавление карточки в контейнер
+                    block.appendChild(card);
+                    icon.addEventListener('click', () => {
+                        icon.classList.toggle('selected'); // Переключение класса 'selected'
+                    });
+                });
+            })
+
+    }
+    function loadDestinationsCardFromCity() {
+        const tripId = localStorage.getItem("tripId");
+        const block = document.querySelector('.card-block');
+
+        fetch(`http://localhost:8080/api/trip/getDestinations/${tripId}`, {
+            method: 'GET',
+            headers: {'Content-Type': 'application/json'}
+        })
+            .then(response => {
+                if (!response.ok) {
+                    window.alert(`Error: ${response.status}`);
+                    return;
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Очистить блок перед добавлением новых карточек
+                block.innerHTML = '';
+
+                data.forEach(cardDestination => {
+                    // Создание карточки
+                    const card = document.createElement('div');
+                    card.classList.add('card-country');
+
+
+
+                    // Создание иконки
+                    const icon = document.createElement('i');
+                    icon.classList.add('bx', 'bx-heart');
+                    card.appendChild(icon);
+
+                    // Создание текста
+                    const text = document.createElement('span');
+                    text.classList.add('text');
+                    text.textContent = cardDestination.name; // Название направления
+                    card.appendChild(text);
+
+                    // Добавление карточки в контейнер
+                    block.appendChild(card);
+                    icon.addEventListener('click', () => {
+                        icon.classList.toggle('selected'); // Переключение класса 'selected'
+                    });
+                });
+            })
+
+    }
+    function cityName() {
+        const city = document.querySelector('.city-dropdown-text');
+   const cityId= localStorage.getItem('city-option-dropdown');
+
+    document.querySelectorAll('.card-country i').forEach((heart) => {
+        heart.addEventListener('click', () => {
+            heart.classList.toggle('selected');
+        });
+
+    });
+fetch(`http://localhost:8080/api/cities/getCityById/${cityId}`,{
+    method:'GET',
+    headers:{ 'Content-Type': 'application/json' }
+}) .then(response => {
+    if (!response.ok) {
+        window.alert(`Error: ${response.status}`);
+
+    }
+    return response.json();
+}).then(data=>{
+    city.innerText=data.cityName;
+})
+
+}
     for (var i = 0; i < arrow.length; i++) {
         arrow[i].addEventListener("click", (e)=>{
             let arrowParent = e.target.parentElement.parentElement;
@@ -717,62 +822,13 @@ background: #ffffff;
     sidebarBtn.addEventListener("click", ()=>{
         sidebar.classList.toggle("close");
     });
-function loadCountriesSelect(){
-    const menuCountriesDropDowm=document.querySelector('.city-dropdown');
-fetch('http://localhost:8080/api/countries/getAllCountries',{
-    method:'GET',
-    headers:{
-        'Content-Type':'application/json'
-    }
-})
-}
+
     document.getElementsByClassName('bx bx-log-out')[0].addEventListener("click",function () {
         window.location.href = 'login.html';
     })
-    document.addEventListener('DOMContentLoaded', function () {
 
-
-            const dropDownMenu = document.querySelector('.city-dropdown');
-
-
-
-            fetch(`http://localhost:8080/api/countries/getAllCountries`, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' }
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        window.alert(`Error: ${response.status}`);
-
-                    }
-                    return response.json();
-                })
-                .then(data => {
-
-                    dropDownMenu.innerHTML = '';
-
-                    data.forEach(city => {
-                        const optionCity = document.createElement('option');
-                        optionCity.value = city.countryId;
-                        optionCity.textContent = city.countryName;
-                        dropDownMenu.appendChild(optionCity);
-                    });
-                })
-
-    });
     let cardCountry=document.getElementsByClassName('card-country');
-    document.addEventListener("click",()=>{
-        const countrySelected=document.getElementsByClassName('card-country');
-       Array.from(countrySelected).forEach(card=>{
-           card.addEventListener("click",()=>{
-               const country=card.querySelector('.text').innerHTML;
-               localStorage.setItem('country',country);
-               window.location.href='addTableData.html';
-           })
-       })
 
-
-    })
 </script>
 </body>
 </html>
