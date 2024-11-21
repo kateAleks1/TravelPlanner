@@ -15,6 +15,7 @@ void updateTrip(int tripId, TripDto trip);
     void deleteTrip(int tripId);
     Trip findTripById(int tripId);
     boolean ifTripExistsWithSuchId(int tripId);
+    Integer getCityFromTripById(int tripId);
     Trip addDestinationToTrip(int tripId,int destinationId);
      List<Destination> getAllDestinationsByTripId(int tripId);
     // List<Destination> deleteDestinationById(int tripId);

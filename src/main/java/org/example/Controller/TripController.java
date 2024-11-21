@@ -53,6 +53,7 @@ private final UserService userService;
         tripService.deleteTrip(tripId);
         return ResponseEntity.ok().build();
     }
+    // getDestinationsFromUserId
     @GetMapping("/getDestinations/{tripId}")
     public ResponseEntity<?> getAllDestinationsFromTrip(@PathVariable int tripId){
         return ResponseEntity.ok(tripService.getAllDestinationsByTripId(tripId));
@@ -69,6 +70,11 @@ return ResponseEntity.ok(tripService.addDestinationToTrip(tripId,destinationId))
     public ResponseEntity<?> getTripById(@PathVariable int tripId){
         return ResponseEntity.ok(tripService.findTripById(tripId));
     }
+    @GetMapping("/getCityFromTripById/{tripId}")
+    public ResponseEntity<?> getCityFromTripById(@PathVariable int tripId){
+        return ResponseEntity.ok(Map.of("cityId",tripService.getCityFromTripById(tripId)));
+    }
+
 //    @PutMapping("/updateTrips/{tripsId}")
 //    public ResponseEntity<?> updateTrios(@PathVariable int tripsId, @RequestBody TripDto tripDto){
 //        if(!userService.chechIfUserIdExists(tripDto.getUser_id()).isPresent()){

@@ -19,6 +19,11 @@ import java.util.*;
 @Service
 public class TripServiceImpl implements TripService {
 
+    @Override
+    public Integer getCityFromTripById(int tripId) {
+        Trip trip=tripRepository.findById(tripId).get();
+     return   trip.getCity().getCityId();
+    }
 
     private final TripRepository tripRepository;
     private final CitiesRepository citiesRepository;
