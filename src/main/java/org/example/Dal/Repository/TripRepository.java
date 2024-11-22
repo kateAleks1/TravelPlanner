@@ -27,6 +27,8 @@ Optional<List<Destination>> findDestinationsByTripId(int tripId);
     @Query("select t.city.cityId from Trip t where t.tripId=:tripId")
     Optional<Integer> getCityFromTripById(@Param("tripId") int tripID);
 
+    Optional<List<Trip>> getTripByUsersId(int userId);
+
 
 }
 

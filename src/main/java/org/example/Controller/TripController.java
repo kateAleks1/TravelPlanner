@@ -74,6 +74,10 @@ return ResponseEntity.ok(tripService.addDestinationToTrip(tripId,destinationId))
     public ResponseEntity<?> getCityFromTripById(@PathVariable int tripId){
         return ResponseEntity.ok(Map.of("cityId",tripService.getCityFromTripById(tripId)));
     }
+    @GetMapping("/getAllTripByUserId/{userId}")
+    public ResponseEntity<?> getAllTripByUserId(@PathVariable int userId){
+        return ResponseEntity.ok(tripService.getAllDestinationsByUserId(userId));
+    }
 
 //    @PutMapping("/updateTrips/{tripsId}")
 //    public ResponseEntity<?> updateTrios(@PathVariable int tripsId, @RequestBody TripDto tripDto){

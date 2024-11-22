@@ -18,5 +18,6 @@ void updateTrip(int tripId, TripDto trip);
     Integer getCityFromTripById(int tripId);
     Trip addDestinationToTrip(int tripId,int destinationId);
      List<Destination> getAllDestinationsByTripId(int tripId);
+    List<Trip> getAllDestinationsByUserId(int userId);
     // List<Destination> deleteDestinationById(int tripId);
 }

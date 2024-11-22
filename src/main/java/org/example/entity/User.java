@@ -30,7 +30,7 @@
         private String login;
         private String password;
         @JsonIgnore
-        @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL)
+        @ManyToMany(mappedBy = "users")
         @JsonBackReference
         private List<Trip> trips;
     }

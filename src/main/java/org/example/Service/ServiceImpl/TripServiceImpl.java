@@ -69,12 +69,19 @@ public class TripServiceImpl implements TripService {
     @Override
     public Trip createTrip(TripDto tripDto) {
         Trip trip = new Trip();
-        if(tripDto.getStart_date().before(tripDto.getEnd_date()) && !tripDto.getStart_date().before(Date.from(Instant.now())) && !tripDto.getEnd_date().before(Date.from(Instant.now()) )){
+        if(tripDto.getStart_date().before(tripDto.getEnd_date()) && !tripDto.getEnd_date().before(Date.from(Instant.now()) )){
             trip.setStartDate(tripDto.getStart_date());
             trip.setEndDate(tripDto.getEnd_date());
         }
-        Optional<Trip_Status> tripStatus = tripStatusRepository.findById(1);
-        trip.setStatusTrip(tripStatus.get());
+        if(trip.getStartDate().after(Date.from(Instant.now()))){
+            Optional<Trip_Status> tripStatus = tripStatusRepository.findById(4);
+            trip.setStatusTrip(tripStatus.get());
+        }if(trip.getStartDate().before(Date.from(Instant.now()))){
+            Optional<Trip_Status> tripStatus = tripStatusRepository.findById(1);
+            trip.setStatusTrip(tripStatus.get());
+        }
+
+
         User user = userRepository.findById(tripDto.getUsers())
                 .orElseThrow(() -> new RuntimeException("User with ID " + tripDto.getUsers() + " not found"));
         trip.getUsers().add(user);
@@ -109,6 +116,11 @@ trip.setCity(citiesRepository.findById(tripDto.getCityId()).get());
     public List<Destination> getAllDestinationsByTripId(int tripId) {
 
         return  tripRepository.findDestinationsByTripId(tripId).get();
+    }
+
+    @Override
+    public List<Trip> getAllDestinationsByUserId(int userId) {
+        return tripRepository.getTripByUsersId(userId).get();
     }
 
     @Override

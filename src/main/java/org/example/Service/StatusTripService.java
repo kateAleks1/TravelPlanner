@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface StatusTripService {
-    Optional<Trip_Status> findTripById(int tripId);
+    Trip_Status findStatusTripById(int tripId);
     List<Trip_Status> getAllTrips();
 }
