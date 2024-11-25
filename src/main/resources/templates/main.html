@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -607,7 +608,8 @@ background: #ffffff;
     <div class="home-content-wrapper">
         <div class="home-content">
             <i class='bx bx-menu'></i>
-            <span class="text">Hello, Username</span>
+            <span class="text">Hello</span>
+            <span class="text-username">Username</span>
         </div>
         <div class="home-content-user-profile">
             <img src="#">
@@ -760,6 +762,9 @@ fetch('http://localhost:8080/api/countries/getAllCountries',{
                 })
 
     });
+function  loadUserId(){
+
+}
     let cardCountry=document.getElementsByClassName('card-country');
     document.addEventListener("click",()=>{
         const countrySelected=document.getElementsByClassName('card-country');

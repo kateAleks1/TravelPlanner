@@ -110,6 +110,10 @@
     <tr class="stringLine">
         <th>User_Id</th>
         <th>Trip_Id</th>
+        <th>is_organizer</th>
+        <th>is_group</th>
+
+        <th>Actions</th>
     </tr>
     </thead>
     <tbody></tbody>
@@ -125,8 +129,8 @@
     document.addEventListener('DOMContentLoaded', () => {
         loadUsersTable();
         loadTripsTable();
-        loadStatusTable();
-
+        loadTripParticipantsTable();
+        loadTripStatusTable();
     });
     function isValidEmail(email) {
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -137,11 +141,100 @@
         const loginPattern = /^[a-zA-Z0-9._-]{3,20}$/;
         return loginPattern.test(login);
     }
-    function  loadTripParticantsTable(){
-        const tableBody=document.querySelector('tabletTripParticipants tbody');
-        tableBody.innerHTML='';
 
+    function executeQuery() {
+        const query = document.getElementById('sqlQuery').value.trim();
+
+        if (!query) {
+            alert('Введите SQL-запрос!');
+            return;
+        }
+
+        fetch('http://localhost:8080/api/sql/executeQuery', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ query })
+        })
+            .then(response => {
+
+                return response.json();
+            })
+            .then(data => {
+
+                clearTables();
+
+                // Обновление таблиц в зависимости от типа данных
+                if (Array.isArray(data)) {
+                    if (data.length > 0 && data[0].hasOwnProperty('id')) {
+                        updateUsersTable(data);
+                    }
+                    if (data.length > 0 && data[0].hasOwnProperty('trip_id')) {
+
+                        updateTripsTable(data);
+                    }  else {
+                        alert('Неизвестный формат данных');
+                    }
+                } else {
+                    alert('Данных для отображения нет');
+                }
+            })
     }
+
+    function clearTables() {
+        document.querySelector('.tableUsers tbody').innerHTML = '';
+        document.querySelector('.tableTrips tbody').innerHTML = '';
+        document.querySelector('.tableTripStatus tbody').innerHTML = '';
+    }
+
+    function updateUsersTable(data) {
+        const tableBody = document.querySelector('.tableUsers tbody');
+        data.forEach(user => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${user.id}</td>
+                <td>${user.login}</td>
+                <td>${user.email}</td>
+                <td>
+                    <button onclick="deleteUser(${user.id}, this)">Delete</button>
+                </td>
+            `;
+            tableBody.appendChild(tr);
+        });
+    }
+
+    function updateTripsTable(data) {
+        const tableBody = document.querySelector('.tableTrips tbody');
+        tableBody.innerHTML = '';
+        data.forEach(trip => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+ <td>${trip.trip_id || ''}</td>
+            <td><input type="datetime-local" value="${trip.start_date ? formatDateForInput(trip.start_date) : ''}" /></td>
+            <td><input type="datetime-local" value="${trip.end_date ? formatDateForInput(trip.end_date) : ''}" /></td>
+            <td>${trip.status_trip_id || ''}</td>
+            <td>
+                <button class="SaveBtn" onclick="updateTrip(${trip.trip_id}, this)">Save</button>
+                <button class="DeleteBtn" onclick="deleteTrip(${trip.trip_id}, this)">Delete</button>
+            </td>
+            `;
+            tableBody.appendChild(tr);
+        });
+    }
+
+    function updateStatusTable(data) {
+        const tableBody = document.querySelector('.tableTripStatus tbody');
+        data.forEach(status => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${status.statusId}</td>
+                <td>${status.statusName}</td>
+            `;
+            tableBody.appendChild(tr);
+        });
+    }
+
     function loadUsersTable() {
         const tableBody = document.querySelector('.tableUsers tbody');
         tableBody.innerHTML = '';
@@ -154,7 +247,7 @@
         })
             .then(response => {
                 if (!response.ok) {
-                    alert('Error');
+                    alert('Error loading users');
                 }
                 return response.json();
             })
@@ -173,83 +266,101 @@
                     tableBody.appendChild(tr);
                 });
 
-
+                // Add event listeners for user login updates
                 document.querySelectorAll('.user-login').forEach(cell => {
                     cell.addEventListener('click', function () {
-                        const userId = this.innerText;
-                        fetch(`http://localhost:8080/api/trip/getAllTripsFromSpecificUserLogin/${userId}`,{
-                            method:'GET',
-                            headers:{
-                                'Content-Type': 'application/json'
-                            }
-                        }).then(response=>{
-                            if(!response.ok){
-                                alert(response.status)
-                            }
-                            return response.json();
-                        }).then(data=>{
-                            const tableBody = document.querySelector('.tableTrips tbody');
-                            tableBody.innerHTML = '';
-                            data.forEach(trip => {
-                                const statusId = trip.statusTrip ? trip.statusTrip.statusId : 1;
-                                const tr = document.createElement('tr');
-                                tr.innerHTML = `
-                <td>${trip.tripId}</td>
-                <td><input type="datetime-local" value="${formatDateForInput(trip.startDate)}" /></td>
-                <td><input type="datetime-local" value="${formatDateForInput(trip.endDate)}" /></td>
-              <! --  <td contenteditable="true">${trip.user.id}</td>-->
-                <td><input type="number" min="1" max="3" value="${statusId}" /></td>
-                <td>
-                    <button class="SaveBtn" onclick="updateTrip(${trip.tripId}, this)">Save</button>
-                    <button class="DeleteBtn" onclick="deleteTrip(${trip.tripId}, this)">Delete</button>
-                </td>
-            `;
-                                tableBody.appendChild(tr);
-                            })
-                            alert(`User Login: ${userLogin}`);
-                        });
-                        alert(`User ID: ${userId}`);
+                        const userLogin = this.innerText;
+                        fetchTripsForUser(userLogin);
                     });
+                });
+            })
+
+    }
+    function loadTripParticipantsTable() {
+        const tableBody = document.querySelector('.tabletTripParticipants tbody');
+        tableBody.innerHTML = '';
+
+        fetch('http://localhost:8080/trip-participants/getAllTripParticipants', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    alert('Error loading users');
+                }
+                return response.json();
+            })
+            .then(data => {
+                data.forEach(data => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                <td>${data.id.tripId || ''}</td>
+               <td>${data.id.userId || ''}</td>
+       <td>${data.organizer || 'false'}</td>
+            <td>${data.group || 'false'}</td>
+            <td>
+                <button class="SaveBtn" onclick="updateTrip(${data.id.tripId}, this)">Save</button>
+                <button class="DeleteBtn" onclick="deleteTrip(${data.id.tripId}, this)">Delete</button>
+            </td>
+            `;
+                    tableBody.appendChild(tr);
                 });
 
-                document.querySelectorAll('.user-id').forEach(cell => {
-                    cell.addEventListener('click', function () {
-                        const userLogin = this.innerText;
-                        fetch(`http://localhost:8080/api/trip/getAllTripsFromSpecificUserId/${userLogin}`,{
-                            method:'GET',
-                            headers:{
-                                'Content-Type': 'application/json'
-                            }
-                        }).then(response=>{
-                            if(!response.ok){
-                                alert(response.status)
-                            }
-                            return response.json();
-                        }).then(data=>{
-                            const tableBody = document.querySelector('.tableTrips tbody');
-                            tableBody.innerHTML = '';
-                            data.forEach(trip => {
-                                const statusId = trip.statusTrip ? trip.statusTrip.statusId : 1;
-                                const tr = document.createElement('tr');
-                                tr.innerHTML = `
-                <td>${trip.tripId}</td>
+                // Add event listeners for user login updates
+
+            })
+
+    }
+
+    document.querySelectorAll('.user-login').forEach(cell => {
+        cell.addEventListener('click', function () {
+            const userLogin = this.innerText;
+            fetchTripsForUser(userLogin);
+        });
+    });
+    function fetchTripsForUser(userLogin) {
+        fetch(`http://localhost:8080/api/trip/getAllTripsFromUserId/${userLogin}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    alert('Error loading trips');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const tableBody = document.querySelector('.tableTrips tbody');
+                tableBody.innerHTML = '';
+                data.forEach(trip => {
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                 <td>${trip.tripId}</td>
                 <td><input type="datetime-local" value="${formatDateForInput(trip.startDate)}" /></td>
                 <td><input type="datetime-local" value="${formatDateForInput(trip.endDate)}" /></td>
-                <td contenteditable="true">${trip.user.id}</td>
-                <td><input type="number" min="1" max="3" value="${statusId}" /></td>
+       <td><input type="number" min="1" max="3" value="${trip.status_id}" /></td>
+
                 <td>
                     <button class="SaveBtn" onclick="updateTrip(${trip.tripId}, this)">Save</button>
                     <button class="DeleteBtn" onclick="deleteTrip(${trip.tripId}, this)">Delete</button>
                 </td>
             `;
-                                tableBody.appendChild(tr);
-                        })
-                        alert(`User Login: ${userLogin}`);
-                    });
+                    tableBody.appendChild(tr);
                 });
-            });
-    });
-    };
+            })
+
+    }
+
+    function formatDateForInput(dateString) {
+        const date = new Date(dateString);
+        return date.toISOString().slice(0, 16);  // Format: YYYY-MM-DDTHH:MM
+    }
+
 
     function loadTripsTable() {
         const tableBody = document.querySelector('.tableTrips tbody');
@@ -280,6 +391,31 @@
                     tableBody.appendChild(tr);
                 });
             });
+    }
+
+    function loadTripStatusTable(){
+        const tableBody = document.querySelector('.tableTripStatus tbody');
+        tableBody.innerHTML = '';
+        fetch('http://localhost:8080/api/trip_status/getStatusTrip',{
+            method:'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            if (!response.ok) {
+                alert('Error loading users');
+            }
+            return response.json();
+        }).then(data=>{
+            data.forEach(record=>{
+                const tr = document.createElement('tr');
+                tr.innerHTML= `
+                <td>${record.statusId || ''}</td>
+                <td>${record.statusName || ''}</td>
+                `;
+                tableBody.appendChild(tr);
+            })
+        })
     }
 
     function deleteUser(userId, button) {
@@ -423,26 +559,7 @@
 
     }
 
-    function loadStatusTable() {
-        const tableBody = document.querySelector('.tableTripStatus tbody');
-        fetch('http://localhost:8080/api/trip_status/getStatusTrip', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                data.forEach(status => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${status.statusId}</td>
-                        <td contenteditable="true">${status.statusName}</td>
-                    `;
-                    tableBody.appendChild(tr);
-                });
-            });
-    }
+
 </script>
 </body>
 </html>

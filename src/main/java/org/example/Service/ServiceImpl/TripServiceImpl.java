@@ -1,5 +1,6 @@
 package org.example.Service.ServiceImpl;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.example.DTO.DestinationDto;
 import org.example.DTO.TripDto;
 import org.example.Dal.Repository.*;
@@ -8,8 +9,10 @@ import org.example.entity.*;
 
 import org.example.exception.GeneralException;
 import org.example.mapper.UserMapper;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.Instant;
@@ -21,8 +24,8 @@ public class TripServiceImpl implements TripService {
 
     @Override
     public Integer getCityFromTripById(int tripId) {
-        Trip trip=tripRepository.findById(tripId).get();
-     return   trip.getCity().getCityId();
+        Integer trip=tripRepository.getCityFromTripById(tripId).get();
+     return   trip;
     }
 
     private final TripRepository tripRepository;
@@ -30,30 +33,49 @@ public class TripServiceImpl implements TripService {
     private final DestinationsRepository destinationsRepository;
     private final UserRepository userRepository;
     private final TripStatusRepository tripStatusRepository;
+    private final TripParticipantRepository tripParticipantRepository;
+
     private  UserMapper userMapper;
 @Autowired
-    public TripServiceImpl(TripRepository tripRepository, CitiesRepository citiesRepository, DestinationsRepository destinationsRepository, UserRepository userRepository, TripStatusRepository tripStatusRepository) {
+    public TripServiceImpl( TripRepository tripRepository, CitiesRepository citiesRepository, DestinationsRepository destinationsRepository, UserRepository userRepository, TripStatusRepository tripStatusRepository, TripParticipantRepository tripParticipantRepository) {
+
         this.tripRepository = tripRepository;
         this.citiesRepository = citiesRepository;
         this.destinationsRepository = destinationsRepository;
         this.userRepository = userRepository;
         this.tripStatusRepository = tripStatusRepository;
+        this.tripParticipantRepository = tripParticipantRepository;
     }
 
     @Override
     public void updateTrip(int tripId, TripDto tripDto) {
+        Trip trip = tripRepository.findById(tripId)
+                .orElseThrow(() -> new EntityNotFoundException("Trip not found with ID: " + tripId));
 
-        Optional<Trip> existingTrip = tripRepository.findById(tripId);
+        // Обновление участников
+        for(Integer userId:tripDto.getUserIds()){
+            userRepository.findById(userId).ifPresent(user -> {
+                // Проверяем, есть ли уже связь между пользователем и поездкой
+                boolean exists = tripParticipantRepository.findByUserAndTrip(user, trip).isPresent();
 
-            Trip trip = existingTrip.get();
+                if (!exists) {
+                    TripPartcipants participants = new TripPartcipants();
+                    participants.setId(new TripParticipantId(trip.getTripId(), user.getId()));
+                    participants.setTrip(trip);
+                    participants.setUser(user);
+                    participants.setOrganizer(tripDto.isOrganizer());
+                    participants.setGroup(tripDto.isGroup());
 
-        userRepository.findById(tripDto.getUsers()).ifPresent(user -> {
-            trip.getUsers().add(user);
-        });
+                    tripParticipantRepository.save(participants);
+                }
+            });
+        }
 
-            tripRepository.save(trip);
 
+        // Сохранение изменений в поездке
+        tripRepository.save(trip);
     }
+
 
     @Override
     public List<Trip> getAllTrips() {
@@ -62,33 +84,66 @@ public class TripServiceImpl implements TripService {
 
     @Override
     public void deleteTrip(int tripId) {
-       if(tripRepository.findById(tripId).isPresent()){
-           tripRepository.delete(tripRepository.findById(tripId).get());
-       }
+        Trip trip = tripRepository.findById(tripId)
+                .orElseThrow(() -> new EntityNotFoundException("Trip not found"));
+        trip.getParticipants().clear(); // Очистка участников
+        trip.getDestinations().clear(); // Очистка направлений
+        tripRepository.delete(trip);
+
     }
     @Override
     public Trip createTrip(TripDto tripDto) {
         Trip trip = new Trip();
-        if(tripDto.getStart_date().before(tripDto.getEnd_date()) && !tripDto.getEnd_date().before(Date.from(Instant.now()) )){
+
+        // Установка дат
+        if (tripDto.getStart_date().before(tripDto.getEnd_date()) &&
+                !tripDto.getEnd_date().before(Date.from(Instant.now()))) {
             trip.setStartDate(tripDto.getStart_date());
             trip.setEndDate(tripDto.getEnd_date());
-        }
-        if(trip.getStartDate().after(Date.from(Instant.now()))){
-            Optional<Trip_Status> tripStatus = tripStatusRepository.findById(4);
-            trip.setStatusTrip(tripStatus.get());
-        }if(trip.getStartDate().before(Date.from(Instant.now()))){
-            Optional<Trip_Status> tripStatus = tripStatusRepository.findById(1);
-            trip.setStatusTrip(tripStatus.get());
+        } else {
+            throw new RuntimeException("Invalid start_date or end_date");
         }
 
+        // Установка статуса поездки
+        if (trip.getStartDate().after(Date.from(Instant.now()))) {
+            trip.setStatusTrip(tripStatusRepository.findById(4)
+                    .orElseThrow(() -> new RuntimeException("Status not found")));
+        } else {
+            trip.setStatusTrip(tripStatusRepository.findById(1)
+                    .orElseThrow(() -> new RuntimeException("Status not found")));
+        }
 
-        User user = userRepository.findById(tripDto.getUsers())
-                .orElseThrow(() -> new RuntimeException("User with ID " + tripDto.getUsers() + " not found"));
-        trip.getUsers().add(user);
-        trip.setDestinations(List.of(new Destination().builder().destinationId(tripDto.getIdDestination()).build()));
-trip.setCity(citiesRepository.findById(tripDto.getCityId()).get());
+        // Установка города
+        trip.setCity(citiesRepository.findById(tripDto.getCityId())
+                .orElseThrow(() -> new RuntimeException("City not found")));
+trip.getDestinations().add(destinationsRepository.findByDestinationId(tripDto.getTrip_id()).get());
         trip.setPrice(tripDto.getPrice());
-      return   tripRepository.save(trip);
+        trip = tripRepository.save(trip);
+
+        if (tripDto.getUsersListId() != null && !tripDto.getUsersListId().isEmpty()) {
+            for (Integer userId : tripDto.getUsersListId()) {
+                User user = userRepository.findById(userId)
+                        .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+
+                TripPartcipants participants = new TripPartcipants();
+                participants.setId(new TripParticipantId(trip.getTripId(), user.getId()));
+                participants.setTrip(trip);
+                participants.setUser(user);
+                participants.setOrganizer(true);
+                if(tripDto.getUsersListId().size()>1){
+                    participants.setGroup(true);
+                }
+                    participants.setGroup(false);
+
+
+
+                tripParticipantRepository.save(participants);
+            }
+        } else {
+            throw new RuntimeException("No users provided for the trip");
+        }
+
+        return trip;
     }
 
     @Override

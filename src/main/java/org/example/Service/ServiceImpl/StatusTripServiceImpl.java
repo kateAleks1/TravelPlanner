@@ -21,7 +21,7 @@ public class StatusTripServiceImpl implements StatusTripService {
 
     @Override
     public Trip_Status findStatusTripById(int tripId) {
-        return tripStatusRepository.findTrip_StatusByStatusId(tripId).get();
+        return tripStatusRepository.findStatusByTripId(tripId).get();
     }
     @Override
     public List<Trip_Status> getAllTrips() {

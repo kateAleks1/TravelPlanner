@@ -24,36 +24,22 @@ public class QueryController {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @PostMapping("/executeQuery")
-    public ResponseEntity<List<Map<String, Object>>> executeQuery(@RequestBody Map<String, String> payload) {
-        String sql = payload.get("query");
-        try {
-            List<Map<String, Object>> results = jdbcTemplate.queryForList(sql);
-            return ResponseEntity.ok(results);
-        } catch (Exception e) {
 
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("error", e.getMessage());
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonList(errorResponse));
-        }
-    }
     @PersistenceContext
     private EntityManager entityManager;
 
 
-    @PostMapping("/execute")
-    @Transactional
-    public ResponseEntity<?> executeQuery(@RequestBody String query) {
+    @PostMapping("/executeQuery")
+    public ResponseEntity<?> executeQuery(@RequestBody Map<String, String> body) {
+        String query = body.get("query");
         try {
-            if (query.trim().toUpperCase().startsWith("SELECT")) {
-                List<?> resultList = entityManager.createNativeQuery(query, User.class).getResultList();
-                return ResponseEntity.ok(resultList);
-            }
-            return ResponseEntity.badRequest().body("Only SELECT queries are supported.");
+            List<Map<String, Object>> result = jdbcTemplate.queryForList(query);
+            return ResponseEntity.ok(result);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Collections.singletonMap("error", e.getMessage()));
         }
     }
+
 
 }

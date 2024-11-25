@@ -5,33 +5,25 @@
         <meta charset="UTF-8">
         <title>Регистрация</title>
         <style>
-                    * {
-            margin: 0;
-                        padding: 0;
+            * {
+                margin: 0;
+                padding: 0;
 
-                    }
+            }
             body {
                 font-family: 'Poppins', sans-serif;
                 background-color: #371b1b;
-              background-image: url('http://localhost:8080/images/spain.jpg');
-
+                background-image: url('http://localhost:8080/images/spain.jpg');
                 background-size: cover; /* Убедитесь, что изображение покрывает весь экран */
                 background-repeat: no-repeat; /* Предотвращает повторение изображения */
                 background-position: center; /* Центрирует изображение */
-                margin: 0;
                 display: flex;
                 flex-direction: column;
+                min-height: 100vh; /* Устанавливаем минимальную высоту */
             }
 
-            .MainDivBlock {
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-start;
-                flex-wrap: wrap; /* Для корректного отображения на маленьких экранах */
-            }
-            .formWrapper{
 
-            }
+
             h1 {
                 margin-left: 40%    ;
 
@@ -56,7 +48,7 @@
                 margin: 10px 0 5px;
             }
             input {
-                width: 100%;
+                width: 80%;
                 padding: 10px;
                 margin-bottom: 15px;
                 border: 1px solid #ccc;
@@ -78,14 +70,31 @@
                 color: red;
                 margin: 10px 0;
             }
-            .MainDivBlock{
+                    .MainDivBlock {
+                        display: flex;
+                        padding-left: 50px;
+                        padding-right: 50px;
+                        position: relative;
+                        align-items: center;
+                        justify-content: center; /* Центрируем содержимое */
+                        gap: 20px; /* Добавляем промежуток между блоками */
+                    }
 
-                display: flex;
-               position: relative;
-                align-items: center;
-                justify-content: center;
+                    .LeftyBlock, .RightBlock {
+                        flex: 1; /* Заставляет блоки занимать одинаковое пространство */
+                    }
 
-            }
+                    .RightBlock {
+                        text-align: left; /* Выровнять весь текст по левому краю */
+                        display: flex;
+                        flex-direction: column; /* Размещение элементов вертикально */
+                        align-items: center; /* Элементы выравниваются по левому краю */
+                        gap: 10px; /* Добавить промежуток между элементами */
+                    }
+
+
+
+
 
             #Token {
                 display: block;
@@ -175,6 +184,25 @@
                         font-size: 24px; /* Размер иконки */
                         color: #333; /* Цвет иконки */
                     }
+                    .btn-block-container{
+                        display: flex;
+                        width: 130px;
+                    justify-content: space-between;
+                    }
+            #toggleArrow {
+                position: absolute; /* Позиционируем стрелку независимо от формы */
+                top: 10px; /* Отступ сверху */
+                left: 50%; /* Центрируем по горизонтали */
+                transform: translateX(-50%); /* Убираем смещение из-за `left: 50%` */
+                cursor: pointer; /* Меняем курсор на "руку" */
+                z-index: 1000; /* Убеждаемся, что стрелка всегда сверху */
+            }
+
+            .collapsed {
+
+                display: none; /* Полностью скрываем форму */
+            }
+
         </style>
     </head>
 
@@ -182,12 +210,14 @@
 
 
 
-    <div class="formWrapper">
-        <form id="Create Trip" class="collapsed">
-            <div class="animation-arrow" id="toggleArrow">
-                <i class='bx bx-chevron-up'></i>
 
-            </div>
+    <div class="animation-arrow" id="toggleArrow">
+        <i class='bx bx-chevron-up'></i>
+
+    </div>
+        <form id="Create Trip" class="collapsed">
+
+            <div class="formWrapper">
 
             <h1>Create New Trip</h1>
 
@@ -229,15 +259,21 @@
                     </div>
 
                 </div>
-            <!--    <div class="RightBlock">
-                    <h1 >UserName</h1>
-                    <label id="userName">no login</label>
-                    <h1 >Token</h1>
+             <div class="RightBlock">
+                    <h2 >UserName</h2>
+                    <label id="userName">Add Participants by login</label>
+                 <div class="btn-block-container">
+                     <button>Alone</button>
+                     <button>Group</button>
+                 </div>
+
+                 <input class="search-input" type="text" placeholder="Search">
+                    <h2 >Token</h2>
                     <label id="Token">Token</label>
-                    <h1 >UserId</h1>
+                    <h2 >UserId</h2>
                     <label id="UserId">UserId</label>
 
-                </div>-->
+                </div>
                 <!--   <div class="StatusTrip">
                        <table class="StatusTripTable">
                            <thead>
@@ -253,10 +289,10 @@
                    </div>-->
             </div>
 
-
+            </div>
 
         </form>
-    </div>
+
 
 
     <script>
@@ -266,11 +302,16 @@
 
 
         toggleArrow.addEventListener('click', () => {
+            // Переключение видимости формы
+            if (createTrip.style.display === 'none' || createTrip.style.display === '') {
+                createTrip.style.display = 'block';
+                } else {
+                    createTrip.style.display = 'none';
+                }
 
-            createTrip.classList.toggle('expanded');
-
+            // Изменяем иконку стрелки
             const icon = toggleArrow.querySelector('i');
-            if (createTrip.classList.contains('expanded')) {
+            if (createTrip.style.display === 'block') {
                 icon.classList.remove('bx-chevron-down');
                 icon.classList.add('bx-chevron-up');
             } else {
@@ -321,7 +362,7 @@
             const token = localStorage.getItem('AccessToken');
             const startDateInput = document.getElementById('startDate');
             const endDateInput = document.getElementById('endDate');
-            const users = localStorage.getItem('id');
+            const users = localStorage.getItem('userId');
             const errorTextElement = document.querySelector('.error-text');
             const dropDownMenu = document.querySelector('.city-dropdown').value;
             localStorage.setItem('city-option-dropdown',dropDownMenu);
@@ -334,12 +375,15 @@
             const end_date = formatDate(endDateInput.value);
 
             const data = {
-                trip_id: 2,
+
                 start_date: start_date,
                 end_date: end_date,
                 price: 100,
-                users: users,
-                cityId:dropDownMenu
+                usersListId: [87, 89],
+                isOrganizer:true,
+                isGroup:true,
+                cityId:dropDownMenu,
+                idDestination:1
             };
 
             fetch('http://localhost:8080/api/trip/createNewTrip', {
@@ -355,7 +399,6 @@
                         resetFields(startDateInput, endDateInput);
                         window.alert(`Error: ${response.status}`);
 
-                        throw new Error(`Request failed with status ${response.status}`);
                     }
                     return response.json();
                 })
@@ -408,7 +451,7 @@ localStorage.setItem("tripId",data.tripId)
                 .then(response => {
                     if (!response.ok) {
                         window.alert(`Error: ${response.status}`);
-                        throw new Error('Failed to fetch cities');
+
                     }
                     return response.json();
                 })

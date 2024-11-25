@@ -1,7 +1,12 @@
 package org.example.Service;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.example.DTO.UserDto;
+import org.example.Dal.Repository.TripParticipantRepository;
+import org.example.Dal.Repository.TripRepository;
 import org.example.Dal.Repository.UserRepository;
+import org.example.entity.Trip;
+import org.example.entity.TripPartcipants;
 import org.example.entity.User;
 import org.example.exception.GeneralException;
 import org.example.exception.UserAlreadyExistsException;
@@ -27,12 +32,15 @@ import java.util.stream.Stream;
 public class UserService  implements UserDetailsService {
 
     private final UserRepository userRepository;
-
-
-    @Autowired
-    public UserService(UserRepository userRepository) {
+private final TripRepository tripRepository;
+private final TripParticipantRepository tripParticipantRepository;
+@Autowired
+    public UserService(UserRepository userRepository, TripRepository tripRepository, TripParticipantRepository tripParticipantRepository) {
         this.userRepository = userRepository;
+        this.tripRepository = tripRepository;
+        this.tripParticipantRepository = tripParticipantRepository;
     }
+
     public boolean isPasswordValid(String password) {
         Pattern pattern = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&.])[A-Za-z\\d@$!%*?&.]{8,}$");
         Matcher matcher = pattern.matcher(password);
@@ -48,7 +56,7 @@ public class UserService  implements UserDetailsService {
         return userRepository.findUserByLogin(login);
     }
 
-    public void registerNewUser(UserDto userDto) throws UserAlreadyExistsException {
+    public User registerNewUser(UserDto userDto) throws UserAlreadyExistsException {
 
 
            if(!isPasswordValid(userDto.getPassword())){
@@ -57,7 +65,7 @@ public class UserService  implements UserDetailsService {
            user.setEmail(userDto.getEmail());
            user.setLogin(userDto.getLogin());
            user.setPassword(encodePassword(userDto.getPassword()));
-           userRepository.save(user);
+          return userRepository.save(user);
     }
 public Optional<User> findUserById(int id){
         return userRepository.findUserById(id);
@@ -122,12 +130,18 @@ public Page<UserDto> getUsers(Pageable pageable) {
         }
         return Optional.empty();
     }
-    public void deleteUser(int userId){
-        if(userRepository.findUserById(userId).isPresent()){
-            User user = userRepository.findUserById(userId).get();
-            userRepository.delete(user);
-        }
+    public void deleteUser(int userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
+
+        // Удаляем записи из trip_participants
+        List<TripPartcipants> participants = tripParticipantRepository.findAllByUser(user);
+        tripParticipantRepository.deleteAll(participants);
+
+        // Удаляем самого пользователя
+        userRepository.delete(user);
     }
+
 
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {

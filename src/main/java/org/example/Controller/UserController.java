@@ -96,8 +96,9 @@ public ResponseEntity<?> deleteUser(@PathVariable int userId){
                             .setExpiration(new Date(System.currentTimeMillis() + 15L))
                             .signWith(secretKey, SignatureAlgorithm.HS512)
                             .compact();
-                    userService.registerNewUser(userDto);
-                    return ResponseEntity.ok(Map.of("AccessToken", accessToken));
+                  User user=  userService.registerNewUser(userDto);
+
+                    return ResponseEntity.ok(Map.of("AccessToken", accessToken,"userid", String.valueOf(user.getId())));
                 }
 
             } else {
@@ -232,7 +233,7 @@ map.put("creatAt",claims.getIssuedAt().toString());
     public ResponseEntity<?> getUsers(@RequestBody UserDto userDto, @PathVariable String login) {
         Optional<User> user = userService.findUserByLogin(login);
         Map<String, String> response = new HashMap<>();
-
+int userid=user.get().getId();
         if (user.isPresent()) {
             boolean passwordMatches = passwordEncoder.matches(userDto.getPassword(), user.get().getPassword());
             if (passwordMatches) {
@@ -243,6 +244,7 @@ map.put("creatAt",claims.getIssuedAt().toString());
                         .signWith(secretKey, SignatureAlgorithm.HS512)
                         .compact();
                 response.put("AccessToken", accessToken);
+                response.put("userid", String.valueOf(userid));
                 return ResponseEntity.ok(response);
             } else {
                 response.put("error", "Invalid password");

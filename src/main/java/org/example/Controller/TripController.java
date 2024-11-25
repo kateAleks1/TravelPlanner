@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.example.DTO.TripDto;
 import org.example.DTO.UserDto;
+import org.example.Dal.Repository.TripRepository;
 import org.example.Service.ServiceImpl.TripServiceImpl;
 import org.example.Service.TripService;
 import org.example.Service.UserService;
@@ -26,21 +27,26 @@ import java.util.stream.Collectors;
 public class TripController {
 @Autowired
     private final TripService tripService;
-@Autowired
+    @Autowired
+private final TripRepository tripRepository;
+    @Autowired
 private final UserService userService;
-
-    public TripController(TripService tripService, UserService userService) {
-        this.tripService = tripService;
+    @Autowired
+    public TripController(UserService userService, TripRepository tripRepository, TripService tripService) {
         this.userService = userService;
+        this.tripRepository = tripRepository;
+        this.tripService = tripService;
     }
 
     @PostMapping("/createNewTrip")
     public ResponseEntity<?> createNewTrip(@RequestBody TripDto tripDto) {
-        if(tripDto.getStart_date().after(tripDto.getEnd_date()) || tripDto.getStart_date().before(Date.from(Instant.now())) || tripDto.getEnd_date().before(Date.from(Instant.now()) )){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message","wrong dates"));
-        }
+
        Trip trip= tripService.createTrip(tripDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("tripId", trip.getTripId()));
+       if(trip!=null){
+           return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("tripId", trip.getTripId()));
+
+       }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
     }
     @GetMapping("/getAllTrips")
@@ -51,7 +57,7 @@ private final UserService userService;
     @DeleteMapping("deleteTrip/{tripId}")
     public ResponseEntity<?> deleteTrip(@PathVariable int tripId){
         tripService.deleteTrip(tripId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Trip successfully deleted");
     }
     // getDestinationsFromUserId
     @GetMapping("/getDestinations/{tripId}")
@@ -101,31 +107,19 @@ return ResponseEntity.ok(tripService.addDestinationToTrip(tripId,destinationId))
 //            }
 //            return ResponseEntity.ok(usersList.get());
 //        }
-//@GetMapping("/getAllTripsFromUserId/{userId}")
-//    public ResponseEntity<?> getAllTripsFromUserId(@PathVariable int userId){
-//        List<Trip> trips=tripService.getAllTrips();
-//
-//        List<Trip> tripList = trips.stream()
-//                .filter(trip -> trip.getUser().stream()
-//                        .anyMatch(user -> user.getId().equals(userId))) // проверяем, есть ли пользователь в поездке
-//                .collect(Collectors.toList());
-//
-//        Optional<List<User>> usersList=userService.findListUserById(tripList);
-//        if (usersList.isEmpty()) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Users not found for provided trip IDs");
-//        }
-//        User user=usersList.get().stream().filter(user1 -> user1.getId().equals(userId)).findAny().get();
-//        return ResponseEntity.ok(user);
-//        List<Trip> trips = tripService.getAllTrips();
-//
-//         Фильтруем поездки, в которых участвует данный пользователь
-//        List<Trip> tripList = trips.stream()
-//                .filter(trip -> trip.getUser().stream()
-//                        .anyMatch(user -> user.getId().equals(userId))) // проверяем, есть ли пользователь в поездке
-//                .collect(Collectors.toList());
-//
-//       return ResponseEntity.ok(trips);
-//    }
+@GetMapping("/getAllTripsFromUserId/{userId}")
+public ResponseEntity<?> getAllTripsFromUserId(@PathVariable String userId) {
+    // Use repository to fetch trips directly
+    Optional<List<Trip>> tripsOptional = tripRepository.getTripByUsersLogin(userId);
+
+    // Check if trips exist for the user
+    if (tripsOptional.isEmpty() || tripsOptional.get().isEmpty()) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No trips found for the provided user ID.");
+    }
+
+    // Return the list of trips
+    return ResponseEntity.ok(tripsOptional.get());
+}
   //  @GetMapping("/getAllTripsFromSpecificUserId/{userId}")
     //public ResponseEntity<?> getAllTripsFromSpecificUserId(@PathVariable String userId){
 //        List<Trip> trips = tripService.getAllTrips();
