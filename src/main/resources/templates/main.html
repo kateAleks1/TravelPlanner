@@ -655,48 +655,47 @@ background: #ffffff;
             </div>
         </div>
         <div class="card-block">
-            <div class="card-country">
+            <div class="card-country" data-country="Spain">
                 <img src="http://localhost:8080/images/spain.jpg" alt="Spain">
                 <span class="text">Spain</span>
             </div>
-            <div class="card-country">
-                <img src="http://localhost:8080/images/france.jpg" alt="Spain">
+            <div class="card-country" data-country="France">
+                <img src="http://localhost:8080/images/france.jpg" alt="France">
                 <span class="text">France</span>
             </div>
-            <div class="card-country">
-                <img src="http://localhost:8080/images/italy.jpg" alt="Spain">
+            <div class="card-country" data-country="Italy">
+                <img src="http://localhost:8080/images/italy.jpg" alt="Italy">
                 <span class="text">Italy</span>
-
             </div>
-            <div class="card-country">
+            <div class="card-country" data-country="Japan">
                 <img src="http://localhost:8080/images/japan.jpg" alt="Spain">
                 <span class="text">Japan</span>
             </div>
-            <div class="card-country">
+            <div class="card-country" data-country="Netherlands">
                 <img src="http://localhost:8080/images/netherlands.jpg" alt="Spain">
                 <span class="text">Netherlands</span>
             </div>
 
         </div>
-        <div class="card-block">
+        <div class="card-block" data-country="Norway">
             <div class="card-country">
                 <img src="http://localhost:8080/images/norway.jpg" alt="Spain">
                 <span class="text">Norway</span>
             </div>
-            <div class="card-country">
+            <div class="card-country" data-country="Thailand">
                 <img src="http://localhost:8080/images/tailand.jpg" alt="Spain">
                 <span class="text">Thailand</span>
             </div>
-            <div class="card-country">
+            <div class="card-country" data-country="Portugal">
                 <img src="http://localhost:8080/images/portugal.jpg" alt="Spain">
                 <span class="text">Portugal</span>
 
             </div>
-            <div class="card-country">
+            <div class="card-country" data-country="Czech Republic">
                 <img src="http://localhost:8080/images/CzechRepublic.jpg" alt="Spain">
                 <span class="text">Czech Republic</span>
             </div>
-            <div class="card-country">
+            <div class="card-country" data-country="Austria">
                 <img src="http://localhost:8080/images/austria.jpg" alt="Spain">
                 <span class="text">Austria</span>
             </div>
@@ -731,40 +730,48 @@ fetch('http://localhost:8080/api/countries/getAllCountries',{
     document.getElementsByClassName('bx bx-log-out')[0].addEventListener("click",function () {
         window.location.href = 'login.html';
     })
+
+
     document.addEventListener('DOMContentLoaded', function () {
+        const dropDownMenu = document.querySelector('.city-dropdown');
+        const cardCountries = document.querySelectorAll('.card-country');
 
-
-            const dropDownMenu = document.querySelector('.city-dropdown');
-
-
-
-            fetch(`http://localhost:8080/api/countries/getAllCountries`, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' }
+        // Загрузка списка стран
+        fetch(`http://localhost:8080/api/countries/getAllCountries`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    window.alert(`Error: ${response.status}`);
+                }
+                return response.json();
             })
-                .then(response => {
-                    if (!response.ok) {
-                        window.alert(`Error: ${response.status}`);
+            .then(data => {
+                dropDownMenu.innerHTML = '<option value="">Select City</option>';
+                data.forEach(city => {
+                    const optionCity = document.createElement('option');
+                    optionCity.value = city.countryName; // Сравниваем по названию
+                    optionCity.textContent = city.countryName;
+                    dropDownMenu.appendChild(optionCity);
+                });
+            });
 
-                    }
-                    return response.json();
-                })
-                .then(data => {
+        // Фильтрация карточек
+        dropDownMenu.addEventListener('change', function () {
+            const selectedCity = this.value;
 
-                    dropDownMenu.innerHTML = '';
-
-                    data.forEach(city => {
-                        const optionCity = document.createElement('option');
-                        optionCity.value = city.countryId;
-                        optionCity.textContent = city.countryName;
-                        dropDownMenu.appendChild(optionCity);
-                    });
-                })
-
+            cardCountries.forEach(card => {
+                if (selectedCity === '' || card.getAttribute('data-country') === selectedCity) {
+                    card.style.display = ''; // Показываем карточку
+                } else {
+                    card.style.display = 'none'; // Скрываем карточку
+                }
+            });
+        });
     });
-function  loadUserId(){
 
-}
+
     let cardCountry=document.getElementsByClassName('card-country');
     document.addEventListener("click",()=>{
         const countrySelected=document.getElementsByClassName('card-country');

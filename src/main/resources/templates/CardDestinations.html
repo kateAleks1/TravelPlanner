@@ -499,17 +499,6 @@
             padding: 10px 20px; /* Отступы вокруг текста */
             border-radius: 5px; /* Скругление фона текста */
         }
-        .city-dropdown {
-            width: 200px;
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #fff;
-            cursor: pointer;
-            margin-left: 20px;
-            transition: all 0.3s ease;
-        }
 
         .city-dropdown:focus {
             border-color: #007bff;
@@ -526,6 +515,18 @@
             height: 40px;
             width: 40px;
         }
+        #city-dropdown {
+            width: 200px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            cursor: pointer;
+            margin-left: 20px;
+            transition: all 0.3s ease;
+        }
+
     </style>
 </head>
 <body>
@@ -663,12 +664,11 @@
                 <div class="main-panel-desc">
                     <span class="text-bold">Filters</span>
                 </div>
-                <select  class="city-dropdown">
+                <select id="city-dropdown">
                     <option value="" disabled selected>Filters</option>
-                    <option value="Most popular" >Most popular</option>
-                    <option value="Most popular" >Europe</option>
-                    <option value="Most popular" >Asia</option>
+
                 </select>
+
             </div>
             <div class="separator"></div>
             <div class="section left">
@@ -711,6 +711,21 @@
         sidebar.classList.toggle("close");
     });
 
+    fetch('http://localhost:8080/api/destinationType/getAllDestinationsType')
+        .then(response => response.json()) // Преобразуем ответ в JSON
+        .then(data => {
+            // Получаем элемент select по его id
+            const selectElement = document.getElementById('city-dropdown');
+
+            // Для каждого элемента из массива data создаём новый option
+            data.forEach(item => {
+                const option = document.createElement('option'); // Создаём новый option
+                option.value = item.typeId; // Устанавливаем значение value равным typeId
+                option.textContent = item.typeName; // Устанавливаем текст опции равным typeName
+                selectElement.appendChild(option); // Добавляем опцию в select
+            });
+        })
+
     // Переход на страницу входа
     document.querySelector('.bx-log-out').addEventListener("click", () => {
         window.location.href = 'login.html';
@@ -729,6 +744,8 @@
                 localStorage.setItem('cityId', data.cityId);
             });
     }
+
+
 
     // Функция загрузки имени города
     function cityName() {

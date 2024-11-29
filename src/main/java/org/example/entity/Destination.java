@@ -1,6 +1,7 @@
 package org.example.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -28,9 +29,13 @@ public class Destination {
     private String description;
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
-    @JsonIgnore
+
     @ManyToMany(mappedBy = "destinations", cascade = CascadeType.ALL)
     @JsonBackReference
     private List<Trip> trips;
+
+    @ManyToOne
+    @JoinColumn(name = "type_id")
+    private DestinationType destinationType;
 }
 
