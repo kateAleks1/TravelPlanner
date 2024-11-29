@@ -3,6 +3,7 @@ package org.example.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,14 +26,14 @@ public class TripPartcipants {
     @ManyToOne
     @MapsId("tripId")
     @JoinColumn(name = "trip_id")
-    @JsonBackReference
     private Trip trip;
 
     @ManyToOne
     @MapsId("userId")
     @JoinColumn(name = "user_id")
-    @JsonBackReference
+
     private User user;
+
     @Column(name = "is_organizer",nullable = false)
 
     private boolean isOrganizer;

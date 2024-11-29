@@ -4,6 +4,7 @@
 
     import com.fasterxml.jackson.annotation.JsonBackReference;
     import com.fasterxml.jackson.annotation.JsonIgnore;
+    import com.fasterxml.jackson.annotation.JsonManagedReference;
     import com.fasterxml.jackson.annotation.JsonProperty;
     import jakarta.persistence.*;
     import lombok.AllArgsConstructor;
@@ -33,9 +34,10 @@
         private String password;
 
  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
- @JsonIgnore
+
  private Set<TripPartcipants> trips = new HashSet<>();
 
 
     }
 
+// make for each user only 10 trip so 1 trip one country that means that trip cannot be more than 10

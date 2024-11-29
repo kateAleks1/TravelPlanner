@@ -141,8 +141,15 @@ public Page<UserDto> getUsers(Pageable pageable) {
         // Удаляем самого пользователя
         userRepository.delete(user);
     }
-
-
+     public Integer findUserIdByUserLogin(String login){
+    return  userRepository.findUserIdByUserLogin(login).get();
+    }
+    public List<Integer> findAllUserIdsFromUserLogins(List<String> logins){
+    return userRepository.findAllUserIdsFromUserLogins(logins).get();
+    }
+public List<User> SearchUsersByPrefix(String loginPrefix){
+    return userRepository.findUserByPrefix(loginPrefix).get();
+}
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
         User user=userRepository.findUserByLogin(login).get();

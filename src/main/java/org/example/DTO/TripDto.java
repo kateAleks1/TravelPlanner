@@ -30,6 +30,7 @@ import java.util.Set;
     private List<Integer> usersListId = new ArrayList<>();
     private int cityId;
     private boolean isGroup;
+    private int userOrganizerId;
     private boolean isOrganizer;
     private List<Integer> userIds;
     private Set<User> usersSet;

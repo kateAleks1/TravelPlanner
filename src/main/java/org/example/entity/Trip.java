@@ -23,28 +23,30 @@ import java.util.*;
         private int tripId;
 
     private Integer price;
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "trip_destinations",
             joinColumns = @JoinColumn(name = "trip_id"),
             inverseJoinColumns = @JoinColumn(name = "destination_id"))
     private List<Destination> destinations;
-        @Column(name = "start_date")
+
+    @Column(name = "start_date")
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private Date startDate;
         @Column(name = "end_date")
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private Date endDate;
-    @JsonIgnoreProperties()
-    @ManyToOne()
+
+    @ManyToOne
     @JoinColumn(name = "status_id")
     private Trip_Status statusTrip;
-    @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JsonIgnoreProperties("trip")
+
+    @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, orphanRemoval = true)
+@JsonIgnore
     private Set<TripPartcipants> participants = new HashSet<>();
-        @ManyToOne
-        @JoinColumn(name = "city_id")
-        @JsonManagedReference
-        private Cities city;
+
+    @ManyToOne
+    @JoinColumn(name = "city_id")
+    private Cities city;
 
 
     }

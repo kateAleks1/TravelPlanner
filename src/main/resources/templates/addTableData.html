@@ -8,327 +8,296 @@
             * {
                 margin: 0;
                 padding: 0;
-
-            }
-            body {
-                font-family: 'Poppins', sans-serif;
-                background-color: #371b1b;
-                background-image: url('http://localhost:8080/images/spain.jpg');
-                background-size: cover; /* Убедитесь, что изображение покрывает весь экран */
-                background-repeat: no-repeat; /* Предотвращает повторение изображения */
-                background-position: center; /* Центрирует изображение */
-                display: flex;
-                flex-direction: column;
-                min-height: 100vh; /* Устанавливаем минимальную высоту */
-            }
-
-
-
-            h1 {
-                margin-left: 40%    ;
-
-                color: #333;
-            }
-            form {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                width: 100%;
-
-                max-width: 100%;
-                padding: 20px;
-                background: white;
-                border-radius: 40px 40px 0 0; /* Радиус верхних углов формы */
-                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
                 box-sizing: border-box;
             }
 
-            label {
-                display: block;
-                margin: 10px 0 5px;
+            body {
+                font-family: 'Poppins', sans-serif;
+                background-color: #371b1b;
+                background-image: none; /* Убираем фоновое изображение */
+                background-color: #f0f0f0; /* Устанавливаем однотонный фон для всего экрана */
+                height: 100%; /* Устанавливаем высоту тела страницы на 100% */
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start; /* Контент будет сверху */
+                align-items: center; /* Центрируем содержимое по горизонтали */
+                overflow-y: auto; /* Включаем прокрутку по вертикали, если нужно */
             }
-            input {
-                width: 80%;
+
+            form {
+                width: 100%;
+                max-width: 900px; /* Максимальная ширина формы, чтобы она не была слишком широкой */
+                padding: 20px;
+                background: white;
+                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+                box-sizing: border-box;
+                margin: 20px 0; /* Добавляем отступы сверху и снизу */
+                overflow: hidden;
+                transition: max-height 0.5s ease;
+                border-radius: 10px;
+                max-height: 100%; /* Форма может занимать всю высоту */
+            }
+
+            .MainDivBlock {
+                display: flex;
+                flex-wrap: wrap; /* Формируем два блока в строке, если нужно */
+                padding: 20px;
+                justify-content: space-between;
+                gap: 20px;
+            }
+
+            .LeftyBlock, .RightBlock {
+                flex: 1;
+                min-width: 300px; /* Устанавливаем минимальную ширину для блоков */
+            }
+
+            .RightBlock {
+                text-align: left;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            input, select, button {
+                width: 100%; /* Чтобы элементы растягивались по всей ширине блока */
                 padding: 10px;
                 margin-bottom: 15px;
                 border: 1px solid #ccc;
                 border-radius: 3px;
             }
-            button {
 
+            button {
                 background-color: #28a745;
                 color: white;
                 border: none;
-                padding: 10px;
-                border-radius: 3px;
                 cursor: pointer;
+                margin-left: 20px;
             }
+
             button:hover {
                 background-color: #218838;
             }
-            .error {
-                color: red;
-                margin: 10px 0;
-            }
-                    .MainDivBlock {
-                        display: flex;
-                        padding-left: 50px;
-                        padding-right: 50px;
-                        position: relative;
-                        align-items: center;
-                        justify-content: center; /* Центрируем содержимое */
-                        gap: 20px; /* Добавляем промежуток между блоками */
-                    }
 
-                    .LeftyBlock, .RightBlock {
-                        flex: 1; /* Заставляет блоки занимать одинаковое пространство */
-                    }
-
-                    .RightBlock {
-                        text-align: left; /* Выровнять весь текст по левому краю */
-                        display: flex;
-                        flex-direction: column; /* Размещение элементов вертикально */
-                        align-items: center; /* Элементы выравниваются по левому краю */
-                        gap: 10px; /* Добавить промежуток между элементами */
-                    }
-
-
-
-
-
-            #Token {
-                display: block;
-                white-space: pre-wrap;
-                word-wrap: break-word;
-                max-width: 500px;
+            .results-container {
+                max-height: 200px;
+                overflow-y: auto;
                 border: 1px solid #ccc;
-                padding: 5px;
-            }
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-bottom: 20px;
-            }
-            th, td {
-                border: 1px solid black;
-                padding: 8px; /
-            text-align: left;
-            }
-            th {
-                background-color: lightgray;
+                padding: 10px;
+                background-color: #f9f9f9;
+                border-radius: 5px;
             }
 
-            .BtnBlock{
-                margin-top: 20px;
-            }
-            .CountryName{
-                font-size: 20px;
-                font-style: oblique;
-                font-weight: 600;
+            .BtnBlock {
+                display: flex;
+                justify-content: space-between;
             }
 
-            .countryClassDestination{
-                margin-left: 10px;
-            }
-            .section-icon{
-                margin-bottom: 30px;
-            }
-            .text-bold{
-                font-size: 20px;
-                font-style: oblique;
-                font-weight: 600;
-            }
-            .error-text{
-                display: none;
-                color: crimson;
-            }
-            .error-style {
-                border: 2px solid crimson;
-                background-color: #ffe6e6;
-            }
-                    #Create Trip {
-                        overflow: hidden; /* Скрывает содержимое, пока окно свернуто */
-                        max-height: 0; /* Сжатое состояние */
-                        opacity: 0; /* Прозрачность в свернутом состоянии */
-                        transition: max-height 0.5s ease, opacity 0.5s ease; /* Анимация разворачивания */
-                        background-color: #f9f9f9;
-                        padding: 20px;
-                        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-                        border-radius: 10px;
-                    }
-
-                    /* Развёрнутое состояние */
-                    #Create Trip.expanded {
-                        max-height: 300px; /* Максимальная высота для развёрнутой формы */
-                        opacity: 1; /* Полная видимость */
-                        padding: 40px; /* Добавляем отступы при разворачивании */
-                    }
             .error-text {
                 display: none;
                 color: crimson;
-                font-size: 0.9rem;
-                margin-top: 5px;
-            }
-                    .animation-arrow {
-                        position: absolute; /* Абсолютное позиционирование относительно формы */
-                        top: -20px; /* Поднимите стрелку вверх над формой */
-                        left: 50%; /* Смещаем на середину формы */
-                        transform: translateX(-50%); /* Центруем по горизонтали */
-                        background-color: white; /* Цвет фона, чтобы стрелка выделялась */
-                        border-radius: 50%; /* Закругление для декоративного круга */
-                        padding: 10px; /* Отступы для стрелки */
-                     /* Легкая тень */
-                    }
-
-                    .animation-arrow i {
-                        font-size: 24px; /* Размер иконки */
-                        color: #333; /* Цвет иконки */
-                    }
-                    .btn-block-container{
-                        display: flex;
-                        width: 130px;
-                    justify-content: space-between;
-                    }
-            #toggleArrow {
-                position: absolute; /* Позиционируем стрелку независимо от формы */
-                top: 10px; /* Отступ сверху */
-                left: 50%; /* Центрируем по горизонтали */
-                transform: translateX(-50%); /* Убираем смещение из-за `left: 50%` */
-                cursor: pointer; /* Меняем курсор на "руку" */
-                z-index: 1000; /* Убеждаемся, что стрелка всегда сверху */
             }
 
-            .collapsed {
-
-                display: none; /* Полностью скрываем форму */
+            .animation-arrow i {
+                font-size: 24px;
+                color: #333;
             }
 
+            .btn-block-container {
+                display: flex;
+                width: 130px;
+                justify-content: space-between;
+            }
         </style>
     </head>
 
     <body>
-
-
-
-
-    <div class="animation-arrow" id="toggleArrow">
-        <i class='bx bx-chevron-up'></i>
-
-    </div>
-        <form id="Create Trip" class="collapsed">
-
-            <div class="formWrapper">
-
-            <h1>Create New Trip</h1>
-
-            <div class="MainDivBlock">
-                <div class="LeftyBlock">
-                    <div class="section-icon">
-                        <i class='bx bx-map-pin' ></i>
-                        <span class="CountryName">Country:</span>
-                        <span class="countryClassDestination">Country</span>
-                    </div>
-
-
-                    <div class="main-panel-desc">
-                        <span class="text-bold">Destination</span>
-                        <span class="text">Select City</span>
-                        <select id="city-dropdown" class="city-dropdown">
-
-                        </select>
-                    </div>
-
-                    <label for="startDate">StartDate:</label>
-                    <input type="datetime-local" id="startDate" name="startDate" required />
-                    <span class="error-text">StartDate must be before endDate</span>
-                    <label for="endDate">EndDate:</label>
-                    <input type="datetime-local" id="endDate" name="endDate" required />
-
-
-                    <!--  <label for="status_id">status_id:</label>
-                      <select id="status_id" required>
-                          <option>1</option>
-                          <option>2</option>
-                          <option>3</option>-->
-
-                    </select>
-                    <div class="BtnBlock">
-                        <button type="submit" id="createBtn">Create</button>
-                        <!--<button type="submit" id="loginBtn">Login</button>
-                        <button type="button" id="registerBtn">Register</button>-->
-                    </div>
-
+    <form id="CreateTrip">
+        <h1>Create New Trip</h1>
+        <div class="MainDivBlock">
+            <div class="LeftyBlock">
+                <div class="section-icon">
+                    <i class='bx bx-map-pin'></i>
+                    <span class="CountryName">Country:</span>
+                    <span class="countryClassDestination">Country</span>
                 </div>
-             <div class="RightBlock">
-                    <h2 >UserName</h2>
-                    <label id="userName">Add Participants by login</label>
-                 <div class="btn-block-container">
-                     <button>Alone</button>
-                     <button>Group</button>
-                 </div>
-
-                 <input class="search-input" type="text" placeholder="Search">
-                    <h2 >Token</h2>
-                    <label id="Token">Token</label>
-                    <h2 >UserId</h2>
-                    <label id="UserId">UserId</label>
-
+                <div class="main-panel-desc">
+                    <span class="text-bold">Destination</span>
+                    <span class="text">Select City</span>
+                    <select id="city-dropdown" class="city-dropdown"></select>
                 </div>
-                <!--   <div class="StatusTrip">
-                       <table class="StatusTripTable">
-                           <thead>
-                           <tr class="stringLine">
-                               <th>Status_id</th>
-                               <th>status_name</th>
-                           </tr>
-                           </thead>
-                           <tbody>
-
-                           </tbody>
-                       </table>
-                   </div>-->
+                <label for="startDate">StartDate:</label>
+                <input type="datetime-local" id="startDate" name="startDate" required />
+                <span class="error-text">StartDate must be before endDate</span>
+                <label for="endDate">EndDate:</label>
+                <input type="datetime-local" id="endDate" name="endDate" required />
             </div>
 
+            <div class="RightBlock">
+                <h2>UserName</h2>
+                <label id="userName">Add Participants by login</label>
+                <div class="btn-block-container">
+                    <button class="btnAlone">Alone</button>
+                    <button class="BtnGroup">Group</button>
+                </div>
+                <input id="search" type="text" placeholder="Search">
+                <div id="results" class="results-container"></div>
+                <div class="participantsBlock"></div>
             </div>
-
-        </form>
+        </div>
+        <div class="BtnBlock">
+            <button type="submit" id="createBtn">Create</button>
+        </div>
+    </form>
 
 
 
     <script>
-        const toggleArrow = document.getElementById('toggleArrow');
+
         const createTrip = document.getElementById('Create Trip');
         const formId = document.getElementById('Create Trip');
+        const input = document.getElementById('search');
+        const resultsDiv = document.getElementById('results');
+        let isAloneMode = true;
+        let userId;
+        document.addEventListener("DOMContentLoaded", () => {
+            const btnAlone = document.querySelector(".btnAlone");
+            const btnGroup = document.querySelector(".BtnGroup");
+
+            if (btnAlone && btnGroup) {
+                // Функция для сброса стилей обеих кнопок
+                const resetButtonStyles = () => {
+                    btnAlone.style.backgroundColor = ''; // Сбросить стиль для btnAlone
+                    btnGroup.style.backgroundColor = ''; // Сбросить стиль для btnGroup
+                };
 
 
-        toggleArrow.addEventListener('click', () => {
-            // Переключение видимости формы
-            if (createTrip.style.display === 'none' || createTrip.style.display === '') {
-                createTrip.style.display = 'block';
-                } else {
-                    createTrip.style.display = 'none';
-                }
+                btnAlone.addEventListener("click", function (event) {
+                    event.preventDefault(); // Предотвратить стандартное поведение (перезагрузку страницы)
 
-            // Изменяем иконку стрелки
-            const icon = toggleArrow.querySelector('i');
-            if (createTrip.style.display === 'block') {
-                icon.classList.remove('bx-chevron-down');
-                icon.classList.add('bx-chevron-up');
+                    // Если кнопка уже выбрана, сбросить её стиль
+                    if (this.style.backgroundColor === 'red') {
+                        this.style.backgroundColor = ''; // Сбросить стиль
+                        isAloneMode = false;
+                        userId = localStorage.getItem("id");
+
+                        console.log("Alone mode deselected");
+                    } else {
+                        resetButtonStyles(); // Сбросить стиль другой кнопки
+                        this.style.backgroundColor = 'red'; // Установить стиль для btnAlone
+                        isAloneMode = true; // Выбрать Alone режим
+                        console.log("Switched to Alone mode");
+                    }
+                });
+
+                btnGroup.addEventListener("click", function (event) {
+                    event.preventDefault(); // Предотвратить стандартное поведение (перезагрузку страницы)
+
+                    // Если кнопка уже выбрана, сбросить её стиль
+                    if (this.style.backgroundColor === 'blue') {
+                        this.style.backgroundColor = ''; // Сбросить стиль
+                        isAloneMode = true; // Отменить выбранный режим
+                        console.log("Group mode deselected");
+                    } else {
+                        resetButtonStyles(); // Сбросить стиль другой кнопки
+                        this.style.backgroundColor = 'blue'; // Установить стиль для btnGroup
+                        isAloneMode = false; // Выбрать Group режим
+                        console.log("Switched to Group mode");
+                    }
+                });
             } else {
-                icon.classList.remove('bx-chevron-up');
-                icon.classList.add('bx-chevron-down');
+                if (!btnAlone) console.error("Элемент с классом .btnAlone не найден!");
+                if (!btnGroup) console.error("Элемент с классом .BtnGroup не найден!");
             }
         });
+        input.addEventListener('input', () => {
+            const prefix = input.value;
+            if (prefix) {
+                fetch(`http://localhost:8080/api/search?query=${prefix}`)
+                    .then(response => {
+                        if (!response.ok) throw new Error("Ошибка сервера");
+                        return response.json();
+                    })
+                    .then(data => {
+                        resultsDiv.innerHTML = data.map(user => `<div>${user}</div>`).join('');
+                    })
+                    .catch(error => {
+                        console.error("Ошибка:", error);
+                        resultsDiv.innerHTML = '<div>Ошибка загрузки данных</div>';
+                    });
+            } else {
+                resultsDiv.innerHTML = '';
+            }
+        });
+        document.addEventListener("DOMContentLoaded", () => {
+            const resultsDiv = document.getElementById("results");
+            const participantsBlock = document.querySelector(".participantsBlock");
+
+            resultsDiv.addEventListener("click", (event) => {
+                const clickedElement = event.target;
+
+                if (clickedElement.tagName === "DIV") {
+                    const selectedLogin = clickedElement.textContent;
+
+                    // Проверяем, есть ли уже элемент с таким логином в списке
+                    const isAlreadyInList = Array.from(participantsBlock.children).some(
+                        (child) => child.textContent === selectedLogin
+                    );
+
+                    // Добавляем только если логина ещё нет
+                    if (!isAlreadyInList) {
+                        const participantDiv = document.createElement("div");
+                        participantDiv.textContent = selectedLogin;
+
+                        participantsBlock.appendChild(participantDiv);
+                    }
+                }
+            });
+        });
+
+        function loadTripCountryDestination(){
+            //загрузить строну в поле Destination
+            const countryName=document.querySelector('.countryClassDestination');
+            countryName.textContent=localStorage.getItem('country');
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
 
             getCitiesFromSelectedCountry();
             loadTripCountryDestination();
         });
-     function loadTripCountryDestination(){
-         const country = localStorage.getItem('country');
-         const countryDestinationElement = document.getElementsByClassName('countryClassDestination')[0];
-         countryDestinationElement.innerText = country;
-     }
+        async function functionLoadIdForListOfUsers() {
+            const listUsers = document.getElementsByClassName('participantsBlock')[0];
+
+            // Проверяем, существует ли элемент
+            if (!listUsers) {
+                console.error("Element '.participantsBlock' not found on the page.");
+                return []; // Возвращаем пустой массив, если элемент не найден
+            }
+
+            const logins = Array.from(listUsers.getElementsByTagName('div')).map(div => div.textContent.trim());
+
+            try {
+                const response = await fetch('http://localhost:8080/api/findAllUserIdsFromUserLogins', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(logins)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch user IDs: ${response.status}`);
+                }
+
+                const data = await response.json();
+                return data; // Предполагаем, что data — это массив чисел
+            } catch (error) {
+                console.error("Error fetching user IDs:", error);
+                return []; // Возвращаем пустой массив в случае ошибки
+            }
+        }
+
 
         function loadStatusTable(){
             const statusTable=document.getElementsByClassName('StatusTripTable')[0].querySelector('tbody');
@@ -356,35 +325,62 @@
             })
         }
 
-        document.getElementById('createBtn').addEventListener("click", function (event) {
+        document.getElementById('createBtn').addEventListener("click", async function (event) {
             event.preventDefault();
 
             const token = localStorage.getItem('AccessToken');
             const startDateInput = document.getElementById('startDate');
             const endDateInput = document.getElementById('endDate');
-            const users = localStorage.getItem('userId');
+            const tripParticipantsBlock = document.querySelector('.participantsBlock');
             const errorTextElement = document.querySelector('.error-text');
             const dropDownMenu = document.querySelector('.city-dropdown').value;
-            localStorage.setItem('city-option-dropdown',dropDownMenu);
+            localStorage.setItem('city-option-dropdown', dropDownMenu);
             if (!startDateInput || !endDateInput) {
                 console.error("StartDate or EndDate input is missing.");
                 return;
             }
-
+            let usersListId = [];
+            try {
+                // Получаем ID пользователей, предполагаем, что функция возвращает массив чисел
+                usersListId = await functionLoadIdForListOfUsers();
+            } catch (error) {
+                console.error("Error loading user IDs:", error);
+                return; // Прерываем выполнение в случае ошибки
+            }
             const start_date = formatDate(startDateInput.value);
             const end_date = formatDate(endDateInput.value);
+            let data;
+            if (isAloneMode === true) {
+                const userId = localStorage.getItem("userId");
 
-            const data = {
+                data = {
+                    start_date: start_date,
+                    end_date: end_date,
+                    price: 100,
+                    usersListId: [parseInt(userId)],
+                    isOrganizer: true,
+                    isGroup: true,
+                    cityId: dropDownMenu,
+                    idDestination: 1,
+                    userOrganizerId:parseInt(userId)
+                };
+            } else {
+                const userId = localStorage.getItem("userId");
+                usersListId.push(userId);
+                data = {
 
-                start_date: start_date,
-                end_date: end_date,
-                price: 100,
-                usersListId: [87, 89],
-                isOrganizer:true,
-                isGroup:true,
-                cityId:dropDownMenu,
-                idDestination:1
-            };
+                    start_date: start_date,
+                    end_date: end_date,
+                    price: 100,
+                    usersListId: usersListId,
+                    isOrganizer: true,
+                    isGroup: true,
+                    cityId: dropDownMenu,
+                    idDestination: 1,
+                    userOrganizerId:parseInt(userId)
+                };
+            }
+
 
             fetch('http://localhost:8080/api/trip/createNewTrip', {
                 method: 'POST',
@@ -398,12 +394,12 @@
                     if (!response.ok) {
                         resetFields(startDateInput, endDateInput);
                         window.alert(`Error: ${response.status}`);
-
+                        throw new Error('Request failed');
                     }
                     return response.json();
                 })
-                .then(data =>{
-localStorage.setItem("tripId",data.tripId)
+                .then(data => {
+                    localStorage.setItem("tripId", data.tripId);
                     window.location.href = 'CardDestinations.html';
                 })
 

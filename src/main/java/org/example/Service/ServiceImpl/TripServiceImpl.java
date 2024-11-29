@@ -79,18 +79,34 @@ public class TripServiceImpl implements TripService {
 
     @Override
     public List<Trip> getAllTrips() {
-        return tripRepository.findAll();
+        List<Trip> trips = tripRepository.findAll();
+        trips.forEach(trip -> {
+            System.out.println("Trip: " + trip.getTripId() + ", Participants: " + trip.getParticipants());
+        });
+        return trips;
+    }
+    public void removeTripForUser(int userId, int tripId) {
+        // Используем JPA или Native Query для удаления записи
+        tripRepository.deleteByUserIdAndTripId(userId, tripId);
+    }
+    @Transactional
+    public void deleteTripById(int tripId) {
+        // Удаляем участников поездки
+        Trip trip = tripRepository.findById(tripId)
+                .orElseThrow(() -> new EntityNotFoundException("Trip with ID " + tripId + " not found"));
+
+        // Удалить участников
+        tripParticipantRepository.deleteAllByTrip(trip);
+
+        // Удалить поездку
+        tripRepository.delete(trip);
     }
 
     @Override
-    public void deleteTrip(int tripId) {
-        Trip trip = tripRepository.findById(tripId)
-                .orElseThrow(() -> new EntityNotFoundException("Trip not found"));
-        trip.getParticipants().clear(); // Очистка участников
-        trip.getDestinations().clear(); // Очистка направлений
-        tripRepository.delete(trip);
-
+    public List<Trip> getTripByUsersId(int userId) {
+        return tripRepository.getTripByUsersId(userId).get();
     }
+
     @Override
     public Trip createTrip(TripDto tripDto) {
         Trip trip = new Trip();
@@ -116,12 +132,13 @@ public class TripServiceImpl implements TripService {
         // Установка города
         trip.setCity(citiesRepository.findById(tripDto.getCityId())
                 .orElseThrow(() -> new RuntimeException("City not found")));
-trip.getDestinations().add(destinationsRepository.findByDestinationId(tripDto.getTrip_id()).get());
+//trip.getDestinations().add(destinationsRepository.findByDestinationId(1).get());
         trip.setPrice(tripDto.getPrice());
         trip = tripRepository.save(trip);
 
         if (tripDto.getUsersListId() != null && !tripDto.getUsersListId().isEmpty()) {
             for (Integer userId : tripDto.getUsersListId()) {
+
                 User user = userRepository.findById(userId)
                         .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
@@ -129,11 +146,20 @@ trip.getDestinations().add(destinationsRepository.findByDestinationId(tripDto.ge
                 participants.setId(new TripParticipantId(trip.getTripId(), user.getId()));
                 participants.setTrip(trip);
                 participants.setUser(user);
-                participants.setOrganizer(true);
+                if(user.getId()==tripDto.getUserOrganizerId()){
+                    participants.setOrganizer(true);
+                }else{
+                    participants.setOrganizer(false);
+                }
+
+
+
                 if(tripDto.getUsersListId().size()>1){
                     participants.setGroup(true);
-                }
+                }else{
                     participants.setGroup(false);
+                }
+
 
 
 

@@ -23,10 +23,7 @@ Optional<List<Destination>> findDestinationsByTripId(int tripId);
     @Modifying
     @Query(value = "DELETE FROM trip_destinations WHERE trip_id = :tripId AND destination_id = :destinationId", nativeQuery = true)
     void deleteDestinationFromTrip(@Param("tripId") int tripId, @Param("destinationId") int destinationId);
-    @Modifying
-    @Transactional
-    @Query("DELETE FROM Trip t WHERE t.tripId = :tripId")
-    void deleteTripById(@Param("tripId") int tripId);
+
     Optional<Set<Trip>> findByParticipants_User_Id(Integer id);
     @Query("select t.city.cityId from Trip t where t.tripId=:tripId")
     Optional<Integer> getCityFromTripById(@Param("tripId") int tripID);
@@ -35,9 +32,14 @@ Optional<List<Destination>> findDestinationsByTripId(int tripId);
     Optional<List<Trip>> getTripByUsersId(@Param("userId") int userId);
     @Query("SELECT t FROM Trip t JOIN TripPartcipants tp ON tp.trip = t WHERE tp.user.login = :userLogin")
     Optional<List<Trip>> getTripByUsersLogin(@Param("userLogin") String userLogin);
-
-
-
+    @Query("SELECT t FROM Trip t JOIN FETCH t.participants")
+    List<Trip> findAllWithParticipants();
+    @Modifying
+    @Query("DELETE FROM TripPartcipants tp WHERE tp.user.id = :userId AND tp.trip.tripId = :tripId")
+    void deleteByUserIdAndTripId(@Param("userId") int userId, @Param("tripId") int tripId);
+    @Modifying
+    @Transactional
+    void deleteByTripId(int tripId);
 }
 
 

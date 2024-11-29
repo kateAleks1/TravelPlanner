@@ -221,13 +221,27 @@ map.put("creatAt",claims.getIssuedAt().toString());
 
 
     }
-
+@GetMapping("/search")
+public ResponseEntity<?> SearchUsersByPrefix(@RequestParam String query){
+return ResponseEntity.ok(userService.SearchUsersByPrefix(query).stream().map(User::getLogin).toList());
+}
     @GetMapping("/items")
     public ResponseEntity<List<UserDto>> getUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Page<UserDto> usersPage = userService.getUsers(PageRequest.of(page, size));
         return ResponseEntity.ok(usersPage.getContent());
+    }
+    @GetMapping("/findUserIdByUserLogin/{login}")
+    public ResponseEntity<?> findUserIdByUserLogin(@PathVariable String login){
+        Integer i=0;
+        i=userService.findUserIdByUserLogin(login);
+        return ResponseEntity.ok(i);
+    }
+    @PostMapping("/findAllUserIdsFromUserLogins")
+    public ResponseEntity<?> findAllUserIdsFromUserLogins(@RequestBody List<String> loginsList) {
+        List<Integer> listId= userService.findAllUserIdsFromUserLogins(loginsList);
+        return ResponseEntity.ok(listId);
     }
     @PostMapping("/login/{login}")
     public ResponseEntity<?> getUsers(@RequestBody UserDto userDto, @PathVariable String login) {

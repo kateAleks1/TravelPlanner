@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Card Destinations</title>
+    <title>My Card Destinations</title>
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 
     <style>
@@ -636,8 +636,8 @@
         <div class="home-content">
             <i class='bx bx-menu'></i>
             <span class="text">Trip City:  </span>
-            <span class="city-dropdown-text-city">Trip</span>
-            <div class="city-dropdown-text-cityId">CityId</div>
+            <span class="city-dropdown-text">Trip</span>
+            <div class="city-dropdown-text-cityId">CityId </div>
             <div class="city-dropdown-text"> TripId:=></div>
             <div class="city-dropdown-text-tripId">TripId:=></div>
         </div>
@@ -732,103 +732,23 @@
 
     // Функция загрузки имени города
     function cityName() {
-        const cityElement = document.querySelector('.city-dropdown-text-city');
-        const cityIdElement  = localStorage.getItem('city-dropdown-text-cityId');
+        const cityElement = document.querySelector('.city-dropdown-text');
+        const cityId = localStorage.getItem('city-option-dropdown');
         const tripIdElement = document.querySelector('.city-dropdown-text-tripId');
         const tripIdStorage = localStorage.getItem('tripId');
-
-
-// Преобразовать текст в число
-        const cityIdNum = localStorage.getItem('cityId');
-        fetch(`http://localhost:8080/api/cities/getCityById/${cityIdNum}`, {
+        fetch(`http://localhost:8080/api/cities/getCityById/${cityId}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         }).then(response => response.json())
             .then(data => {
                 cityElement.innerText = data.cityName;
                 tripIdElement.innerHTML = tripIdStorage;
-
             });
     }
 
-    // Загрузка карточек направлений из города
-    function loadDestinationsCardFromCity() {
-        const tripId = localStorage.getItem("tripId");
-        const block = document.querySelector('.card-block');
-        const cityId = localStorage.getItem('cityId');
 
-        fetch(`http://localhost:8080/api/destination/getAllDestinationsByCityId/${cityId}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
-        }).then(response => response.json())
-            .then(data => {
-                block.innerHTML = '';
+    loadDestinationsCard();
 
-                data.forEach(cardDestination => {
-                    const card = document.createElement('div');
-                    card.classList.add('card-country');
-                    card.style.backgroundImage = `url('${cardDestination.imageUrl}')`;
-                    card.style.backgroundSize = 'cover';
-                    card.style.backgroundPosition = 'center';
-                    card.style.height = '200px';
-                    card.style.width = '300px';
-
-                    const icon = document.createElement('i');
-                    icon.classList.add('bx', 'bx-heart');
-                    card.appendChild(icon);
-
-                    const text = document.createElement('span');
-                    text.classList.add('text');
-                    text.textContent = cardDestination.name;
-                    card.appendChild(text);
-
-                    block.appendChild(card);
-
-                    // Проверяем статус сердечка
-                    fetch(`http://localhost:8080/api/tripDestinations/isAdded/${tripId}/${cardDestination.destinationId}`, {
-                        method: 'GET'
-                    }).then(response => response.json())
-                        .then(isAdded => {
-                            if (isAdded) {
-                                icon.classList.add('selected');
-                            }
-                        });
-
-                    // Обработчик клика по сердечку
-                    icon.addEventListener('click', () => {
-                        if (icon.classList.contains('selected')) {
-                            fetch(`http://localhost:8080/api/tripDestinations/remove`, {
-                                method: 'DELETE',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    tripId: tripId,
-                                    destinationId: cardDestination.destinationId
-                                })
-                            }).then(response => {
-                                if (response.ok) {
-                                    icon.classList.remove('selected');
-                                }
-                            });
-                        } else {
-                            fetch(`http://localhost:8080/api/tripDestinations/add`, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    tripId: tripId,
-                                    destinationId: cardDestination.destinationId
-                                })
-                            }).then(response => {
-                                if (response.ok) {
-                                    icon.classList.add('selected');
-                                }
-                            });
-                        }
-                    });
-                });
-            });
-    }
-
-    // Загрузка карточек направлений из поездки
     function loadDestinationsCard() {
         const tripId = localStorage.getItem("tripId");
         const block = document.querySelector('.card-block');

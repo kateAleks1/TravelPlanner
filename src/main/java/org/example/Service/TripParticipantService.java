@@ -39,6 +39,5 @@ public class TripParticipantService {
 Trip trip=tripRepository.findById(tripId).get();
 
 
-// поездка 1
     }
 }

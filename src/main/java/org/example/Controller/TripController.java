@@ -37,16 +37,17 @@ private final UserService userService;
         this.tripRepository = tripRepository;
         this.tripService = tripService;
     }
-
+@GetMapping("/getAllTripsByUserId/{userId}")
+public ResponseEntity<?> createNewTrip(@PathVariable int userId) {
+    List<Trip> trips = tripService.getTripByUsersId(userId);
+    return ResponseEntity.ok(trips);
+}
     @PostMapping("/createNewTrip")
     public ResponseEntity<?> createNewTrip(@RequestBody TripDto tripDto) {
 
        Trip trip= tripService.createTrip(tripDto);
-       if(trip!=null){
-           return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("tripId", trip.getTripId()));
 
-       }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        return ResponseEntity.ok(trip);
 
     }
     @GetMapping("/getAllTrips")
@@ -54,10 +55,10 @@ private final UserService userService;
             List<Trip> trips = tripService.getAllTrips();
             return ResponseEntity.ok(trips);
     }
-    @DeleteMapping("deleteTrip/{tripId}")
-    public ResponseEntity<?> deleteTrip(@PathVariable int tripId){
-        tripService.deleteTrip(tripId);
-        return ResponseEntity.ok("Trip successfully deleted");
+    @DeleteMapping("/deleteTrip/{tripId}")
+    public ResponseEntity<String> deleteTrip(@PathVariable int tripId) {
+        tripService.deleteTripById(tripId);
+        return ResponseEntity.ok("Trip with ID " + tripId + " has been deleted successfully.");
     }
     // getDestinationsFromUserId
     @GetMapping("/getDestinations/{tripId}")
@@ -84,6 +85,7 @@ return ResponseEntity.ok(tripService.addDestinationToTrip(tripId,destinationId))
     public ResponseEntity<?> getAllTripByUserId(@PathVariable int userId){
         return ResponseEntity.ok(tripService.getAllDestinationsByUserId(userId));
     }
+
 
 //    @PutMapping("/updateTrips/{tripsId}")
 //    public ResponseEntity<?> updateTrios(@PathVariable int tripsId, @RequestBody TripDto tripDto){
@@ -120,6 +122,14 @@ public ResponseEntity<?> getAllTripsFromUserId(@PathVariable String userId) {
     // Return the list of trips
     return ResponseEntity.ok(tripsOptional.get());
 }
+
+    @DeleteMapping("/deleteTripForUser/{userId}/{tripId}")
+    public ResponseEntity<?> deleteTripForUser(
+            @PathVariable int userId,
+            @PathVariable int tripId) {
+        tripService.removeTripForUser(userId, tripId);
+        return ResponseEntity.ok("Trip successfully removed");
+    }
   //  @GetMapping("/getAllTripsFromSpecificUserId/{userId}")
     //public ResponseEntity<?> getAllTripsFromSpecificUserId(@PathVariable String userId){
 //        List<Trip> trips = tripService.getAllTrips();

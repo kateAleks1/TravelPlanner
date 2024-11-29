@@ -15,7 +15,7 @@
     <property name="hibernate.format_sql">true</property>
     <mapping class="org.example.entity.User"/>
     <mapping class="org.example.entity.Trip"/>
-    <mapping class="org.example.entity.Trip_Destination"/>
+
     <mapping class="org.example.entity.Trip_Status"/>
     <mapping class="org.example.entity.Countries"/>
     <mapping class="org.example.entity.TripPartcipants"/>

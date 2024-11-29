@@ -12,12 +12,14 @@ public interface TripService {
     Trip createTrip(TripDto tripDto);
 void updateTrip(int tripId, TripDto trip);
     List<Trip> getAllTrips();
-    void deleteTrip(int tripId);
+    void deleteTripById(int tripId);
     Trip findTripById(int tripId);
+    void removeTripForUser(int userId, int tripId);
     boolean ifTripExistsWithSuchId(int tripId);
     Integer getCityFromTripById(int tripId);
     Trip addDestinationToTrip(int tripId,int destinationId);
      List<Destination> getAllDestinationsByTripId(int tripId);
     List<Trip> getAllDestinationsByUserId(int userId);
     // List<Destination> deleteDestinationById(int tripId);
+    List<Trip> getTripByUsersId(int userId);
 }
