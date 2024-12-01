@@ -21,6 +21,7 @@ public interface TripRepository extends JpaRepository<Trip,Integer> {
 @Query(" SELECT t.destinations from Trip t ")
 Optional<List<Destination>> findDestinationsByTripId(int tripId);
     @Modifying
+    @Transactional
     @Query(value = "DELETE FROM trip_destinations WHERE trip_id = :tripId AND destination_id = :destinationId", nativeQuery = true)
     void deleteDestinationFromTrip(@Param("tripId") int tripId, @Param("destinationId") int destinationId);
 

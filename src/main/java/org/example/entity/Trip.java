@@ -22,7 +22,7 @@ import java.util.*;
         @Id
         private int tripId;
 
-    private Integer price;
+
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "trip_destinations",
             joinColumns = @JoinColumn(name = "trip_id"),

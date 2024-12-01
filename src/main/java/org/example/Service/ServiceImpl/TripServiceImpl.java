@@ -79,6 +79,7 @@ public class TripServiceImpl implements TripService {
 
     @Override
     public List<Trip> getAllTrips() {
+    //update trip status through date
         List<Trip> trips = tripRepository.findAll();
         trips.forEach(trip -> {
             System.out.println("Trip: " + trip.getTripId() + ", Participants: " + trip.getParticipants());
@@ -105,6 +106,11 @@ public class TripServiceImpl implements TripService {
     @Override
     public List<Trip> getTripByUsersId(int userId) {
         return tripRepository.getTripByUsersId(userId).get();
+    }
+    @Transactional
+    @Override
+    public void deleteDestinationById(int tripId,int destinationId) {
+         tripRepository.deleteDestinationFromTrip(tripId,destinationId);
     }
 
     @Override
@@ -133,7 +139,6 @@ public class TripServiceImpl implements TripService {
         trip.setCity(citiesRepository.findById(tripDto.getCityId())
                 .orElseThrow(() -> new RuntimeException("City not found")));
 //trip.getDestinations().add(destinationsRepository.findByDestinationId(1).get());
-        trip.setPrice(tripDto.getPrice());
         trip = tripRepository.save(trip);
 
         if (tripDto.getUsersListId() != null && !tripDto.getUsersListId().isEmpty()) {

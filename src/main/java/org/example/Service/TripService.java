@@ -20,6 +20,6 @@ void updateTrip(int tripId, TripDto trip);
     Trip addDestinationToTrip(int tripId,int destinationId);
      List<Destination> getAllDestinationsByTripId(int tripId);
     List<Trip> getAllDestinationsByUserId(int userId);
-    // List<Destination> deleteDestinationById(int tripId);
+   void deleteDestinationById(int tripId,int destinationId);
     List<Trip> getTripByUsersId(int userId);
 }

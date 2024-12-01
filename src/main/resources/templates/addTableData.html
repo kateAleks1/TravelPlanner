@@ -371,7 +371,6 @@
 
                     start_date: start_date,
                     end_date: end_date,
-                    price: 100,
                     usersListId: usersListId,
                     isOrganizer: true,
                     isGroup: true,
@@ -394,7 +393,7 @@
                     if (!response.ok) {
                         resetFields(startDateInput, endDateInput);
                         window.alert(`Error: ${response.status}`);
-                        throw new Error('Request failed');
+
                     }
                     return response.json();
                 })

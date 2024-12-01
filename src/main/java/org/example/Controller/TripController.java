@@ -71,7 +71,8 @@ return ResponseEntity.ok(tripService.addDestinationToTrip(tripId,destinationId))
     }
     @DeleteMapping("/{tripId}/deleteDestinationById/{destinationId}")
     public ResponseEntity<?> deleteDestinationById(@PathVariable int tripId, @PathVariable int destinationId){
-        return ResponseEntity.ok(tripService.addDestinationToTrip(tripId,destinationId));
+        tripService.deleteDestinationById(tripId,destinationId);
+        return ResponseEntity.ok("build");
     }
     @GetMapping("/getTripById/{tripId}")
     public ResponseEntity<?> getTripById(@PathVariable int tripId){
