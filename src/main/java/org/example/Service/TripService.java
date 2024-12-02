@@ -4,6 +4,7 @@ import org.example.DTO.DestinationDto;
 import org.example.DTO.TripDto;
 import org.example.entity.Destination;
 import org.example.entity.Trip;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,4 +23,6 @@ void updateTrip(int tripId, TripDto trip);
     List<Trip> getAllDestinationsByUserId(int userId);
    void deleteDestinationById(int tripId,int destinationId);
     List<Trip> getTripByUsersId(int userId);
+    List<Trip> findTripsByUserIdAndCountryName( int userId,String countryName);
+    List<Trip> SearchTripByPrefix(String loginPrefix);
 }

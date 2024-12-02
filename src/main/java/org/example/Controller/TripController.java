@@ -26,7 +26,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/trip")
 public class TripController {
 @Autowired
-    private final TripService tripService;
+    private final TripService
+        tripService;
     @Autowired
 private final TripRepository tripRepository;
     @Autowired
@@ -69,6 +70,10 @@ public ResponseEntity<?> createNewTrip(@PathVariable int userId) {
     public ResponseEntity<?> addDestinationToTrip(@PathVariable int tripId, @PathVariable int destinationId){
 return ResponseEntity.ok(tripService.addDestinationToTrip(tripId,destinationId));
     }
+    @GetMapping("/searchTrips")
+    public ResponseEntity<?> SearchTripByPrefix(@RequestParam String query){
+        return ResponseEntity.ok(tripService.SearchTripByPrefix(query));
+    }
     @DeleteMapping("/{tripId}/deleteDestinationById/{destinationId}")
     public ResponseEntity<?> deleteDestinationById(@PathVariable int tripId, @PathVariable int destinationId){
         tripService.deleteDestinationById(tripId,destinationId);
@@ -86,8 +91,11 @@ return ResponseEntity.ok(tripService.addDestinationToTrip(tripId,destinationId))
     public ResponseEntity<?> getAllTripByUserId(@PathVariable int userId){
         return ResponseEntity.ok(tripService.getAllDestinationsByUserId(userId));
     }
-
-
+    @GetMapping("/findTripsByCountryName/{userId}/{countryName}")
+    public ResponseEntity<?> findTripsByCountryName(@PathVariable int userId,@PathVariable String countryName){
+        List<Trip> trips=tripService.findTripsByUserIdAndCountryName(userId,countryName);
+        return ResponseEntity.ok(trips);
+    }
 //    @PutMapping("/updateTrips/{tripsId}")
 //    public ResponseEntity<?> updateTrios(@PathVariable int tripsId, @RequestBody TripDto tripDto){
 //        if(!userService.chechIfUserIdExists(tripDto.getUser_id()).isPresent()){

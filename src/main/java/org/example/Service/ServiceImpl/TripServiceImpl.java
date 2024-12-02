@@ -138,7 +138,7 @@ public class TripServiceImpl implements TripService {
         // Установка города
         trip.setCity(citiesRepository.findById(tripDto.getCityId())
                 .orElseThrow(() -> new RuntimeException("City not found")));
-//trip.getDestinations().add(destinationsRepository.findByDestinationId(1).get());
+
         trip = tripRepository.save(trip);
 
         if (tripDto.getUsersListId() != null && !tripDto.getUsersListId().isEmpty()) {
@@ -165,9 +165,6 @@ public class TripServiceImpl implements TripService {
                     participants.setGroup(false);
                 }
 
-
-
-
                 tripParticipantRepository.save(participants);
             }
         } else {
@@ -191,13 +188,14 @@ public class TripServiceImpl implements TripService {
       return tripRepository.save(trip);
 
     }
+    public List<Trip> SearchTripByPrefix(String loginPrefix){
+        return tripRepository.findTripsByPrefix(loginPrefix).get();
+    }
 
-//    @Override
-//    public List<Destination> deleteDestinationById(int tripId) {
-//        Trip trip=tripRepository.findById(tripId).get();
-//
-//    }
-
+    @Override
+    public List<Trip> findTripsByUserIdAndCountryName(int userId,String countryName) {
+        return tripRepository.findTripsByUserIdAndCountryName(userId,countryName);
+    }
     @Override
     public List<Destination> getAllDestinationsByTripId(int tripId) {
 
@@ -218,4 +216,6 @@ public class TripServiceImpl implements TripService {
     public boolean ifTripExistsWithSuchId(int tripId) {
         return tripRepository.findById(tripId).isPresent();
     }
+
+
 }

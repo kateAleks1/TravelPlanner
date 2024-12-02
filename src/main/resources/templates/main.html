@@ -129,7 +129,7 @@ margin-left: 40px;
 
         .sidebar.close .nav-links li a .link_name {
             opacity: 0;
-            pointer-events: none;
+
         }
 
         .sidebar .nav-links li .sub-menu {
@@ -174,10 +174,6 @@ margin-left: 40px;
             opacity: 1;
             pointer-events: auto;
             transition: all 0.4s ease;
-        }
-
-        .sidebar .nav-links li .sub-menu .link_name {
-            display: none;
         }
 
         .sidebar.close .nav-links li .sub-menu .link_name {
@@ -520,6 +516,7 @@ background: #ffffff;
         <li>
             <div class="iocn-link">
                 <a href="#">
+
                     <i class='bx bx-collection' ></i>
                     <span class="link_name">Category</span>
                 </a>
@@ -566,10 +563,10 @@ background: #ffffff;
         <li>
             <a href="#">
                 <i class='bx bx-compass' ></i>
-                <span class="link_name">Explore</span>
+                <span class="link_name" id="link_name_explore">Explore</span>
             </a>
             <ul class="sub-menu blank">
-                <li><a class="link_name" href="#">Explore</a></li>
+                <li><a class="link_name"   href="#">Explore</a></li>
             </ul>
         </li>
         <li>
@@ -705,6 +702,11 @@ background: #ffffff;
     </div>
 </section>
 <script >
+    document.querySelector('#link_name_explore').addEventListener("click", (event) => {
+        event.preventDefault();
+
+        window.location.href = 'myCardsDestinations.html';
+    });
     let arrow = document.querySelectorAll(".arrow");
     for (var i = 0; i < arrow.length; i++) {
         arrow[i].addEventListener("click", (e)=>{
@@ -712,12 +714,14 @@ background: #ffffff;
             arrowParent.classList.toggle("showMenu");
         });
     }
+
     let sidebar = document.querySelector(".sidebar");
     let sidebarBtn = document.querySelector(".bx-menu");
     console.log(sidebarBtn);
     sidebarBtn.addEventListener("click", ()=>{
         sidebar.classList.toggle("close");
     });
+
 function loadCountriesSelect(){
     const menuCountriesDropDowm=document.querySelector('.city-dropdown');
 fetch('http://localhost:8080/api/countries/getAllCountries',{
@@ -786,5 +790,6 @@ fetch('http://localhost:8080/api/countries/getAllCountries',{
 
     })
 </script>
+
 </body>
 </html>

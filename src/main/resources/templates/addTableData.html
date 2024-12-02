@@ -108,6 +108,9 @@
                 width: 130px;
                 justify-content: space-between;
             }
+            .hidden {
+                display: none;
+            }
         </style>
     </head>
 
@@ -134,15 +137,17 @@
             </div>
 
             <div class="RightBlock">
-                <h2>UserName</h2>
+
                 <label id="userName">Add Participants by login</label>
                 <div class="btn-block-container">
                     <button class="btnAlone">Alone</button>
                     <button class="BtnGroup">Group</button>
                 </div>
-                <input id="search" type="text" placeholder="Search">
-                <div id="results" class="results-container"></div>
-                <div class="participantsBlock"></div>
+                <div id="groupInput" class="hidden">
+                    <input id="search" type="text" placeholder="Search">
+                    <div id="results" class="results-container"></div>
+                    <div class="participantsBlock"></div>
+                </div>
             </div>
         </div>
         <div class="BtnBlock">
@@ -356,12 +361,10 @@
                 data = {
                     start_date: start_date,
                     end_date: end_date,
-                    price: 100,
                     usersListId: [parseInt(userId)],
                     isOrganizer: true,
                     isGroup: true,
                     cityId: dropDownMenu,
-                    idDestination: 1,
                     userOrganizerId:parseInt(userId)
                 };
             } else {
@@ -373,9 +376,9 @@
                     end_date: end_date,
                     usersListId: usersListId,
                     isOrganizer: true,
-                    isGroup: true,
+                    isGroup: false,
                     cityId: dropDownMenu,
-                    idDestination: 1,
+
                     userOrganizerId:parseInt(userId)
                 };
             }
@@ -393,7 +396,7 @@
                     if (!response.ok) {
                         resetFields(startDateInput, endDateInput);
                         window.alert(`Error: ${response.status}`);
-
+                        throw new Error(`Server error: ${response.status}`);
                     }
                     return response.json();
                 })
@@ -403,7 +406,19 @@
                 })
 
         });
+        document.addEventListener("DOMContentLoaded", () => {
+            const btnAlone = document.querySelector(".btnAlone");
+            const btnGroup = document.querySelector(".BtnGroup");
+            const groupInput = document.getElementById("groupInput");
 
+            btnAlone.addEventListener("click", () => {
+                groupInput.classList.add("hidden"); // Скрыть блок при нажатии "Alone"
+            });
+
+            btnGroup.addEventListener("click", () => {
+                groupInput.classList.remove("hidden"); // Показать блок при нажатии "Group"
+            });
+        });
 
         function resetFields(startDateInput, endDateInput) {
             startDateInput.value = ""; // Очистить значение

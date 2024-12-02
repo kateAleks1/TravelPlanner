@@ -758,7 +758,8 @@
     }
 
 
-    loadDestinationsCard();
+
+
     function loadDestinationsCard() {
         const tripId = localStorage.getItem("tripId");
         const block = document.querySelector('.card-block');
@@ -766,9 +767,28 @@
         fetch(`http://localhost:8080/api/trip/getDestinations/${tripId}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
-        }).then(response => response.json())
+        })
+            .then(response => {
+                if (!response.ok) {
+                    // Если сервер вернул ошибку (например, 404)
+                    if (response.status === 404) {
+                        console.warn("No destinations found for this trip.");
+                        block.innerHTML = '<p>No destinations found. Add one to start planning your trip!</p>';
+                        return []; // Возвращаем пустой массив, чтобы код продолжил работать
+                    }
+
+                }
+                return response.json(); // Если ответ успешный, преобразуем его в JSON
+            })
             .then(data => {
+                // Очищаем блок перед добавлением карточек
                 block.innerHTML = '';
+
+                if (!data || data.length === 0) {
+                    // Если данных нет, показываем сообщение
+                    block.innerHTML = '<p>No destinations found. Add one to start planning your trip!</p>';
+                    return;
+                }
 
                 data.forEach(cardDestination => {
                     const card = document.createElement('div');
@@ -779,8 +799,7 @@
                     card.style.height = '200px';
                     card.style.width = '300px';
 
-const  destId =cardDestination.destinationId;
-
+                    const destId = cardDestination.destinationId;
 
                     const btnDelete = document.createElement('i');
                     btnDelete.classList.add('bx', 'bx-x');
@@ -791,14 +810,12 @@ const  destId =cardDestination.destinationId;
                     text.textContent = cardDestination.name;
                     card.appendChild(text);
 
-
                     btnDelete.addEventListener('click', (event) => {
                         event.stopPropagation(); // Останавливаем всплытие события клика
 
-                        const tripId = localStorage.getItem("tripId"); // Получаем ID поездки из data-атрибута
-                        const destinationId = destId; // Получаем ID пункта назначения из data-атрибута
+                        const tripId = localStorage.getItem("tripId"); // Получаем ID поездки
+                        const destinationId = destId; // Получаем ID пункта назначения
 
-                        // Выполнение DELETE-запроса на ваш API
                         fetch(`http://localhost:8080/api/trip/${tripId}/deleteDestinationById/${destinationId}`, {
                             method: 'DELETE',
                             headers: { 'Content-Type': 'application/json' }
@@ -807,24 +824,28 @@ const  destId =cardDestination.destinationId;
                                 if (!response.ok) {
                                     return Promise.reject(`Failed to delete destination with ID ${destinationId}`);
                                 }
-                                card.remove(); // Удаление карточки из DOM
+                                card.remove(); // Удаляем карточку из DOM
                                 console.log(`Destination with ID ${destinationId} removed from trip ${tripId}`);
+                                // Если все карточки удалены, обновляем список
+                                if (!block.querySelector('.card-country')) {
+                                    block.innerHTML = '<p>No destinations found. Add one to start planning your trip!</p>';
+                                }
                             })
 
                     });
 
                     block.appendChild(card);
-
-
                 });
-            });
+            })
+
     }
+
 
     // Инициализация
     document.addEventListener('DOMContentLoaded', () => {
         cityName();
         loadCityId();
-
+        loadDestinationsCard()
     });
 </script>
 

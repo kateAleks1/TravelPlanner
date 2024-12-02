@@ -567,6 +567,9 @@ margin: 5px;
             height: 40px;
             width: 40px;
         }
+        .filter-container{
+            margin-left: 15px;
+        }
     </style>
 </head>
 <body>
@@ -704,10 +707,18 @@ margin: 5px;
                 </div>
                 <select  class="city-dropdown">
                     <option value="" disabled selected>Filters</option>
-                    <option value="Most popular" >Most popular</option>
-                    <option value="Most popular" >Europe</option>
-                    <option value="Most popular" >Asia</option>
+
                 </select>
+
+                <div class="filter-container">
+                    <label for="start-date">Start Date:</label>
+                    <input id="start-date" type="date" class="date-input">
+
+                    <label for="end-date">End Date:</label>
+                    <input id="end-date" type="date" class="date-input">
+
+                    <button id="filter-button" class="filter-button">Filter</button>
+                </div>
             </div>
             <div class="separator"></div>
             <div class="section left">
@@ -751,7 +762,174 @@ margin: 5px;
         window.location.href = 'login.html';
     })
     cityName();
+    document.addEventListener('DOMContentLoaded', function () {
+        const dropDownMenu = document.querySelector('.city-dropdown');
+        const cardContainer = document.querySelector('.card-block');
+        const userId = localStorage.getItem('userId') ;
 
+        // Загрузка списка стран
+        fetch(`http://localhost:8080/api/countries/getAllCountries`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    console.error(`Error: ${response.status}`);
+                    window.alert(`Error: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                dropDownMenu.innerHTML = '<option value="">Select Country</option>';
+                data.forEach(country => {
+                    const optionCountry = document.createElement('option');
+                    optionCountry.value = country.countryName; // Значение — название страны
+                    optionCountry.textContent = country.countryName;
+                    dropDownMenu.appendChild(optionCountry);
+                });
+            });
+
+        // Обработка изменения выбранной страны
+        dropDownMenu.addEventListener('change', function () {
+            const selectedCountry = this.value;
+
+            // Очистка контейнера карточек
+            cardContainer.innerHTML = '';
+
+            // Если страна не выбрана, показать сообщение
+            if (selectedCountry === '') {
+                getAllTripByUserId();
+            }
+            else{
+                // Загрузка поездок по выбранной стране
+                fetch(`http://localhost:8080/api/trip/findTripsByCountryName/${userId}/${selectedCountry}`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            console.error(`Error fetching trips: ${response.status}`);
+                            window.alert(`Error fetching trips: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(trips => {
+                        if (trips.length === 0) {
+                            const message = document.createElement('p');
+                            message.textContent = 'No trips found for the selected country.';
+                            cardContainer.appendChild(message);
+                        } else {
+                            trips.forEach(trip => {
+                                const card = createTripCard(trip); // Создание карточки поездки
+                                cardContainer.appendChild(card);
+                            });
+                        }
+                    })
+            }
+
+
+
+        });
+
+        // Функция для создания карточки поездки
+        function createTripCard(trip) {
+            const card = document.createElement('div');
+            card.classList.add('card-country');
+            card.dataset.tripId = trip.tripId; // Сохраняем tripId в data-атрибуте
+
+            // Создание кнопки удаления
+            const btnDelete = document.createElement('i');
+            btnDelete.classList.add('bx', 'bx-x');
+            card.appendChild(btnDelete);
+
+            // Создание содержимого карточки
+
+            const text = document.createElement('span');
+            text.classList.add('text');
+            text.textContent = `${trip.tripId}  ${trip.city.cityName}`;
+            card.appendChild(text);
+
+            // Добавление обработчика клика для перехода на другую страницу
+            card.addEventListener("click", (event) => {
+                if (event.target === btnDelete) return; // Игнорируем клик на кнопке удаления
+                localStorage.setItem('tripId', trip.tripId);
+                window.location.href = 'myCardsDestinations.html'; // Переход на другую страницу
+            });
+
+            // Добавление обработчика клика для удаления карточки
+            btnDelete.addEventListener('click', (event) => {
+                event.stopPropagation(); // Останавливаем всплытие события
+                const tripId = card.dataset.tripId;
+
+                fetch(`http://localhost:8080/api/trip/deleteTrip/${tripId}`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            console.error(`Failed to delete trip: ${response.status}`);
+                            return Promise.reject('Failed to delete trip');
+                        }
+                        card.remove(); // Удаление карточки из DOM
+                        console.log(`Trip with ID ${tripId} deleted successfully.`);
+                    })
+                    .catch(error => {
+                        console.error('Error deleting trip:', error);
+                    });
+            });
+
+            return card;
+        }
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+        const input = document.querySelector('#search-input'); // Поле ввода
+        const resultsDiv = document.querySelector('.card-block'); // Контейнер для карточек
+
+        input.addEventListener('input', () => {
+            const prefix = input.value.trim(); // Получение введенного текста
+            if (prefix) {
+                fetch(`http://localhost:8080/api/trip/searchTrips?query=${prefix}`)
+                    .then(response => {
+
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Очищаем результаты и создаем новые карточки
+                        resultsDiv.innerHTML = data
+                            .map(trip => createTripCardHTML(trip)) // Преобразуем поездки в HTML
+                            .join('');
+                    })
+
+            } else {
+                resultsDiv.innerHTML = ''; // Если поле ввода пустое
+            }
+        });
+
+        // Функция создания HTML карточки
+        function createTripCardHTML(trip) {
+            return `
+            <div class="card-country" data-trip-id="${trip.tripId}">
+                <i class="bx bx-x" onclick="deleteTrip(${trip.tripId})"></i>
+                <span class="text">${trip.tripId} ${trip.city.cityName}</span>
+            </div>
+        `;
+        }
+
+        // Функция удаления карточки
+        window.deleteTrip = function (tripId) {
+            fetch(`http://localhost:8080/api/trip/deleteTrip/${tripId}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' }
+            })
+                .then(response => {
+                    if (!response.ok) throw new Error(`Ошибка удаления: ${response.status}`);
+                    // Удаляем карточку из DOM
+                    const card = document.querySelector(`.card-country[data-trip-id="${tripId}"]`);
+                    if (card) card.remove();
+                })
+                .catch(error => console.error('Ошибка удаления поездки:', error));
+        };
+    });
     function loadDestinationsCard() {
         const tripId = localStorage.getItem("tripId");
         const block = document.querySelector('.card-block');
@@ -842,7 +1020,7 @@ margin: 5px;
                     // Создание текста с названием города и датами
                     const text = document.createElement('span');
                     text.classList.add('text');
-                    text.textContent = `${cardTrip.tripId}  ${cardTrip.city.cityName} - From: ${cardTrip.startDate} To: ${cardTrip.endDate}`;
+                    text.textContent = `${cardTrip.tripId}  ${cardTrip.city.cityName}`;
                     card.appendChild(text);
 
                     // Добавление карточки в контейнер
@@ -902,7 +1080,7 @@ margin: 5px;
                     card.remove();
                     console.log(`Trip with ID ${tripId} removed for user ${userId}`);
                 })
-                .catch(error => console.error(error));
+
         });
     });
 
