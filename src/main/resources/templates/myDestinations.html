@@ -767,7 +767,6 @@ margin: 5px;
         const cardContainer = document.querySelector('.card-block');
         const userId = localStorage.getItem('userId') ;
 
-        // Загрузка списка стран
         fetch(`http://localhost:8080/api/countries/getAllCountries`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }

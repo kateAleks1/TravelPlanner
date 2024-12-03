@@ -28,6 +28,6 @@ Optional<List<Destination>> findDestinationByTripsAndDestinationId(@Param("id") 
     @Query("SELECT d FROM Trip t JOIN t.destinations d WHERE t.tripId = :tripId AND d.destinationType.typeName = :typeName")
     List<Destination> findDestinationsByTypeByTripId(@Param("tripId") int tripId, @Param("typeName") String typeName);
 
-    @Query("SELECT d FROM Destination d JOIN d.cities c WHERE c.cityName LIKE %:prefix%")
-    Optional<List<Destination>> findDestinationByPrefix(@Param("prefix")String prefix);
+    @Query("SELECT d FROM Destination d JOIN d.cities c WHERE c.cityId=:cityId and d.name LIKE %:prefix%")
+    Optional<List<Destination>> findDestinationByPrefix(@Param("cityId") int cityId,@Param("prefix")String prefix);
 }

@@ -398,7 +398,7 @@
         .main-panel-desc {
             display: flex;
             flex-direction: column;
-            align-items: center/* Stack elements vertically */
+            align-items: center
         }
         .main-panel-desc .text-bold{
             font-size: 20px;
@@ -686,8 +686,6 @@
         <div class="card-block">
 
 
-
-
         </div>
 
 
@@ -695,7 +693,7 @@
     </div>
 </section>
 <script>
-    // Переключение подменю в боковой панели
+
     let arrows = document.querySelectorAll(".arrow");
     arrows.forEach(arrow => {
         arrow.addEventListener("click", (e) => {
@@ -704,7 +702,7 @@
         });
     });
 
-    // Переключение боковой панели
+
     let sidebar = document.querySelector(".sidebar");
     let sidebarBtn = document.querySelector(".bx-menu");
     sidebarBtn.addEventListener("click", () => {
@@ -712,17 +710,17 @@
     });
 
     fetch('http://localhost:8080/api/destinationType/getAllDestinationsType')
-        .then(response => response.json()) // Преобразуем ответ в JSON
+        .then(response => response.json())
         .then(data => {
-            // Получаем элемент select по его id
+
             const selectElement = document.getElementById('city-dropdown');
 
-            // Для каждого элемента из массива data создаём новый option
+
             data.forEach(item => {
-                const option = document.createElement('option'); // Создаём новый option
-                option.value = item.typeId; // Устанавливаем значение value равным typeId
-                option.textContent = item.typeName; // Устанавливаем текст опции равным typeName
-                selectElement.appendChild(option); // Добавляем опцию в select
+                const option = document.createElement('option');
+                option.value = item.typeId;
+                option.textContent = item.typeName;
+                selectElement.appendChild(option);
             });
         })
 
@@ -731,7 +729,7 @@
         window.location.href = 'login.html';
     });
 
-    // Функция загрузки ID города
+
     function loadCityId() {
         const tripId = localStorage.getItem("tripId");
         const cityIdElement = document.querySelector('.city-dropdown-text-cityId');
@@ -755,7 +753,7 @@
             return;
         }
 
-        // Функция для загрузки карточек по типу
+
         function loadDestinationsCardFromCity() {
             // Очистка контейнера с карточками
             cardContainer.innerHTML = '';
@@ -792,7 +790,7 @@
         dropDownMenu.addEventListener('change', function () {
             const selectedTypeId = this.value;
             let selectedTypeName = '';
-
+            const cityId = localStorage.getItem('cityId');
             Array.from(dropDownMenu.options).forEach(option => {
                 if (option.value === selectedTypeId) {
                     selectedTypeName = option.textContent;
@@ -803,7 +801,7 @@
             if (selectedTypeId === '') {
                 loadDestinationsCardFromCity();
             } else {
-                // Запрос для получения карточек по выбранному типу
+
                 fetch(`http://localhost:8080/api/destination/findDestinationByCityAndDByDestinationType/${selectedTypeName}/${cityId}`, {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' }
@@ -816,7 +814,7 @@
                         return response.json();
                     })
                     .then(data => {
-                        cardContainer.innerHTML = ''; // Очистка контейнера перед добавлением новых карточек
+                        cardContainer.innerHTML = '';
 
                         if (!data || data.length === 0) {
                             const message = document.createElement('p');
@@ -833,31 +831,28 @@
             }
         });
 
-        // Функция для создания карточки
         function createCard(destination) {
             const card = document.createElement('div');
             card.classList.add('card-country');
-            card.setAttribute('data-type', destination.type);  // Добавляем атрибут типа для фильтрации
+            card.setAttribute('data-type', destination.type);
             card.style.backgroundImage = destination.imageUrl
                 ? `url('${destination.imageUrl}')`
-                : "url('default-image.jpg')";  // Замена на дефолтное изображение, если URL отсутствует
+                : "url('default-image.jpg')";
             card.style.backgroundSize = 'cover';
             card.style.backgroundPosition = 'center';
             card.style.height = '200px';
             card.style.width = '300px';
 
-            // Иконка "сердечко"
+
             const icon = document.createElement('i');
             icon.classList.add('bx', 'bx-heart');
             card.appendChild(icon);
 
-            // Название достопримечательности
             const text = document.createElement('span');
             text.classList.add('text');
             text.textContent = destination.name;
             card.appendChild(text);
 
-            // Проверка статуса избранного
             fetch(`http://localhost:8080/api/tripDestinations/isAdded/${tripId}/${destination.destinationId}`, {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' }
@@ -869,7 +864,6 @@
                     }
                 });
 
-            // Обработчик клика по сердечку
             icon.addEventListener('click', () => {
                 toggleFavorite(icon, tripId, destination.destinationId);
             });
@@ -877,7 +871,6 @@
             return card;
         }
 
-        // Функция для добавления/удаления из избранного
         function toggleFavorite(icon, tripId, destinationId) {
             const url = `http://localhost:8080/api/tripDestinations/${icon.classList.contains('selected') ? 'remove' : 'add'}`;
             const method = icon.classList.contains('selected') ? 'DELETE' : 'POST';
@@ -896,13 +889,116 @@
                 });
         }
 
-        // Изначальная загрузка карточек
         loadDestinationsCardFromCity();
     });
 
 
+    document.addEventListener('DOMContentLoaded', function () {
+        const input = document.querySelector('#search-input');
+        const resultsDiv = document.querySelector('.card-block');
+        const cityId = localStorage.getItem('cityId');
+        const tripId = localStorage.getItem('tripId'); // Убедитесь, что tripId определён
 
+        if (!cityId || !tripId) {
+            console.warn("City ID or Trip ID is missing in localStorage.");
+            return;
+        }
 
+        input.addEventListener('input', () => {
+            const prefix = input.value.trim();
+
+            if (!prefix) {
+                loadDestinationsCardFromCity();
+                return;
+            }
+            const prefixEncoded = encodeURIComponent(prefix);
+            fetch(`http://localhost:8080/api/destination/findDestinationByPrefix/${cityId}?query=${prefixEncoded}`)
+                .then(response => {
+                    if (!response.ok) {
+
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Data received:", data);
+
+                    resultsDiv.innerHTML = '';
+
+                    if (!Array.isArray(data)) {
+                        console.error("API did not return an array:", data);
+                        resultsDiv.innerHTML = '<p>No destinations found.</p>';
+                        return;
+                    }
+
+                    if (data.length === 0) {
+                        resultsDiv.innerHTML = '<p>No destinations found.</p>';
+                        return;
+                    }
+
+                    data.forEach(cardDestination => {
+                        const card = document.createElement('div');
+                        card.classList.add('card-country');
+                        card.style.backgroundImage = `url('${cardDestination.imageUrl}')`;
+                        card.style.backgroundSize = 'cover';
+                        card.style.backgroundPosition = 'center';
+                        card.style.height = '200px';
+                        card.style.width = '300px';
+
+                        const icon = document.createElement('i');
+                        icon.classList.add('bx', 'bx-heart');
+                        card.appendChild(icon);
+
+                        const text = document.createElement('span');
+                        text.classList.add('text');
+                        text.textContent = cardDestination.name;
+                        card.appendChild(text);
+
+                        resultsDiv.appendChild(card);
+
+                        fetch(`http://localhost:8080/api/tripDestinations/isAdded/${tripId}/${cardDestination.destinationId}`, {
+                            method: 'GET'
+                        })
+                            .then(response => response.json())
+                            .then(isAdded => {
+                                if (isAdded) {
+                                    icon.classList.add('selected');
+                                }
+                            });
+
+                        icon.addEventListener('click', () => {
+                            if (icon.classList.contains('selected')) {
+                                fetch(`http://localhost:8080/api/tripDestinations/remove`, {
+                                    method: 'DELETE',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        tripId: tripId,
+                                        destinationId: cardDestination.destinationId
+                                    })
+                                }).then(response => {
+                                    if (response.ok) {
+                                        icon.classList.remove('selected');
+                                    }
+                                });
+                            } else {
+                                fetch(`http://localhost:8080/api/tripDestinations/add`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        tripId: tripId,
+                                        destinationId: cardDestination.destinationId
+                                    })
+                                }).then(response => {
+                                    if (response.ok) {
+                                        icon.classList.add('selected');
+                                    }
+                                });
+                            }
+                        });
+                    });
+                })
+
+        });
+    });
         function cityName() {
         const cityElement = document.querySelector('.city-dropdown-text-city');
         const cityIdElement  = localStorage.getItem('city-dropdown-text-cityId');
@@ -910,7 +1006,6 @@
         const tripIdStorage = localStorage.getItem('tripId');
 
 
-// Преобразовать текст в число
         const cityIdNum = localStorage.getItem('cityId');
         fetch(`http://localhost:8080/api/cities/getCityById/${cityIdNum}`, {
             method: 'GET',
@@ -923,7 +1018,6 @@
             });
     }
 
-    // Загрузка карточек направлений из города
     function loadDestinationsCardFromCity() {
         const tripId = localStorage.getItem("tripId");
         const block = document.querySelector('.card-block');
@@ -1000,7 +1094,6 @@
             });
     }
 
-    // Загрузка карточек направлений из поездки
     function loadDestinationsCard() {
         const tripId = localStorage.getItem("tripId");
         const block = document.querySelector('.card-block');
@@ -1040,7 +1133,6 @@
             });
     }
 
-    // Инициализация
     document.addEventListener('DOMContentLoaded', () => {
         cityName();
         loadCityId();

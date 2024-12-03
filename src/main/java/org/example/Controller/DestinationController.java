@@ -5,10 +5,7 @@ import org.example.Service.DestinationService;
 import org.example.entity.Destination;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -43,6 +40,9 @@ public class DestinationController {
         return ResponseEntity.ok(destinationService.findDestinationByCityAndDByDestinationType(typeName,cityId));
     }
 
-
+    @GetMapping("/findDestinationByPrefix/{cityId}")
+    public ResponseEntity<?> findDestinationByPrefix(@PathVariable int cityId,@RequestParam String query){
+        return ResponseEntity.ok(destinationService.findDestinationByPrefix(cityId,query));
+    }
 
 }

@@ -19,5 +19,5 @@ List<Destination> getAllDestinationByName(String name);
     List<Destination> findDestinationsByTypeByTripId(int tripId, String typeName);
     List<Destination> findDestinationByDestinationType( String typeName);
     List<Destination> findDestinationByCityAndDByDestinationType(String typeName, int cityId);
-
+    List<Destination> findDestinationByPrefix(int cityId,String prefix);
 }

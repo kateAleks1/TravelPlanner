@@ -52,6 +52,12 @@ public class DestinationServiceImpl implements DestinationService {
     public List<Destination> getAllDestinationByCityId(int cityId) {
         return destinationsRepository.findAllDestinationsByCityId(cityId).get();
     }
+
+    @Override
+    public List<Destination> findDestinationByPrefix(int cityId,String prefix) {
+        return destinationsRepository.findDestinationByPrefix(cityId,prefix).get();
+    }
+
     @Override
     public List<Destination> findDestinationByDestinationType( String typeName){
     return  destinationsRepository.findDestinationByDestinationType(typeName).get();
