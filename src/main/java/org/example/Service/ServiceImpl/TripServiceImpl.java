@@ -53,11 +53,17 @@ public class TripServiceImpl implements TripService {
     public void updateTrip(int tripId, TripDto tripDto) {
         Trip trip = tripRepository.findById(tripId)
                 .orElseThrow(() -> new EntityNotFoundException("Trip not found with ID: " + tripId));
+        if (tripDto.getStart_date() != null && tripDto.getStart_date().toString()!="") {
+            trip.setStartDate(tripDto.getStart_date());
+        }
 
-        // Обновление участников
-        for(Integer userId:tripDto.getUserIds()){
+        if (tripDto.getEnd_date() != null && tripDto.getEnd_date().toString()!="") {
+            trip.setEndDate(tripDto.getEnd_date());
+        }
+
+        for(Integer userId:tripDto.getUsersListId()){
             userRepository.findById(userId).ifPresent(user -> {
-                // Проверяем, есть ли уже связь между пользователем и поездкой
+
                 boolean exists = tripParticipantRepository.findByUserAndTrip(user, trip).isPresent();
 
                 if (!exists) {
@@ -73,15 +79,13 @@ public class TripServiceImpl implements TripService {
             });
         }
 
-
-        // Сохранение изменений в поездке
         tripRepository.save(trip);
     }
 
 
     @Override
     public List<Trip> getAllTrips() {
-    //update trip status through date
+
         List<Trip> trips = tripRepository.findAll();
         trips.forEach(trip -> {
             System.out.println("Trip: " + trip.getTripId() + ", Participants: " + trip.getParticipants());
@@ -89,19 +93,16 @@ public class TripServiceImpl implements TripService {
         return trips;
     }
     public void removeTripForUser(int userId, int tripId) {
-        // Используем JPA или Native Query для удаления записи
+
         tripRepository.deleteByUserIdAndTripId(userId, tripId);
     }
     @Transactional
     public void deleteTripById(int tripId) {
-        // Удаляем участников поездки
         Trip trip = tripRepository.findById(tripId)
                 .orElseThrow(() -> new EntityNotFoundException("Trip with ID " + tripId + " not found"));
 
-        // Удалить участников
         tripParticipantRepository.deleteAllByTrip(trip);
 
-        // Удалить поездку
         tripRepository.delete(trip);
     }
 
@@ -127,7 +128,7 @@ public class TripServiceImpl implements TripService {
     public Trip createTrip(TripDto tripDto) {
         Trip trip = new Trip();
 
-        // Установка дат
+
         if (tripDto.getStart_date().before(tripDto.getEnd_date()) &&
                 !tripDto.getEnd_date().before(Date.from(Instant.now()))) {
             trip.setStartDate(tripDto.getStart_date());
@@ -136,7 +137,6 @@ public class TripServiceImpl implements TripService {
             throw new RuntimeException("Invalid start_date or end_date");
         }
 
-        // Установка статуса поездки
         if (trip.getStartDate().after(Date.from(Instant.now()))) {
             trip.setStatusTrip(tripStatusRepository.findById(4)
                     .orElseThrow(() -> new RuntimeException("Status not found")));
@@ -145,7 +145,6 @@ public class TripServiceImpl implements TripService {
                     .orElseThrow(() -> new RuntimeException("Status not found")));
         }
 
-        // Установка города
         trip.setCity(citiesRepository.findById(tripDto.getCityId())
                 .orElseThrow(() -> new RuntimeException("City not found")));
 
@@ -167,8 +166,6 @@ public class TripServiceImpl implements TripService {
                     participants.setOrganizer(false);
                 }
 
-
-
                 if(tripDto.getUsersListId().size()>1){
                     participants.setGroup(true);
                 }else{
@@ -186,7 +183,6 @@ public class TripServiceImpl implements TripService {
 
     @Override
     public Trip addDestinationToTrip(int tripId,int destinationId) {
-        //поиск tripId по городу
        Trip trip=tripRepository.findById(tripId).get();
        Destination destination=destinationsRepository.findByDestinationId(destinationId).get();
        if(trip!=null && destination!=null && trip.getCity().equals(destination.getCities())){

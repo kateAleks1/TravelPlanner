@@ -64,7 +64,11 @@ public ResponseEntity<?> createNewTrip(@PathVariable int userId) {
         tripService.deleteTripById(tripId);
         return ResponseEntity.ok("Trip with ID " + tripId + " has been deleted successfully.");
     }
-    // getDestinationsFromUserId
+   @PutMapping("updateTipById/{tripId}")
+   public ResponseEntity<?> updateTipById(@PathVariable int tripId,@RequestBody TripDto tripDto){
+       tripService.updateTrip(tripId,tripDto);
+       return ResponseEntity.ok("update");
+   }
     @GetMapping("/getDestinations/{tripId}")
     public ResponseEntity<?> getAllDestinationsFromTrip(@PathVariable int tripId){
         return ResponseEntity.ok(tripService.getAllDestinationsByTripId(tripId));
@@ -135,15 +139,13 @@ return ResponseEntity.ok(tripService.addDestinationToTrip(tripId,destinationId))
 //        }
 @GetMapping("/getAllTripsFromUserId/{userId}")
 public ResponseEntity<?> getAllTripsFromUserId(@PathVariable String userId) {
-    // Use repository to fetch trips directly
+
     Optional<List<Trip>> tripsOptional = tripRepository.getTripByUsersLogin(userId);
 
-    // Check if trips exist for the user
     if (tripsOptional.isEmpty() || tripsOptional.get().isEmpty()) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No trips found for the provided user ID.");
     }
 
-    // Return the list of trips
     return ResponseEntity.ok(tripsOptional.get());
 }
 
@@ -171,18 +173,4 @@ public ResponseEntity<?> getAllTripsFromUserId(@PathVariable String userId) {
     }
 
 
-//    @RequestMapping("/error")
-//
-//    @GetMapping("/getAllTripsFromSpecificUserLogin/{userLogin}")
-//    public ResponseEntity<?> getAllTripsFromSpecificUserLogin(@PathVariable String userLogin){
-//        List<Trip> trips = tripService.getAllTrips();
-//
-//
-//        List<Trip> tripList = trips.stream()
-//                .filter(trip -> trip.getUser().stream()
-//                        .anyMatch(user -> user.getId().equals(userLogin))) // проверяем, есть ли пользователь в поездке
-//                .collect(Collectors.toList());
-//
-//        return ResponseEntity.ok(tripList);
-//    }
 

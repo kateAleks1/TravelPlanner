@@ -26,7 +26,6 @@ import java.util.Set;
             private int price;
             private int  status_id;
             private int idDestination;
-
     private List<Integer> usersListId = new ArrayList<>();
     private int cityId;
     private boolean isGroup;
