@@ -5,6 +5,7 @@ import org.example.DTO.TripDto;
 import org.example.entity.Countries;
 import org.example.entity.Destination;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -15,5 +16,8 @@ List<Destination> getAllDestinationByCityId(int cityId);
 List<Destination> getDestinationsFromUserId(int userId);
     void createDestination(TripDto tripDto);
 List<Destination> getAllDestinationByName(String name);
+    List<Destination> findDestinationsByTypeByTripId(int tripId, String typeName);
+    List<Destination> findDestinationByDestinationType( String typeName);
+    List<Destination> findDestinationByCityAndDByDestinationType(String typeName, int cityId);
 
 }

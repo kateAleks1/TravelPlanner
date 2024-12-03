@@ -16,7 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 @Service
@@ -113,6 +115,14 @@ public class TripServiceImpl implements TripService {
          tripRepository.deleteDestinationFromTrip(tripId,destinationId);
     }
 
+    @Override
+    public List<Trip> filterTripsByDate(Date startDate, Date endDate) {
+        if (startDate.after(endDate)) {
+            throw new IllegalArgumentException("Start date must be before or equal to end date");
+        }
+
+        return tripRepository.findTripsByDateRange(startDate, endDate);
+    }
     @Override
     public Trip createTrip(TripDto tripDto) {
         Trip trip = new Trip();

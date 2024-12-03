@@ -9,6 +9,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -18,6 +20,12 @@ public interface TripRepository extends JpaRepository<Trip,Integer> {
 
     @Query("SELECT t.destinations FROM Trip t WHERE t.tripId = :tripId")
     Optional<List<Destination>> findDestinationsByTripId(@Param("tripId") int tripId);
+
+
+
+
+    @Query("SELECT t FROM Trip t WHERE t.startDate >= :startDate AND t.endDate >= :endDate")
+    List<Trip> findTripsByDateRange(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
 
     @Modifying

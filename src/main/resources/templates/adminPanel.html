@@ -866,7 +866,7 @@
     }
     function loadDestinationTable() {
         const destinationsTable = document.querySelector('.tableDestination tbody');
-        destinationsTable.innerHTML = ''; // Очистка таблицы перед добавлением новых данных
+        destinationsTable.innerHTML = '';
         fetch('http://localhost:8080/api/destination/getAllDestination', {
             method: 'GET',
             headers: {
@@ -901,13 +901,13 @@
 
     }
     function deleteImage(button) {
-        const fileInput = button.previousElementSibling.previousElementSibling; // Найти input[type="file"]
-        const preview = button.previousElementSibling; // Найти img для превью
+        const fileInput = button.previousElementSibling.previousElementSibling;
+        const preview = button.previousElementSibling;
 
-        // Сбросить значение input (очистить выбранный файл)
+
         fileInput.value = "";
 
-        // Скрыть превью и удалить источник изображения
+
         preview.src = "#";
         preview.style.display = "none";
 
@@ -915,20 +915,19 @@
     }
 
     function loadImage(button) {
-        const fileInput = button.previousElementSibling; // Найти input[type="file"]
-        const preview = button.nextElementSibling; // Найти img для превью
+        const fileInput = button.previousElementSibling;
+        const preview = button.nextElementSibling;
 
-        fileInput.click(); // Имитируем клик по input
-
+        fileInput.click();
         fileInput.addEventListener('change', (event) => {
-            const file = event.target.files[0]; // Получить выбранный файл
+            const file = event.target.files[0];
             if (file && file.type === 'image/jpeg') {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    preview.src = e.target.result; // Установить источник изображения
-                    preview.style.display = 'block'; // Показать превью
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
                 };
-                reader.readAsDataURL(file); // Прочитать файл как Data URL
+                reader.readAsDataURL(file);
             } else {
                 alert("Пожалуйста, выберите файл формата JPEG.");
             }

@@ -44,7 +44,21 @@ public class DestinationServiceImpl implements DestinationService {
     }
 
     @Override
+    public List<Destination> findDestinationsByTypeByTripId(int tripId,String typeName) {
+        return destinationsRepository.findDestinationsByTypeByTripId(tripId,typeName);
+    }
+
+    @Override
     public List<Destination> getAllDestinationByCityId(int cityId) {
         return destinationsRepository.findAllDestinationsByCityId(cityId).get();
+    }
+    @Override
+    public List<Destination> findDestinationByDestinationType( String typeName){
+    return  destinationsRepository.findDestinationByDestinationType(typeName).get();
+    }
+
+    @Override
+    public List<Destination> findDestinationByCityAndDByDestinationType(String typeName, int cityId) {
+        return destinationsRepository.findDestinationByCityAndDByDestinationType(typeName,cityId).get();
     }
 }

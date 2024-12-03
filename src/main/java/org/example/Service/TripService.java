@@ -6,6 +6,9 @@ import org.example.entity.Destination;
 import org.example.entity.Trip;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,4 +28,5 @@ void updateTrip(int tripId, TripDto trip);
     List<Trip> getTripByUsersId(int userId);
     List<Trip> findTripsByUserIdAndCountryName( int userId,String countryName);
     List<Trip> SearchTripByPrefix(String loginPrefix);
+    List<Trip> filterTripsByDate(Date startDate, Date endDate);
 }

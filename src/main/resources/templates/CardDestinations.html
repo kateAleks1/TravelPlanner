@@ -745,10 +745,165 @@
             });
     }
 
+    document.addEventListener('DOMContentLoaded', function () {
+        const dropDownMenu = document.querySelector('#city-dropdown');
+        const cardContainer = document.querySelector('.card-block');
+        const cityId = localStorage.getItem('cityId');
+        const tripId = localStorage.getItem('tripId');
+        dropDownMenu.innerHTML = '<option value="">Filter</option>';
+        if (!dropDownMenu || !cardContainer || !tripId || !cityId) {
+            return;
+        }
+
+        // Функция для загрузки карточек по типу
+        function loadDestinationsCardFromCity() {
+            // Очистка контейнера с карточками
+            cardContainer.innerHTML = '';
+
+            // Запрос всех достопримечательностей
+            fetch(`http://localhost:8080/api/destination/getAllDestinationsByCityId/${cityId}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            })
+                .then(response => {
+                    if (!response.ok) {
+
+                        return Promise.reject("Failed to fetch destinations");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (!data || data.length === 0) {
+                        const message = document.createElement('p');
+                        message.textContent = 'No destinations found for the selected city.';
+                        cardContainer.appendChild(message);
+                        return;
+                    }
+
+                    // Заполнение карточек для всех объектов
+                    data.forEach(destination => {
+                        const card = createCard(destination);
+                        cardContainer.appendChild(card);
+                    });
+                });
+        }
 
 
-    // Функция загрузки имени города
-    function cityName() {
+        dropDownMenu.addEventListener('change', function () {
+            const selectedTypeId = this.value;
+            let selectedTypeName = '';
+
+            Array.from(dropDownMenu.options).forEach(option => {
+                if (option.value === selectedTypeId) {
+                    selectedTypeName = option.textContent;
+                }
+            });
+
+
+            if (selectedTypeId === '') {
+                loadDestinationsCardFromCity();
+            } else {
+                // Запрос для получения карточек по выбранному типу
+                fetch(`http://localhost:8080/api/destination/findDestinationByCityAndDByDestinationType/${selectedTypeName}/${cityId}`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                    .then(response => {
+                        if (!response.ok) {
+
+                            return Promise.reject("Failed to fetch destinations");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        cardContainer.innerHTML = ''; // Очистка контейнера перед добавлением новых карточек
+
+                        if (!data || data.length === 0) {
+                            const message = document.createElement('p');
+                            message.textContent = 'No destinations found for the selected country.';
+                            cardContainer.appendChild(message);
+                            return;
+                        }
+
+                        data.forEach(destination => {
+                            const card = createCard(destination);
+                            cardContainer.appendChild(card);
+                        });
+                    });
+            }
+        });
+
+        // Функция для создания карточки
+        function createCard(destination) {
+            const card = document.createElement('div');
+            card.classList.add('card-country');
+            card.setAttribute('data-type', destination.type);  // Добавляем атрибут типа для фильтрации
+            card.style.backgroundImage = destination.imageUrl
+                ? `url('${destination.imageUrl}')`
+                : "url('default-image.jpg')";  // Замена на дефолтное изображение, если URL отсутствует
+            card.style.backgroundSize = 'cover';
+            card.style.backgroundPosition = 'center';
+            card.style.height = '200px';
+            card.style.width = '300px';
+
+            // Иконка "сердечко"
+            const icon = document.createElement('i');
+            icon.classList.add('bx', 'bx-heart');
+            card.appendChild(icon);
+
+            // Название достопримечательности
+            const text = document.createElement('span');
+            text.classList.add('text');
+            text.textContent = destination.name;
+            card.appendChild(text);
+
+            // Проверка статуса избранного
+            fetch(`http://localhost:8080/api/tripDestinations/isAdded/${tripId}/${destination.destinationId}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            })
+                .then(response => response.json())
+                .then(isAdded => {
+                    if (isAdded) {
+                        icon.classList.add('selected');
+                    }
+                });
+
+            // Обработчик клика по сердечку
+            icon.addEventListener('click', () => {
+                toggleFavorite(icon, tripId, destination.destinationId);
+            });
+
+            return card;
+        }
+
+        // Функция для добавления/удаления из избранного
+        function toggleFavorite(icon, tripId, destinationId) {
+            const url = `http://localhost:8080/api/tripDestinations/${icon.classList.contains('selected') ? 'remove' : 'add'}`;
+            const method = icon.classList.contains('selected') ? 'DELETE' : 'POST';
+
+            fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tripId, destinationId })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        console.error(`Error updating favorite status: ${response.status}`);
+                        return;
+                    }
+                    icon.classList.toggle('selected');
+                });
+        }
+
+        // Изначальная загрузка карточек
+        loadDestinationsCardFromCity();
+    });
+
+
+
+
+        function cityName() {
         const cityElement = document.querySelector('.city-dropdown-text-city');
         const cityIdElement  = localStorage.getItem('city-dropdown-text-cityId');
         const tripIdElement = document.querySelector('.city-dropdown-text-tripId');
@@ -801,7 +956,7 @@
 
                     block.appendChild(card);
 
-                    // Проверяем статус сердечка
+
                     fetch(`http://localhost:8080/api/tripDestinations/isAdded/${tripId}/${cardDestination.destinationId}`, {
                         method: 'GET'
                     }).then(response => response.json())
@@ -889,7 +1044,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         cityName();
         loadCityId();
-        loadDestinationsCardFromCity();
+
     });
 </script>
 

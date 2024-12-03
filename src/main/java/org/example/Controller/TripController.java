@@ -11,12 +11,15 @@ import org.example.Service.UserService;
 import org.example.entity.Trip;
 import org.example.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -66,6 +69,18 @@ public ResponseEntity<?> createNewTrip(@PathVariable int userId) {
     public ResponseEntity<?> getAllDestinationsFromTrip(@PathVariable int tripId){
         return ResponseEntity.ok(tripService.getAllDestinationsByTripId(tripId));
     }
+    @GetMapping("/filterByDate")
+    public ResponseEntity<List<Trip>> filterTripsByDate(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endDate) {
+        if (startDate.after(endDate)) {
+            return ResponseEntity.badRequest().body(Collections.emptyList());
+        }
+
+        List<Trip> trips = tripService.filterTripsByDate(startDate, endDate);
+        return ResponseEntity.ok(trips);
+    }
+
     @PutMapping("/{tripId}/addDestination/{destinationId}")
     public ResponseEntity<?> addDestinationToTrip(@PathVariable int tripId, @PathVariable int destinationId){
 return ResponseEntity.ok(tripService.addDestinationToTrip(tripId,destinationId));

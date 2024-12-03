@@ -94,7 +94,20 @@
             align-items: center;
             justify-content: space-between;
         }
+        .add-destination-btn {
+            background-color: #007BFF; /* Синий фон */
+            color: white; /* Белый текст */
+            border: none; /* Убираем рамку */
+            padding: 10px 20px;
+            margin-top: 30px;/* Внутренний отступ */
+            font-size: 16px; /* Размер текста */
+            border-radius: 5px; /* Скруглённые углы */
+            cursor: pointer; /* Курсор при наведении */
+        }
 
+        .add-destination-btn:hover {
+            background-color: #0056b3; /* Более тёмный синий при наведении */
+        }
         .sidebar.close .nav-links li .iocn-link {
             display: block;
         }
@@ -491,7 +504,19 @@
             transition: all 0.3s ease;
             margin: 30px;
         }
+        button {
+            background-color: #007BFF;
+            color: #bd3030;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
 
+        button:hover {
+            background-color: #0056b3;
+        }
         .card-country img {
             width: 100%;
             height: 100%;
@@ -706,7 +731,7 @@
     </div>
 </section>
 <script>
-    // Переключение подменю в боковой панели
+
     let arrows = document.querySelectorAll(".arrow");
     arrows.forEach(arrow => {
         arrow.addEventListener("click", (e) => {
@@ -715,19 +740,17 @@
         });
     });
 
-    // Переключение боковой панели
     let sidebar = document.querySelector(".sidebar");
     let sidebarBtn = document.querySelector(".bx-menu");
     sidebarBtn.addEventListener("click", () => {
         sidebar.classList.toggle("close");
     });
 
-    // Переход на страницу входа
+
     document.querySelector('.bx-log-out').addEventListener("click", () => {
         window.location.href = 'login.html';
     });
 
-    // Функция загрузки ID города
     function loadCityId() {
         const tripId = localStorage.getItem("tripId");
         const cityIdElement = document.querySelector('.city-dropdown-text-cityId');
@@ -741,7 +764,6 @@
             });
     }
 
-    // Функция загрузки имени города
     function cityName() {
         const cityElement = document.querySelector('.city-dropdown-text');
         const cityId = localStorage.getItem('city-option-dropdown');
@@ -759,7 +781,6 @@
 
 
 
-
     function loadDestinationsCard() {
         const tripId = localStorage.getItem("tripId");
         const block = document.querySelector('.card-block');
@@ -770,23 +791,51 @@
         })
             .then(response => {
                 if (!response.ok) {
-                    // Если сервер вернул ошибку (например, 404)
+
                     if (response.status === 404) {
                         console.warn("No destinations found for this trip.");
                         block.innerHTML = '<p>No destinations found. Add one to start planning your trip!</p>';
-                        return []; // Возвращаем пустой массив, чтобы код продолжил работать
+
+                        const btn = document.createElement('button');
+                        btn.textContent = 'Add Destination';
+
+                        btn.classList.add('add-destination-btn');
+
+
+                        btn.addEventListener('click', () => {
+                            window.location.href = 'CardDestinations.html';
+                        });
+
+                        block.appendChild(btn);
+
+
+                        block.appendChild(btn);
+                        return [];
                     }
 
                 }
-                return response.json(); // Если ответ успешный, преобразуем его в JSON
+                return response.json();
             })
             .then(data => {
-                // Очищаем блок перед добавлением карточек
+
                 block.innerHTML = '';
 
                 if (!data || data.length === 0) {
-                    // Если данных нет, показываем сообщение
-                    block.innerHTML = '<p>No destinations found. Add one to start planning your trip!</p>';
+
+                    block.innerHTML = '<p style="margin-top: 30px;">No destinations found. Add one to start planning your trip!</p>';
+
+                    const btn = document.createElement('button');
+                    btn.textContent = 'Add Destination';
+
+                    btn.classList.add('add-destination-btn');
+
+                    btn.addEventListener('click', () => {
+                        window.location.href = 'CardDestinations.html';
+                    });
+
+                    block.appendChild(btn);
+
+                    block.appendChild(btn);
                     return;
                 }
 
@@ -811,10 +860,10 @@
                     card.appendChild(text);
 
                     btnDelete.addEventListener('click', (event) => {
-                        event.stopPropagation(); // Останавливаем всплытие события клика
+                        event.stopPropagation();
 
-                        const tripId = localStorage.getItem("tripId"); // Получаем ID поездки
-                        const destinationId = destId; // Получаем ID пункта назначения
+                        const tripId = localStorage.getItem("tripId");
+                        const destinationId = destId;
 
                         fetch(`http://localhost:8080/api/trip/${tripId}/deleteDestinationById/${destinationId}`, {
                             method: 'DELETE',
@@ -824,9 +873,9 @@
                                 if (!response.ok) {
                                     return Promise.reject(`Failed to delete destination with ID ${destinationId}`);
                                 }
-                                card.remove(); // Удаляем карточку из DOM
+                                card.remove();
                                 console.log(`Destination with ID ${destinationId} removed from trip ${tripId}`);
-                                // Если все карточки удалены, обновляем список
+
                                 if (!block.querySelector('.card-country')) {
                                     block.innerHTML = '<p>No destinations found. Add one to start planning your trip!</p>';
                                 }
@@ -841,7 +890,7 @@
     }
 
 
-    // Инициализация
+
     document.addEventListener('DOMContentLoaded', () => {
         cityName();
         loadCityId();
