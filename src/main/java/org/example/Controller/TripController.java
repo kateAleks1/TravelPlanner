@@ -54,6 +54,11 @@ public ResponseEntity<?> createNewTrip(@PathVariable int userId) {
         return ResponseEntity.ok(trip);
 
     }
+    @PostMapping("/update-statuses")
+    public ResponseEntity<String> updateTripStatuses() {
+        tripService.updateTripStatuses();
+        return ResponseEntity.ok("Statuses updated successfully");
+    }
     @GetMapping("/getAllTrips")
     public ResponseEntity<?> getAllTrips() {
             List<Trip> trips = tripService.getAllTrips();

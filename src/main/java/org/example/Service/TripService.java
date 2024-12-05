@@ -29,4 +29,5 @@ void updateTrip(int tripId, TripDto trip);
     List<Trip> findTripsByUserIdAndCountryName( int userId,String countryName);
     List<Trip> SearchTripByPrefix(String loginPrefix);
     List<Trip> filterTripsByDate(Date startDate, Date endDate);
+     void updateTripStatuses();
 }

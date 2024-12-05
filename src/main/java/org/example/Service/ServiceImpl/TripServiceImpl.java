@@ -1,5 +1,6 @@
 package org.example.Service.ServiceImpl;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
 import org.example.DTO.DestinationDto;
 import org.example.DTO.TripDto;
@@ -11,19 +12,23 @@ import org.example.exception.GeneralException;
 import org.example.mapper.UserMapper;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
 public class TripServiceImpl implements TripService {
 
+    @Autowired
+    private TaskScheduler taskScheduler;
     @Override
     public Integer getCityFromTripById(int tripId) {
         Integer trip=tripRepository.getCityFromTripById(tripId).get();
@@ -124,6 +129,38 @@ public class TripServiceImpl implements TripService {
 
         return tripRepository.findTripsByDateRange(startDate, endDate);
     }
+
+//    public void forceUpdateTripStatuses() {
+//        taskScheduler.schedule(this::updateTripStatuses, new Date());  // Немедленное выполнение
+//    }
+    @Override
+    @Scheduled(cron = "0 0 0 * * ?")
+public void updateTripStatuses(){
+LocalDate today=LocalDate.now();
+
+List<Trip>trips=tripRepository.findAll();
+for(Trip trip:trips){
+LocalDate tripStartDate=trip.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+LocalDate tripEndDate=trip.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+if(tripStartDate.isBefore(today)){
+    trip.setStatusTrip(tripStatusRepository.findById(2)
+            .orElseThrow(() -> new RuntimeException("Status not found")));
+}else if(tripStartDate.equals(today)){
+    trip.setStatusTrip(tripStatusRepository.findById(1)
+            .orElseThrow(() -> new RuntimeException("Status not found")));
+}
+    else if(today.isAfter(tripStartDate) && today.isBefore(tripEndDate)){
+    trip.setStatusTrip(tripStatusRepository.findById(3)
+            .orElseThrow(() -> new RuntimeException("Status not found")));
+}
+else{
+    trip.setStatusTrip(tripStatusRepository.findById(4)
+            .orElseThrow(() -> new RuntimeException("Status not found")));
+}
+}
+tripRepository.saveAll(trips);
+
+}
     @Override
     public Trip createTrip(TripDto tripDto) {
         Trip trip = new Trip();
@@ -136,15 +173,29 @@ public class TripServiceImpl implements TripService {
         } else {
             throw new RuntimeException("Invalid start_date or end_date");
         }
+        SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            // Получаем только дату без времени
+            Date startDate = dateOnlyFormat.parse(dateOnlyFormat.format(trip.getStartDate()));
+            Date endDate = dateOnlyFormat.parse(dateOnlyFormat.format(trip.getEndDate()));
+            Date today = dateOnlyFormat.parse(dateOnlyFormat.format(new Date()));
 
-        if (trip.getStartDate().after(Date.from(Instant.now()))) {
-            trip.setStatusTrip(tripStatusRepository.findById(4)
-                    .orElseThrow(() -> new RuntimeException("Status not found")));
-        } else {
-            trip.setStatusTrip(tripStatusRepository.findById(1)
-                    .orElseThrow(() -> new RuntimeException("Status not found")));
+            if (startDate.after(today)) {
+                trip.setStatusTrip(tripStatusRepository.findById(2)
+                        .orElseThrow(() -> new RuntimeException("Status not found"))); // PLANNED
+            } else if (startDate.before(today) && endDate.after(today)) {
+                trip.setStatusTrip(tripStatusRepository.findById(3)
+                        .orElseThrow(() -> new RuntimeException("Status not found"))); // IN_PROGRESS
+            } else if (endDate.before(today)) {
+                trip.setStatusTrip(tripStatusRepository.findById(4)
+                        .orElseThrow(() -> new RuntimeException("Status not found"))); // FINISHED
+            } else if (startDate.equals(today)) {
+                trip.setStatusTrip(tripStatusRepository.findById(1)
+                        .orElseThrow(() -> new RuntimeException("Status not found"))); // STARTED
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
-
         trip.setCity(citiesRepository.findById(tripDto.getCityId())
                 .orElseThrow(() -> new RuntimeException("City not found")));
 

@@ -709,9 +709,7 @@
                 <div class="main-panel-desc">
                     <span class="text-bold">Destination:</span>
                 </div>
-                <div class="main-panel-desc">
-                    <span class="text-dest">Destination:</span>
-                </div>
+                <button id="downloadBtn">Download Trip Report</button>
             </div>
         </div>
         <div class="table-container">
@@ -770,6 +768,38 @@
             arrowParent.classList.toggle("showMenu");
         });
     }
+
+    document.getElementById('downloadBtn').addEventListener('click', function() {
+        if (selectedUserId === null) {
+            alert("Please select a user first!");
+            return;
+        }
+        fetch(`http://localhost:8080/api/reports/user/${selectedUserId}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/pdf',
+            }
+        })
+            .then(response => {
+                if (response.ok) {
+
+                    return response.blob();
+                }
+            })
+            .then(blob => {
+
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'UserTripsReport.pdf';
+                a.click();
+                URL.revokeObjectURL(url);
+            })
+            .catch(error => {
+                console.error('Error downloading report:', error);
+            });
+    });
+
     let sidebar = document.querySelector(".sidebar");
     let sidebarBtn = document.querySelector(".bx-menu");
     console.log(sidebarBtn);
@@ -797,7 +827,7 @@
         const minutes = String(date.getMinutes()).padStart(2, '0');
         return `${year}-${month}-${day}T${hours}:${minutes}`;
     }
-
+    let selectedUserId = null;
     function loadUsersTable() {
         const tableBody = document.querySelector('.tableUsers tbody');
         tableBody.innerHTML = '';
@@ -821,11 +851,18 @@
                 <td class="user-id">${user.id}</td>
                 <td class="user-login" contenteditable="true">${user.login}</td>
                 <td contenteditable="true">${user.email}</td>
+
                 <td>
                     <button class="SaveBtn" onclick="validateAndSaveUser(${user.id}, this)">Save</button>
                     <button class="DeleteBtn" onclick="deleteUser(${user.id}, this)">Delete</button>
                 </td>
             `;
+                    const userIdCell = tr.querySelector('.user-id');
+                    userIdCell.addEventListener('click', function() {
+                        selectedUserId = user.id;  // Сохраняем userId в глобальной переменной
+                        console.log("Selected User ID: ", selectedUserId);
+                    });
+
                     tableBody.appendChild(tr);
                 });
 
@@ -833,7 +870,9 @@
 
 
             });
+
     }
+
 
     function loadTripTable() {
 
@@ -991,6 +1030,7 @@
                 });
         }
     }
+
     function updateTrip(tripId, button) {
         const row = button.closest('tr');
         const startDate = row.cells[1].querySelector('input').value;
