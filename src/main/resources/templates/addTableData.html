@@ -14,33 +14,33 @@
             body {
                 font-family: 'Poppins', sans-serif;
                 background-color: #371b1b;
-                background-image: none; /* Убираем фоновое изображение */
-                background-color: #f0f0f0; /* Устанавливаем однотонный фон для всего экрана */
-                height: 100%; /* Устанавливаем высоту тела страницы на 100% */
+                background-image: none;
+                background-color: #f0f0f0;
+                height: 100%;
                 display: flex;
                 flex-direction: column;
-                justify-content: flex-start; /* Контент будет сверху */
-                align-items: center; /* Центрируем содержимое по горизонтали */
-                overflow-y: auto; /* Включаем прокрутку по вертикали, если нужно */
+                justify-content: flex-start;
+                align-items: center;
+                overflow-y: auto;
             }
 
             form {
                 width: 100%;
-                max-width: 900px; /* Максимальная ширина формы, чтобы она не была слишком широкой */
+                max-width: 900px;
                 padding: 20px;
                 background: white;
                 box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
                 box-sizing: border-box;
-                margin: 20px 0; /* Добавляем отступы сверху и снизу */
+                margin: 20px 0;
                 overflow: hidden;
                 transition: max-height 0.5s ease;
                 border-radius: 10px;
-                max-height: 100%; /* Форма может занимать всю высоту */
+                max-height: 100%;
             }
 
             .MainDivBlock {
                 display: flex;
-                flex-wrap: wrap; /* Формируем два блока в строке, если нужно */
+                flex-wrap: wrap;
                 padding: 20px;
                 justify-content: space-between;
                 gap: 20px;
@@ -48,7 +48,7 @@
 
             .LeftyBlock, .RightBlock {
                 flex: 1;
-                min-width: 300px; /* Устанавливаем минимальную ширину для блоков */
+                min-width: 300px;
             }
 
             .RightBlock {
@@ -60,7 +60,7 @@
             }
 
             input, select, button {
-                width: 100%; /* Чтобы элементы растягивались по всей ширине блока */
+                width: 100%;
                 padding: 10px;
                 margin-bottom: 15px;
                 border: 1px solid #ccc;
@@ -87,6 +87,9 @@
                 background-color: #f9f9f9;
                 border-radius: 5px;
             }
+
+
+
 
             .BtnBlock {
                 display: flex;
@@ -170,43 +173,42 @@
             const btnGroup = document.querySelector(".BtnGroup");
 
             if (btnAlone && btnGroup) {
-                // Функция для сброса стилей обеих кнопок
+
                 const resetButtonStyles = () => {
-                    btnAlone.style.backgroundColor = ''; // Сбросить стиль для btnAlone
-                    btnGroup.style.backgroundColor = ''; // Сбросить стиль для btnGroup
+                    btnAlone.style.backgroundColor = '';
+                    btnGroup.style.backgroundColor = '';
                 };
 
 
                 btnAlone.addEventListener("click", function (event) {
-                    event.preventDefault(); // Предотвратить стандартное поведение (перезагрузку страницы)
+                    event.preventDefault();
 
-                    // Если кнопка уже выбрана, сбросить её стиль
+
                     if (this.style.backgroundColor === 'red') {
-                        this.style.backgroundColor = ''; // Сбросить стиль
+                        this.style.backgroundColor = '';
                         isAloneMode = false;
                         userId = localStorage.getItem("id");
 
                         console.log("Alone mode deselected");
                     } else {
-                        resetButtonStyles(); // Сбросить стиль другой кнопки
-                        this.style.backgroundColor = 'red'; // Установить стиль для btnAlone
-                        isAloneMode = true; // Выбрать Alone режим
+                        resetButtonStyles();
+                        this.style.backgroundColor = 'red';
+                        isAloneMode = true;
                         console.log("Switched to Alone mode");
                     }
                 });
 
                 btnGroup.addEventListener("click", function (event) {
-                    event.preventDefault(); // Предотвратить стандартное поведение (перезагрузку страницы)
+                    event.preventDefault();
 
-                    // Если кнопка уже выбрана, сбросить её стиль
                     if (this.style.backgroundColor === 'blue') {
-                        this.style.backgroundColor = ''; // Сбросить стиль
-                        isAloneMode = true; // Отменить выбранный режим
+                        this.style.backgroundColor = '';
+                        isAloneMode = true;
                         console.log("Group mode deselected");
                     } else {
-                        resetButtonStyles(); // Сбросить стиль другой кнопки
-                        this.style.backgroundColor = 'blue'; // Установить стиль для btnGroup
-                        isAloneMode = false; // Выбрать Group режим
+                        resetButtonStyles();
+                        this.style.backgroundColor = 'blue';
+                        isAloneMode = false;
                         console.log("Switched to Group mode");
                     }
                 });
@@ -244,24 +246,37 @@
                 if (clickedElement.tagName === "DIV") {
                     const selectedLogin = clickedElement.textContent;
 
-                    // Проверяем, есть ли уже элемент с таким логином в списке
+
                     const isAlreadyInList = Array.from(participantsBlock.children).some(
-                        (child) => child.textContent === selectedLogin
+                        (child) => child.querySelector('span')?.textContent === selectedLogin
                     );
 
-                    // Добавляем только если логина ещё нет
                     if (!isAlreadyInList) {
                         const participantDiv = document.createElement("div");
-                        participantDiv.textContent = selectedLogin;
+
+                        const loginSpan = document.createElement("span");
+                        loginSpan.textContent = selectedLogin;
+
+                        const btnDelete = document.createElement('i');
+                        btnDelete.classList.add('bx', 'bx-x');
+                        btnDelete.style.marginLeft = "15px";
+
+                        participantDiv.appendChild(loginSpan);
+                        participantDiv.appendChild(btnDelete);
 
                         participantsBlock.appendChild(participantDiv);
+
+                        btnDelete.addEventListener('click', (event) => {
+                            event.stopPropagation();
+                            participantDiv.remove();
+                        });
                     }
                 }
             });
         });
 
         function loadTripCountryDestination(){
-            //загрузить строну в поле Destination
+
             const countryName=document.querySelector('.countryClassDestination');
             countryName.textContent=localStorage.getItem('country');
         }
@@ -274,10 +289,9 @@
         async function functionLoadIdForListOfUsers() {
             const listUsers = document.getElementsByClassName('participantsBlock')[0];
 
-            // Проверяем, существует ли элемент
             if (!listUsers) {
                 console.error("Element '.participantsBlock' not found on the page.");
-                return []; // Возвращаем пустой массив, если элемент не найден
+                return [];
             }
 
             const logins = Array.from(listUsers.getElementsByTagName('div')).map(div => div.textContent.trim());
@@ -296,10 +310,10 @@
                 }
 
                 const data = await response.json();
-                return data; // Предполагаем, что data — это массив чисел
+                return data;
             } catch (error) {
                 console.error("Error fetching user IDs:", error);
-                return []; // Возвращаем пустой массив в случае ошибки
+                return [];
             }
         }
 
@@ -346,15 +360,21 @@
             }
             let usersListId = [];
             try {
-                // Получаем ID пользователей, предполагаем, что функция возвращает массив чисел
+
                 usersListId = await functionLoadIdForListOfUsers();
             } catch (error) {
                 console.error("Error loading user IDs:", error);
-                return; // Прерываем выполнение в случае ошибки
+                return;
             }
             const start_date = formatDate(startDateInput.value);
             const end_date = formatDate(endDateInput.value);
             let data;
+            const currentDate = new Date();
+            const formattedDate = currentDate.toISOString()
+                .slice(0, 19)
+                .replace("T", " ");
+            console.log(formattedDate);
+
             if (isAloneMode === true) {
                 const userId = localStorage.getItem("userId");
 
@@ -365,7 +385,8 @@
                     isOrganizer: true,
                     isGroup: true,
                     cityId: dropDownMenu,
-                    userOrganizerId:parseInt(userId)
+                    userOrganizerId:parseInt(userId),
+                    createdAt:formattedDate
                 };
             } else {
                 const userId = localStorage.getItem("userId");
@@ -412,27 +433,27 @@
             const groupInput = document.getElementById("groupInput");
 
             btnAlone.addEventListener("click", () => {
-                groupInput.classList.add("hidden"); // Скрыть блок при нажатии "Alone"
+                groupInput.classList.add("hidden");
             });
 
             btnGroup.addEventListener("click", () => {
-                groupInput.classList.remove("hidden"); // Показать блок при нажатии "Group"
+                groupInput.classList.remove("hidden");
             });
         });
 
         function resetFields(startDateInput, endDateInput) {
-            startDateInput.value = ""; // Очистить значение
-            endDateInput.value = "";  // Очистить значение
+            startDateInput.value = "";
+            endDateInput.value = "";
 
-            // Вернуть поля в первоначальное состояние, например, если есть кастомные стили
-            startDateInput.classList.remove('error-style'); // Пример класса для ошибок
+
+            startDateInput.classList.remove('error-style');
             endDateInput.classList.remove('error-style');
         }
         function resetStartDate() {
             if (startDate && endDate && errorTextElement) {
                 startDate.value = '';
                 endDate.value = '';
-                errorTextElement.style.display = 'none';// Очистка поля
+                errorTextElement.style.display = 'none';
             }
         }
         function formatDate(dateString) {

@@ -30,4 +30,5 @@ void updateTrip(int tripId, TripDto trip);
     List<Trip> SearchTripByPrefix(String loginPrefix);
     List<Trip> filterTripsByDate(Date startDate, Date endDate);
      void updateTripStatuses();
+    void updateupreatedAtDates();
 }

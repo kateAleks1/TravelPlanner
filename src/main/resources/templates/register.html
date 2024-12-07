@@ -131,6 +131,7 @@ text-align: center;
             .then(data => {
                 console.log(data.message);
                 localStorage.setItem('AccessToken', data.accessToken);
+                localStorage.setItem('userId',data.userid);
                 window.location.href = 'main.html';
             })
 

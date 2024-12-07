@@ -2,12 +2,15 @@ package org.example.Service.ServiceImpl;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
+
 import org.example.DTO.DestinationDto;
 import org.example.DTO.TripDto;
 import org.example.Dal.Repository.*;
 import org.example.Service.TripService;
 import org.example.entity.*;
 
+import java.text.DateFormat;
+import java.util.stream.Stream;
 import org.example.exception.GeneralException;
 import org.example.mapper.UserMapper;
 import org.hibernate.Hibernate;
@@ -161,8 +164,54 @@ else{
 tripRepository.saveAll(trips);
 
 }
+@Scheduled(cron="0 0 0 * * ?")
+    @Override
+    public void updateupreatedAtDates() {
+        Random random=new Random();
+        String pattern="yyyy-MM-dd HH:mm:ss";
+        List<Trip> allTrips=tripRepository.findAll();
+        for(Trip trip:allTrips){
+            if(trip.getCreatedAt()==null){
+
+                trip.setCreatedAt(generateDate(pattern));
+                while (trip.getCreatedAt().after(Date.from(Instant.now()))){
+                    trip.setCreatedAt(generateDate(pattern));
+                }
+            }
+
+        }
+        tripRepository.saveAll(allTrips);
+    }
+
+
+    public static Date generateDate(String pattern) {
+        int year = 2024;
+        int day = (int) ((Math.random() * 31) + 1);
+        int month = (int) ((Math.random() * 12) + 1);
+        int hours = (int) ((Math.random() * 24));
+        int minutes = (int) ((Math.random() * 60));
+        int seconds = (int) ((Math.random() * 60));
+
+        String dates = pattern
+                .replaceFirst("yyyy", String.format("%04d", year))
+                .replaceFirst("MM", String.format("%02d", month))
+                .replaceFirst("dd", String.format("%02d", day))
+                .replaceFirst("HH", String.format("%02d", hours))
+                .replaceFirst("mm", String.format("%02d", minutes))
+                .replaceFirst("ss", String.format("%02d", seconds));
+        DateTimeFormatter formatter=DateTimeFormatter.ofPattern(pattern);
+        LocalDateTime localDateTime=LocalDateTime.parse(dates,formatter);
+  return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+
+    }
+
     @Override
     public Trip createTrip(TripDto tripDto) {
+      for(Trip tripEach:tripRepository.getTripByUsersId(tripDto.getUserOrganizerId()).get()){
+          if(tripEach.getCity().getCityId()==tripDto.getCityId()){
+              throw new RuntimeException("Invalid start_date or end_date");
+          }
+      }
         Trip trip = new Trip();
 
 
@@ -175,7 +224,7 @@ tripRepository.saveAll(trips);
         }
         SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("yyyy-MM-dd");
         try {
-            // Получаем только дату без времени
+
             Date startDate = dateOnlyFormat.parse(dateOnlyFormat.format(trip.getStartDate()));
             Date endDate = dateOnlyFormat.parse(dateOnlyFormat.format(trip.getEndDate()));
             Date today = dateOnlyFormat.parse(dateOnlyFormat.format(new Date()));
@@ -196,9 +245,13 @@ tripRepository.saveAll(trips);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        trip.setCity(citiesRepository.findById(tripDto.getCityId())
-                .orElseThrow(() -> new RuntimeException("City not found")));
 
+
+            trip.setCity(citiesRepository.findById(tripDto.getCityId())
+                    .orElseThrow(() -> new RuntimeException("City not found")));
+
+
+trip.setCreatedAt(tripDto.getCreatedAt());
         trip = tripRepository.save(trip);
 
         if (tripDto.getUsersListId() != null && !tripDto.getUsersListId().isEmpty()) {

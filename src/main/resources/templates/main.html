@@ -665,26 +665,26 @@ background: #ffffff;
                 <span class="text">Italy</span>
             </div>
             <div class="card-country" data-country="Japan">
-                <img src="http://localhost:8080/images/japan.jpg" alt="Spain">
+                <img src="http://localhost:8080/images/japan.jpg" alt="Japan">
                 <span class="text">Japan</span>
             </div>
             <div class="card-country" data-country="Netherlands">
-                <img src="http://localhost:8080/images/netherlands.jpg" alt="Spain">
+                <img src="http://localhost:8080/images/netherlands.jpg" alt="Netherlands">
                 <span class="text">Netherlands</span>
             </div>
 
         </div>
         <div class="card-block" data-country="Norway">
             <div class="card-country">
-                <img src="http://localhost:8080/images/norway.jpg" alt="Spain">
+                <img src="http://localhost:8080/images/norway.jpg" alt="Norway">
                 <span class="text">Norway</span>
             </div>
             <div class="card-country" data-country="Thailand">
-                <img src="http://localhost:8080/images/tailand.jpg" alt="Spain">
+                <img src="http://localhost:8080/images/tailand.jpg" alt="Thailand">
                 <span class="text">Thailand</span>
             </div>
             <div class="card-country" data-country="Portugal">
-                <img src="http://localhost:8080/images/portugal.jpg" alt="Spain">
+                <img src="http://localhost:8080/images/portugal.jpg" alt="Portugal">
                 <span class="text">Portugal</span>
 
             </div>
@@ -755,21 +755,20 @@ fetch('http://localhost:8080/api/countries/getAllCountries',{
                 dropDownMenu.innerHTML = '<option value="">Select City</option>';
                 data.forEach(city => {
                     const optionCity = document.createElement('option');
-                    optionCity.value = city.countryName; // Сравниваем по названию
+                    optionCity.value = city.countryName;
                     optionCity.textContent = city.countryName;
                     dropDownMenu.appendChild(optionCity);
                 });
             });
 
-        // Фильтрация карточек
         dropDownMenu.addEventListener('change', function () {
             const selectedCity = this.value;
 
             cardCountries.forEach(card => {
                 if (selectedCity === '' || card.getAttribute('data-country') === selectedCity) {
-                    card.style.display = ''; // Показываем карточку
+                    card.style.display = '';
                 } else {
-                    card.style.display = 'none'; // Скрываем карточку
+                    card.style.display = 'none';
                 }
             });
         });

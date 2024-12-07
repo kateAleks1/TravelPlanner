@@ -59,6 +59,16 @@ public ResponseEntity<?> createNewTrip(@PathVariable int userId) {
         tripService.updateTripStatuses();
         return ResponseEntity.ok("Statuses updated successfully");
     }
+    @PostMapping("/setCreatedAt")
+    public ResponseEntity<?> setCreatedAt() {
+        tripService.updateupreatedAtDates();
+        return ResponseEntity.ok("CreatedAt updated successfully");
+    }
+    @GetMapping("/selectTripByMonth")
+    public void selectTripByMonth() {
+        tripService.updateupreatedAtDates();
+//        return ResponseEntity.ok("CreatedAt updated successfully");
+    }
     @GetMapping("/getAllTrips")
     public ResponseEntity<?> getAllTrips() {
             List<Trip> trips = tripService.getAllTrips();

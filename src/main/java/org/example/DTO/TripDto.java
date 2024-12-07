@@ -23,7 +23,7 @@ import java.util.Set;
             private Date start_date;
             @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
             private Date   end_date;
-            private int price;
+
             private int  status_id;
             private int idDestination;
     private List<Integer> usersListId = new ArrayList<>();
@@ -32,7 +32,7 @@ import java.util.Set;
     private int userOrganizerId;
     private boolean isOrganizer;
     private List<Integer> userIds;
-    private Set<User> usersSet;
-    private  int OrganizerId;// Идентификаторы пользователей
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+private Date createdAt;
 
 }

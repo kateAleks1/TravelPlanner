@@ -593,11 +593,11 @@
         </li>
         <li>
             <a href="#">
-                <i class='bx bx-compass' ></i>
+                <i class='bx bx-compass' ></i >
                 <span class="link_name">Explore</span>
             </a>
             <ul class="sub-menu blank">
-                <li><a class="link_name" href="#">Explore</a></li>
+                <li><a class="link_name" id='bx-compass' href="#">Explore</a></li>
             </ul>
         </li>
         <li>
@@ -693,6 +693,9 @@
     </div>
 </section>
 <script>
+    document.getElementsByClassName('bx bx-log-out')[0].addEventListener("click",function () {
+        window.location.href = 'login.html';
+    })
 
     let arrows = document.querySelectorAll(".arrow");
     arrows.forEach(arrow => {
@@ -724,11 +727,13 @@
             });
         })
 
-    // Переход на страницу входа
+
     document.querySelector('.bx-log-out').addEventListener("click", () => {
         window.location.href = 'login.html';
     });
-
+    document.querySelector('#bx-compass').addEventListener("click", () => {
+        window.location.href = 'myCardsDestinations.html.html';
+    });
 
     function loadCityId() {
         const tripId = localStorage.getItem("tripId");
@@ -897,7 +902,7 @@
         const input = document.querySelector('#search-input');
         const resultsDiv = document.querySelector('.card-block');
         const cityId = localStorage.getItem('cityId');
-        const tripId = localStorage.getItem('tripId'); // Убедитесь, что tripId определён
+        const tripId = localStorage.getItem('tripId');
 
         if (!cityId || !tripId) {
             console.warn("City ID or Trip ID is missing in localStorage.");

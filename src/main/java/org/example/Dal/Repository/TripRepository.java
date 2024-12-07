@@ -33,6 +33,7 @@ public interface TripRepository extends JpaRepository<Trip,Integer> {
     @Query(value = "DELETE FROM trip_destinations WHERE trip_id = :tripId AND destination_id = :destinationId", nativeQuery = true)
     void deleteDestinationFromTrip(@Param("tripId") int tripId, @Param("destinationId") int destinationId);
 
+
     Optional<Set<Trip>> findByParticipants_User_Id(Integer id);
     @Query("select t.city.cityId from Trip t where t.tripId=:tripId")
     Optional<Integer> getCityFromTripById(@Param("tripId") int tripID);

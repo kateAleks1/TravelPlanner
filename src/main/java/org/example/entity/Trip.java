@@ -22,7 +22,6 @@ import java.util.*;
         @Id
         private int tripId;
 
-
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "trip_destinations",
             joinColumns = @JoinColumn(name = "trip_id"),
@@ -47,6 +46,7 @@ import java.util.*;
     @ManyToOne
     @JoinColumn(name = "city_id")
     private Cities city;
-
+@Column(name="created_at")
+private Date createdAt;
 
     }
