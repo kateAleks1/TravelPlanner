@@ -5,10 +5,163 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+    <style>
+        .option-block{
+            display: flex;
+            width: 40%;
+            height: 10%;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .block-statistic{
+            display: flex;
+            background: #272d3c;
+            opacity: 90%;
+            margin: 20px;
+            color: #f0f0f0;
+            font-family: 'Poppins', sans-serif;
+            font-weight: lighter;
+            font-size: small;
+            padding: 10px;
+            border-radius: 30px;
+            align-items: center;
+            justify-content: space-between;
+        }
+     #block2{
+
+            height: 90%;
+
+        }
+        button{
+            height: 20%;
+            margin-left: 20px;
+        }
+        h1{
+            width: 40%;
+
+        }
+        .statistic-section{
+            display: flex;
+            background: #6c7793;
+            opacity: 90%;
+height: 80%;
+            margin: 5px;
+            padding: 10px;
+            border-radius: 30px;
+            align-items: center;
+         justify-content: center;
+
+        }
+        li{
+            color: #f0f0f0;
+        }
+        .option-block{
+            display: flex;
+        }
+    </style>
 </head>
 <body>
-<h1>Statistics about new users that has registered recently (last week,last month)</h1>
-<h1>most common trips</h1>
-<h1>most common destinations</h1>
+<div class="block-statistic">
+    <h1>Statistics about new users that have registered recently</h1>
+    <div class="option-block">
+
+
+        <button id="showStatisticButton">Show Statistics</button>
+
+    </div>
+</div>
+<div class="block-statistic" id="block2">
+    <div class="statistic-section" id="userStatistics">
+        <h1>New Users Registration Statistics</h1>
+
+    </div>
+    <div class="statistic-section" id="userStatistics2">
+        <h1>New Users Registration Statistics</h1>
+
+    </div>
+
+</div>
+<div class="block-statistic" >
+    <div class="statistic-section">
+        <h1>Top 3 City Destination all the Time</h1>
+<ul id="popularCities">
+
+
+</ul>
+    </div>
+
+    <div class="statistic-section">
+        <h1>Most Common Destinations</h1>
+        <div class="option-block">
+            <select id="timePeriodSelect">
+                <option value="today">This week</option>
+                <option value="older">Today</option>
+                <option value="older">Last Month</option>
+            </select>
+            <span>text</span>
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<script>
+    function displayStatistics(data) {
+        const userStatisticsDiv = document.getElementById('userStatistics');
+        userStatisticsDiv.innerHTML = `<h1>New Users Registration Statistics</h1>`;
+
+        data.forEach(item => {
+            const statItem = document.createElement('div');
+            statItem.classList.add('statistic-item');
+            statItem.style.margin=10;
+            statItem.innerHTML = `<strong>${item.timePeriod}</strong>: ${item.userCount} users`;
+            userStatisticsDiv.appendChild(statItem);
+        });
+    }
+    function displayStatistics2(data) {
+        const userStatisticsDiv = document.getElementById('userStatistics2');
+        userStatisticsDiv.innerHTML = `<h1>New Users Registration Statistics</h1>`;
+
+        data.forEach(item => {
+            const statItem = document.createElement('div');
+            statItem.classList.add('statistic-item');
+            statItem.style.margin=10;
+            statItem.innerHTML = `<strong>${item.timePeriod}</strong>: ${item.userCount} users`;
+            userStatisticsDiv.appendChild(statItem);
+        });
+    }
+    function displayStatisticsPopularCities(data) {
+        const userStatisticsDiv = document.getElementById('popularCities');
+        let a=1;
+            data.forEach(item => {
+
+                const statItem = document.createElement('li');
+                statItem.innerHTML=`<span>Top${a}</span> ${item.cityCount} <span>${item.cityName}</span>`;
+                a++;
+                userStatisticsDiv.appendChild(statItem);
+            });
+    }
+    fetch('http://localhost:8080/api/getUserStatisticsToday')
+        .then(response => response.json())
+        .then(data => {
+            console.log('Statistics data for today:', data);
+            displayStatistics(data);
+        })
+
+    fetch('http://localhost:8080/api/statistics2')
+        .then(response => response.json())
+        .then(data => {
+
+            displayStatistics2(data);
+        })
+    fetch('http://localhost:8080/api/cities/getTop3Cities')
+        .then(response => response.json())
+        .then(data => {
+
+            displayStatisticsPopularCities(data);
+        })
+</script>
 </body>
 </html>

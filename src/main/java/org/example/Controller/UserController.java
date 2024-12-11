@@ -4,6 +4,7 @@ package org.example.Controller;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.example.DTO.UserStatistic;
 import org.example.Dal.Repository.UserRepository;
 import org.example.Response.RefreshTokenRequest;
 import org.example.DTO.UserDto;
@@ -133,7 +134,57 @@ if(accessTokenHeader.startsWith("Bearer ")){
 
         return "items";
     }
+    @GetMapping("/statistics2")
+    public ResponseEntity<?> getUserStatistics() {
+        Calendar calendar = Calendar.getInstance();
 
+        // Дата для последней недели (7 дней назад)
+        calendar.add(Calendar.DATE, -7);
+        Date lastWeek = calendar.getTime();
+
+        // Дата для последнего месяца (1 месяц назад)
+        calendar = Calendar.getInstance(); // сбрасываем календарь
+        calendar.add(Calendar.MONTH, -1); // отнимаем 1 месяц
+        Date lastMonth = calendar.getTime();
+
+        // Устанавливаем миллисекунды на 0 для "сегодня"
+       calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        Date today = calendar.getTime();
+
+
+        System.out.println("Last Week: " + lastWeek);
+        System.out.println("Last Month: " + lastMonth);
+        System.out.println("Today: " + today);
+
+        List<UserStatistic> statistics = userService.getUserStatistics(lastWeek, lastMonth, today);
+
+        return ResponseEntity.ok(statistics);
+    }
+
+    @GetMapping("/getUserStatisticsToday")
+    public ResponseEntity<?> getUserStatisticsToday() {
+        Calendar calendar = Calendar.getInstance();
+        calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        Date today = calendar.getTime();
+
+        List<UserStatistic> statistics = userService.getUserStatisticsToday(today);
+
+        return ResponseEntity.ok(statistics);
+    }
+
+    @PostMapping("/setCreatedAtDate")
+    public ResponseEntity<?> setCreatedAt() {
+        userService.setCreatedDates();
+        return ResponseEntity.ok("CreatedAt updated successfully");
+    }
     @PostMapping("/refresh")
     public ResponseEntity<TokenResponse> refreshToken(@RequestHeader("Authorization") String refreshToken) {
         String token = refreshToken.replace("Bearer", "").trim();

@@ -16,13 +16,13 @@ public class UserDetailsImpl implements UserDetails {
     private boolean enabled;
 
     public UserDetailsImpl(User user) {
-        this.username = user.getLogin(); // или user.getEmail(), в зависимости от вашего подхода
+        this.username = user.getLogin();
         this.password = user.getPassword();
 
-        this.accountNonExpired = true; // или используйте логику, основанную на ваших требованиях
-        this.accountNonLocked = true; // аналогично
-        this.credentialsNonExpired = true; // аналогично
-        this.enabled = true; // аналогично
+        this.accountNonExpired = true;
+        this.accountNonLocked = true;
+        this.credentialsNonExpired = true;
+        this.enabled = true;
     }
 
     @Override

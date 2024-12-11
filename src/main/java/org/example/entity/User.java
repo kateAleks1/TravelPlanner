@@ -12,10 +12,7 @@
     import lombok.Data;
     import lombok.NoArgsConstructor;
 
-    import java.util.ArrayList;
-    import java.util.HashSet;
-    import java.util.List;
-    import java.util.Set;
+    import java.util.*;
 
     @Data
     @NoArgsConstructor
@@ -32,7 +29,9 @@
         @JsonProperty("login")
         private String login;
         private String password;
-
+        @Temporal(TemporalType.DATE)
+        @Column(name="created_at")
+        private Date createdAt;
  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 
  private Set<TripPartcipants> trips = new HashSet<>();

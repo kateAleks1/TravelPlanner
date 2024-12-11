@@ -1,16 +1,11 @@
 package org.example.Service;
 
-import org.example.DTO.DestinationDto;
 import org.example.DTO.TripDto;
 import org.example.entity.Destination;
 import org.example.entity.Trip;
-import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 public interface TripService {
     Trip createTrip(TripDto tripDto);
@@ -31,4 +26,5 @@ void updateTrip(int tripId, TripDto trip);
     List<Trip> filterTripsByDate(Date startDate, Date endDate);
      void updateTripStatuses();
     void updateupreatedAtDates();
+    List<Object[]> getMostPopularTrips();
 }

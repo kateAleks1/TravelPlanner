@@ -647,7 +647,7 @@ background: #ffffff;
             <div class="section right">
                 <div class="search-container">
                     <i class='bx bx-user'></i>
-                    <input class="search-input" type="text" placeholder="Search">
+                    <input class="search-input" type="text" placeholder="Search" id="searchInput">
                 </div>
             </div>
         </div>
@@ -674,7 +674,7 @@ background: #ffffff;
             </div>
 
         </div>
-        <div class="card-block" data-country="Norway">
+        <div class="card-block">
             <div class="card-country">
                 <img src="http://localhost:8080/images/norway.jpg" alt="Norway">
                 <span class="text">Norway</span>
@@ -702,6 +702,26 @@ background: #ffffff;
     </div>
 </section>
 <script >
+
+    const searchInput = document.getElementById('searchInput');
+    const cards = document.querySelectorAll('.card-country');
+
+    function filterCards() {
+        const query = searchInput.value.toLowerCase();
+
+        cards.forEach(card => {
+            const countryName = card.getAttribute('data-country').toLowerCase();
+            if (countryName.startsWith(query)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    searchInput.addEventListener('input', filterCards);
+
+
     document.querySelector('#link_name_explore').addEventListener("click", (event) => {
         event.preventDefault();
 
@@ -734,8 +754,12 @@ fetch('http://localhost:8080/api/countries/getAllCountries',{
     document.getElementsByClassName('bx bx-log-out')[0].addEventListener("click",function () {
         window.location.href = 'login.html';
     })
-
-
+    document.getElementsByClassName('bx bx-compass')[0].addEventListener("click",function () {
+        window.location.href = 'addTableData.html';
+    })
+    document.getElementsByClassName('bx bx-heart')[0].addEventListener("click",function () {
+        window.location.href = 'myCardsDestinations.html';
+    })
     document.addEventListener('DOMContentLoaded', function () {
         const dropDownMenu = document.querySelector('.city-dropdown');
         const cardCountries = document.querySelectorAll('.card-country');

@@ -1,7 +1,10 @@
 package org.example.Service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.Temporal;
 import org.example.DTO.UserDto;
+import org.example.DTO.UserStatistic;
+import org.example.DTO.UserStatisticProjection;
 import org.example.Dal.Repository.TripParticipantRepository;
 import org.example.Dal.Repository.TripRepository;
 import org.example.Dal.Repository.UserRepository;
@@ -14,14 +17,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Optional;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -56,6 +62,37 @@ private final TripParticipantRepository tripParticipantRepository;
         return userRepository.findUserByLogin(login);
     }
 
+    public void setCreatedDates() {
+        List<User> users = userRepository.findAll();
+
+        for (User user : users) {
+
+            Optional<List<Trip>> optionalTrips = tripRepository.getTripByUsersId(user.getId());
+            if (optionalTrips.isEmpty()) {
+                continue;
+            }
+
+            List<Trip> trips = optionalTrips.get();
+            Date earliestDate = Date.from(Instant.now());
+
+            for (Trip trip : trips) {
+                Date dateTrip = tripRepository.getCreatedAtFromTripById(trip.getTripId());
+                if (dateTrip.before(earliestDate)) {
+                    earliestDate = dateTrip;
+                }
+            }
+
+            LocalDate localDate = earliestDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            LocalDate userCreatedAt = localDate.minusDays(5);
+            Date dateUserCreated = Date.from(userCreatedAt.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+            user.setCreatedAt(dateUserCreated);
+            userRepository.save(user);
+        }
+
+
+
+    }
     public User registerNewUser(UserDto userDto) throws UserAlreadyExistsException {
 
 
@@ -64,7 +101,9 @@ private final TripParticipantRepository tripParticipantRepository;
            } User user = new User();
            user.setEmail(userDto.getEmail());
            user.setLogin(userDto.getLogin());
+
            user.setPassword(encodePassword(userDto.getPassword()));
+           user.setCreatedAt(userDto.getCreatedAt());
           return userRepository.save(user);
     }
 public Optional<User> findUserById(int id){
@@ -72,9 +111,9 @@ public Optional<User> findUserById(int id){
 }
     public Optional<List<User>> findListUserById(List<Integer> usersIds){
         List<User> users = usersIds.stream()
-                .map(userRepository::findUserById) // Вернет Optional<User>
-                .filter(Optional::isPresent)       // Отфильтруем только присутствующие значения
-                .map(Optional::get)                // Получим объект User из Optional
+                .map(userRepository::findUserById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .collect(Collectors.toList());
         return users.isEmpty()?Optional.empty():Optional.of(users);
     }
@@ -89,7 +128,13 @@ public Optional<User> findUserById(int id){
     }
 
 
+    public List<UserStatistic> getUserStatistics(Date lastWeek, Date lastMonth,Date today) {
+        return userRepository.getUserStatistics(lastWeek, lastMonth,today);
+    }
 
+    public List<UserStatistic> getUserStatisticsToday(Date today) {
+        return userRepository.getUserStatisticsToday(today);
+    }
     public List<User> getAllUsers(){
         return userRepository.findAll();
     }
@@ -108,7 +153,7 @@ public Optional<User> findUserById(int id){
 
 public Page<UserDto> getUsers(Pageable pageable) {
     Page<User> usersPage = userRepository.findAll(pageable);
-    return usersPage.map(user -> new UserDto(user.getId(), user.getEmail(),user.getLogin(),user.getPassword()));
+    return usersPage.map(user -> new UserDto(user.getId(), user.getEmail(),user.getLogin(),user.getPassword(),user.getCreatedAt()));
 }
 
 
@@ -117,7 +162,7 @@ public Page<UserDto> getUsers(Pageable pageable) {
                 user.getId(),
                 user.getEmail(),
                 user.getLogin(),
-                user.getPassword()
+                user.getPassword(),user.getCreatedAt()
         );
     }
 
@@ -134,11 +179,10 @@ public Page<UserDto> getUsers(Pageable pageable) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
 
-        // Удаляем записи из trip_participants
         List<TripPartcipants> participants = tripParticipantRepository.findAllByUser(user);
         tripParticipantRepository.deleteAll(participants);
 
-        // Удаляем самого пользователя
+
         userRepository.delete(user);
     }
      public Integer findUserIdByUserLogin(String login){

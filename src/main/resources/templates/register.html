@@ -103,12 +103,17 @@ text-align: center;
 
         const login = document.getElementById("login").value;
         const email = document.getElementById("email").value;
+        const currentDate = new Date();
         const password = document.getElementById("password").value;
+        const formattedDate = currentDate.toISOString()
+            .slice(0, 19)
+            .replace("T", " ");
 
         const data = {
             login: login,
             email: email,
-            password: password
+            password: password,
+            createdAt:formattedDate
         };
 
         fetch('http://localhost:8080/api/register', {

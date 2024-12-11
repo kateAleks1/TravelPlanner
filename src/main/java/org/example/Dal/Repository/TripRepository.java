@@ -33,6 +33,10 @@ public interface TripRepository extends JpaRepository<Trip,Integer> {
     @Query(value = "DELETE FROM trip_destinations WHERE trip_id = :tripId AND destination_id = :destinationId", nativeQuery = true)
     void deleteDestinationFromTrip(@Param("tripId") int tripId, @Param("destinationId") int destinationId);
 
+    @Query("SELECT tp.trip.tripId as tripId, COUNT(tp.trip.tripId) as tripCount " +
+            "FROM TripPartcipants tp " +
+            "GROUP BY tp.trip.tripId ")
+    List<Object[]> findMostFrequentTrips();
 
     Optional<Set<Trip>> findByParticipants_User_Id(Integer id);
     @Query("select t.city.cityId from Trip t where t.tripId=:tripId")
@@ -47,11 +51,13 @@ public interface TripRepository extends JpaRepository<Trip,Integer> {
            "JOIN t.participants tp " +
            "WHERE co.countryName = :countryName AND tp.user.id = :userId")
    List<Trip> findTripsByUserIdAndCountryName(@Param("userId") int userId, @Param("countryName") String countryName);
-
+    @Query("select t.createdAt from Trip t where t.tripId=:tripId")
+Date getCreatedAtFromTripById(@Param("tripId") int tripID);
     @Query("SELECT t FROM Trip t JOIN TripPartcipants tp ON tp.trip = t WHERE tp.user.id = :userId")
     Optional<List<Trip>> getTripByUsersId(@Param("userId") int userId);
     @Query("SELECT t FROM Trip t JOIN TripPartcipants tp ON tp.trip = t WHERE tp.user.login = :userLogin")
     Optional<List<Trip>> getTripByUsersLogin(@Param("userLogin") String userLogin);
+
     @Query("SELECT t FROM Trip t JOIN FETCH t.participants")
     List<Trip> findAllWithParticipants();
     @Modifying
@@ -62,6 +68,8 @@ public interface TripRepository extends JpaRepository<Trip,Integer> {
     void deleteByTripId(int tripId);
     @Query("SELECT t FROM Trip t JOIN t.city c WHERE c.cityName LIKE %:prefix%")
     Optional<List<Trip>> findTripsByPrefix(@Param("prefix")String prefix);
+
+
 }
 
 

@@ -1,19 +1,13 @@
 package org.example.Service.ServiceImpl;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
 
-import org.example.DTO.DestinationDto;
 import org.example.DTO.TripDto;
 import org.example.Dal.Repository.*;
 import org.example.Service.TripService;
 import org.example.entity.*;
 
-import java.text.DateFormat;
-import java.util.stream.Stream;
-import org.example.exception.GeneralException;
 import org.example.mapper.UserMapper;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -183,6 +177,10 @@ tripRepository.saveAll(trips);
         tripRepository.saveAll(allTrips);
     }
 
+    @Override
+    public List<Object[]> getMostPopularTrips() {
+        return tripRepository.findMostFrequentTrips();
+    }
 
     public static Date generateDate(String pattern) {
         int year = 2024;
@@ -209,7 +207,7 @@ tripRepository.saveAll(trips);
     public Trip createTrip(TripDto tripDto) {
       for(Trip tripEach:tripRepository.getTripByUsersId(tripDto.getUserOrganizerId()).get()){
           if(tripEach.getCity().getCityId()==tripDto.getCityId()){
-              throw new RuntimeException("Invalid start_date or end_date");
+              throw new RuntimeException("This city has already exist");
           }
       }
         Trip trip = new Trip();

@@ -56,8 +56,8 @@
             transition-delay: 0.3s;
         }
         .sidebar *:not(input, button, textarea, a) {
-            outline: none;  /* Убирает обводку при клике */
-            pointer-events: none; /* Убирает возможность фокусировки */
+            outline: none;
+            pointer-events: none;
         }
         .sidebar.close .logo-details .logo_name{
             transition-delay: 0s;
@@ -95,18 +95,18 @@
             justify-content: space-between;
         }
         .add-destination-btn {
-            background-color: #007BFF; /* Синий фон */
-            color: white; /* Белый текст */
-            border: none; /* Убираем рамку */
+            background-color: #007BFF;
+            color: white;
+            border: none;
             padding: 10px 20px;
-            margin-top: 30px;/* Внутренний отступ */
-            font-size: 16px; /* Размер текста */
-            border-radius: 5px; /* Скруглённые углы */
-            cursor: pointer; /* Курсор при наведении */
+            margin-top: 30px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
         }
 
         .add-destination-btn:hover {
-            background-color: #0056b3; /* Более тёмный синий при наведении */
+            background-color: #0056b3;
         }
         .sidebar.close .nav-links li .iocn-link {
             display: block;
@@ -284,6 +284,7 @@
             color: #ffffff;
             cursor: pointer;
         }
+
         .home-section {
             position: relative;
             background: #E4E9F7;
@@ -291,14 +292,14 @@
             left: 260px;
             padding: 20px;
             min-height: 100vh;
-            width: calc(100% - 260px); /* Ширина на 260px меньше от общего размера экрана */
+            width: calc(100% - 260px);
             transition: all 0.5s ease;
-            box-sizing: border-box; /* Убедитесь, что padding не увеличивает размеры */
+            box-sizing: border-box;
         }
         .main-section {
 
             position: relative;
-            background: #f1f1f1; /* Тёмный фон для внутреннего блока */
+            background: #f1f1f1;
             width: 100%;
             border-radius: 20px;
             padding: 15px;
@@ -373,11 +374,10 @@
                 left: 0;
             }
 
-            /* Новый стиль для бургер-меню */
             .home-section .home-content .bx-menu {
                 display: block;
                 margin: 0 15px;
-                font-size: 30px; /* Размер иконки меню */
+                font-size: 30px;
                 transition: all 0.3s ease;
             }
 
@@ -389,7 +389,7 @@
         .separator {
             width: 1px;
             height: 100%;
-            background-color: #000; /* The color of the vertical line */
+            background-color: #000;
         }
 
         .text {
@@ -422,7 +422,7 @@
         .main-panel-desc {
             display: flex;
             flex-direction: column;
-            align-items: center/* Stack elements vertically */
+            align-items: center
         }
         .main-panel-desc .text-bold{
             font-size: 20px;
@@ -449,27 +449,28 @@
             display: flex;
             align-items: center;
         }
-        .card-country i {
-            position: absolute;
-            top: 10px; /* Отступ от верхней границы */
-            right: 10px; /* Отступ от правой границы */
-            font-size: 24px; /* Размер иконки */
-            color: white; /* Цвет иконки */
-            background-color: rgba(0, 0, 0, 0.5); /* Фон для читаемости */
-            padding: 5px; /* Отступы вокруг иконки */
-            border-radius: 50%; /* Круглый фон */
-            cursor: pointer; /* Указатель при наведении */
-            transition: all 0.3s ease; /* Анимация при наведении */
-        }
+            .card-country i {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                font-size: 24px;
+                color: white;
+                background-color: rgba(0, 0, 0, 0.5);
+                padding: 5px;
+                border-radius: 50%;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
 
-        .card-country i:hover {
-            color: red; /* Цвет иконки при наведении */
-            background-color: rgba(255, 255, 255, 0.8); /* Фон при наведении */
-        }
-        .card-country i.selected {
-            color: white; /* Текст (иконка) белая */
-            background-color: red; /* Фон полностью красный */
-        }
+            .card-country i:hover {
+                color: red;
+                background-color: rgba(255, 255, 255, 0.8);
+            }
+            .card-country i.selected {
+                color: white;
+                background-color: red;
+            }
+
         .search-input {
             padding-left: 30px;
             padding-right: 10px;
@@ -492,13 +493,12 @@
         }
 
         .card-country:hover {
-            background-color: rgba(0, 0, 0, 0.1); /* Подсветка фоном при наведении */
-            transform: scale(1.05); /* Немного увеличиваем размер для эффекта выбора */
+            background-color: rgba(0, 0, 0, 0.1);
+            transform: scale(1.05);
         }
         .card-country {
             position: relative;
-            width: 270px;
-            height: 230px;
+
             border-radius: 20px;
             overflow: hidden;
             transition: all 0.3s ease;
@@ -526,14 +526,25 @@
         }
         .card-country .text {
             position: absolute;
-            bottom: 10px; /* Отступ от нижней границы */
-            left: 10px; /* Отступ от левой границы */
-            color: white; /* Цвет текста */
-            font-size: 18px; /* Размер шрифта */
-            font-weight: bold; /* Сделать текст жирным */
+
+            bottom: 10px;
+            left: 10px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
             background-color: rgba(0, 0, 0, 0.5);
-            padding: 10px 20px; /* Отступы вокруг текста */
-            border-radius: 5px; /* Скругление фона текста */
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+
+        .card-country .stars-container i {
+            font-size: 18px;
+            color: gold;
+            transition: color 0.3s ease;
+        }
+
+        .card-country .stars-container i:hover {
+            color: orange;
         }
         .city-dropdown {
             width: 200px;
@@ -727,7 +738,6 @@
         </div>
 
 
-
     </div>
 </section>
 <script>
@@ -844,6 +854,7 @@
                     card.classList.add('card-country');
                     card.style.backgroundImage = `url('${cardDestination.imageUrl}')`;
                     card.style.backgroundSize = 'cover';
+
                     card.style.backgroundPosition = 'center';
                     card.style.height = '200px';
                     card.style.width = '300px';
@@ -858,6 +869,11 @@
                     text.classList.add('text');
                     text.textContent = cardDestination.name;
                     card.appendChild(text);
+
+
+
+
+
 
                     btnDelete.addEventListener('click', (event) => {
                         event.stopPropagation();

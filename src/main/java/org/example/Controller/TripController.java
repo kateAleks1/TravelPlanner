@@ -1,6 +1,7 @@
 package org.example.Controller;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.example.DTO.TripDto;
 import org.example.DTO.UserDto;
@@ -27,13 +28,14 @@ import java.util.stream.Collectors;
 //@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/trip")
+
 public class TripController {
 @Autowired
     private final TripService
         tripService;
     @Autowired
 private final TripRepository tripRepository;
-    @Autowired
+
 private final UserService userService;
     @Autowired
     public TripController(UserService userService, TripRepository tripRepository, TripService tripService) {
@@ -68,6 +70,20 @@ public ResponseEntity<?> createNewTrip(@PathVariable int userId) {
     public void selectTripByMonth() {
         tripService.updateupreatedAtDates();
 //        return ResponseEntity.ok("CreatedAt updated successfully");
+    }
+    @GetMapping("/most-frequent")
+    public ResponseEntity<List<Map<String, Object>>> getMostFrequentTrips() {
+        List<Object[]> results = tripService.getMostPopularTrips();
+
+        List<Map<String, Object>> response = new ArrayList<>();
+        for (Object[] result : results) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("tripId", result[0]);
+            map.put("tripCount", result[1]);
+            response.add(map);
+        }
+
+        return ResponseEntity.ok(response);
     }
     @GetMapping("/getAllTrips")
     public ResponseEntity<?> getAllTrips() {

@@ -36,4 +36,8 @@ public class CitiesController {
                     .body("City with ID " + cityId + " not found");
         }
     }
+    @GetMapping("/getTop3Cities")
+    public ResponseEntity<?> getTop3Cities(){
+        return ResponseEntity.ok(citiesService.findTopThreeCities());
+    }
 }
