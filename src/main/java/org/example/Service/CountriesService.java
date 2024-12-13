@@ -6,6 +6,7 @@ import org.example.entity.Trip;
 import org.springframework.data.domain.Pageable;
 
 import javax.swing.text.html.Option;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,5 +18,5 @@ public interface CountriesService{
     Optional<String> getCountryNameByCountryId(int CountryId);
     List<CityStatistic> mostCommonCountriesByPeriod();
     List<CityStatistic> mostCommonCountriesByAllTheTime(Pageable pageable);
-
+    List<CityStatistic> mostCommonCountriesByUserSelectedPeriod(Date date);
 }

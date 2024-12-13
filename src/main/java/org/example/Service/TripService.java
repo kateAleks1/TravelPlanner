@@ -1,5 +1,7 @@
 package org.example.Service;
 
+import org.example.DTO.CityStatistic;
+import org.example.DTO.DestinationsStatistic;
 import org.example.DTO.TripDto;
 import org.example.entity.Destination;
 import org.example.entity.Trip;
@@ -27,4 +29,8 @@ void updateTrip(int tripId, TripDto trip);
      void updateTripStatuses();
     void updateupreatedAtDates();
     List<Object[]> getMostPopularTrips();
+    List<DestinationsStatistic>  findMostCommonDestination();
+    List<DestinationsStatistic> findAllMostCommonDestination();
+    List<Trip> getAloneTrip(int userId);
+    List<Trip> getTripByGroup(int userId);
 }

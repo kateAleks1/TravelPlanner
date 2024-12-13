@@ -20,14 +20,12 @@ public interface TripParticipantRepository extends JpaRepository<TripPartcipants
     @Query("SELECT tp.user.id FROM TripPartcipants tp WHERE tp.trip.tripId = :tripId")
     List<Integer> findUserIdsByTripId(@Param("tripId") int tripId);
 
-    // Получить список поездок для определённого пользователя
     @Query(value = "SELECT trip_id FROM trip_participants WHERE user_id = :userId", nativeQuery = true)
     List<Integer> findTripIdsByUserId(@Param("userId") int userId);
     Optional<TripPartcipants> findByUserAndTrip(User user, Trip trip);
     @Query("SELECT tp FROM TripPartcipants tp WHERE tp.trip = :trip AND tp.isOrganizer = :isOrganizer")
     Optional<TripPartcipants> findByTripAndIsOrganizer(@Param("trip") Trip trip, @Param("isOrganizer") boolean isOrganizer);
 
-    // Удалить связь между поездкой и пользователем
     @Modifying
     @Query(value = "DELETE FROM trip_participants WHERE trip_id = :tripId AND user_id = :userId", nativeQuery = true)
     void deleteUserFromTrip(@Param("tripId") int tripId, @Param("userId") int userId);

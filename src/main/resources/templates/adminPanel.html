@@ -415,7 +415,7 @@
         .main-panel-desc {
             display: flex;
             flex-direction: column;
-            align-items: center/* Stack elements vertically */
+            align-items: center
         }
         .main-panel-desc .text-bold{
             font-size: 20px;
@@ -444,24 +444,24 @@
         }
         .card-country i {
             position: absolute;
-            top: 10px; /* Отступ от верхней границы */
-            right: 10px; /* Отступ от правой границы */
-            font-size: 24px; /* Размер иконки */
-            color: white; /* Цвет иконки */
-            background-color: rgba(0, 0, 0, 0.5); /* Фон для читаемости */
-            padding: 5px; /* Отступы вокруг иконки */
-            border-radius: 50%; /* Круглый фон */
-            cursor: pointer; /* Указатель при наведении */
-            transition: all 0.3s ease; /* Анимация при наведении */
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
         .card-country i:hover {
-            color: red; /* Цвет иконки при наведении */
-            background-color: rgba(255, 255, 255, 0.8); /* Фон при наведении */
+            color: red;
+            background-color: rgba(255, 255, 255, 0.8);
         }
         .card-country i.selected {
-            color: white; /* Текст (иконка) белая */
-            background-color: red; /* Фон полностью красный */
+            color: white;
+            background-color: red;
         }
         .search-input {
             padding-left: 30px;
@@ -488,8 +488,8 @@
             justify-content: space-between;
         }
         .card-country:hover {
-            background-color: rgba(0, 0, 0, 0.1); /* Подсветка фоном при наведении */
-            transform: scale(1.05); /* Немного увеличиваем размер для эффекта выбора */
+            background-color: rgba(0, 0, 0, 0.1);
+            transform: scale(1.05);
         }
         .card-country {
             position: relative;
@@ -510,14 +510,14 @@
         }
         .card-country .text {
             position: absolute;
-            bottom: 10px; /* Отступ от нижней границы */
-            left: 10px; /* Отступ от левой границы */
-            color: white; /* Цвет текста */
-            font-size: 18px; /* Размер шрифта */
-            font-weight: bold; /* Сделать текст жирным */
+            bottom: 10px;
+            left: 10px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
             background-color: rgba(0, 0, 0, 0.5);
-            padding: 10px 20px; /* Отступы вокруг текста */
-            border-radius: 5px; /* Скругление фона текста */
+            padding: 10px 20px;
+            border-radius: 5px;
         }
         .city-dropdown {
             width: 200px;
@@ -672,7 +672,6 @@
     <!--recent new users-->
     <div class="main-section">
         <div class="up-block">
-            <span class="text">Users</span>
 
         </div>
         <div class="main-filter-search-block">
@@ -747,6 +746,16 @@
                     <th>description</th>
                     <th>LoadImage</th>
                     <th>Actions</th>
+                </tr>
+
+                </thead>
+                <tbody></tbody>
+            </table>
+            <table class="tableCities hidden">
+                <thead>
+                <tr class="stringLine">
+                    <th>cityId</th>
+                    <th>cityName</th>
                 </tr>
 
                 </thead>
@@ -859,7 +868,7 @@
             `;
                     const userIdCell = tr.querySelector('.user-id');
                     userIdCell.addEventListener('click', function() {
-                        selectedUserId = user.id;  // Сохраняем userId в глобальной переменной
+                        selectedUserId = user.id;
                         console.log("Selected User ID: ", selectedUserId);
                     });
 
@@ -892,9 +901,10 @@
    <td>${trip.tripId}</td>
   <td><input type="datetime-local" value="${formatDateForInput(trip.startDate)}" /></td>
                 <td><input type="datetime-local" value="${formatDateForInput(trip.endDate)}" /></td>
-                   <td>${trip.cityName}</td>
 
-   <td>
+
+ <td>${trip.city ? trip.city.cityName : 'N/A'}</td>
+  <td>
                     <button class="SaveBtn" onclick="updateTrip(${trip.tripId}, this)">Save</button>
                     <button class="DeleteBtn" onclick="deleteTrip(${trip.tripId}, this)">Delete</button>
                 </td>`;
@@ -919,7 +929,7 @@
                     tr.innerHTML = `
     <td>${destination.destinationId}</td>
     <td>${destination.name}</td>
-    <td>${destination.cityName}</td>
+    <td>${destination.cities ? destination.cities.cityName : 'N/A'}</td>
     <td>${destination.description}</td>
     <td>
         <input type="file" class="uploadImage" accept="image/jpeg" style="display: none;" />
@@ -931,6 +941,28 @@
                     <button class="SaveBtn" onclick="validateAndSaveDestination(${destination.destinationId}, this)">Save</button>
                     <button class="DeleteBtn" onclick="deleteDestination(${destination.destinationId}, this)">Delete</button>
                 </td>
+`;
+                    destinationsTable.appendChild(tr);
+                });
+            });
+    }
+    function loadDestinationCities() {
+        const destinationsTable = document.querySelector('.tableCities tbody');
+        destinationsTable.innerHTML = '';
+        fetch('http://localhost:8080/api/cities/getAllCities', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(city => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+    <td>${city.cityId}</td>
+    <td>${city.cityName}</td>
+
 `;
                     destinationsTable.appendChild(tr);
                 });
@@ -1099,12 +1131,14 @@
     const usersTable = document.querySelector('.tableUsers');
     const tripsTable = document.querySelector('.tableTrips');
     const destinationTable=document.querySelector('.tableDestination')
+    const citiesTable=document.querySelector('.tableCities')
     dropDownOptions.addEventListener('change', (event) => {
         const selectedValue = event.target.value;
 
         usersTable.classList.add('hidden');
         tripsTable.classList.add('hidden');
         destinationTable.classList.add('hidden');
+        citiesTable.classList.add('hidden');
         if (selectedValue === 'Users') {
             selectedTable.textContent = 'Users';
             usersTable.classList.remove('hidden');
@@ -1117,6 +1151,10 @@
             selectedTable.textContent = 'Destinations';
             destinationTable.classList.remove('hidden');
             loadDestinationTable();
+        }else if(selectedValue==='Cities'){
+            selectedTable.textContent = 'Cities';
+            citiesTable.classList.remove('hidden');
+            loadDestinationCities();
         }
     });
 </script>

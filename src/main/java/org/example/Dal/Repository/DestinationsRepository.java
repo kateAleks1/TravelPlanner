@@ -2,6 +2,7 @@ package org.example.Dal.Repository;
 
 import org.example.entity.Destination;
 import org.example.entity.Trip;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -30,4 +31,7 @@ Optional<List<Destination>> findDestinationByTripsAndDestinationId(@Param("id") 
 
     @Query("SELECT d FROM Destination d JOIN d.cities c WHERE c.cityId=:cityId and d.name LIKE %:prefix%")
     Optional<List<Destination>> findDestinationByPrefix(@Param("cityId") int cityId,@Param("prefix")String prefix);
+
+
+
 }

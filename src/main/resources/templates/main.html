@@ -754,17 +754,19 @@ fetch('http://localhost:8080/api/countries/getAllCountries',{
     document.getElementsByClassName('bx bx-log-out')[0].addEventListener("click",function () {
         window.location.href = 'login.html';
     })
-    document.getElementsByClassName('bx bx-compass')[0].addEventListener("click",function () {
-        window.location.href = 'addTableData.html';
+    document.getElementsByClassName('bx bx-grid-alt')[0].addEventListener("click",function () {
+        window.location.href = 'main.html';
     })
     document.getElementsByClassName('bx bx-heart')[0].addEventListener("click",function () {
         window.location.href = 'myCardsDestinations.html';
+    })
+    document.getElementsByClassName('bx bx-compass')[0].addEventListener("click",function () {
+        window.location.href = 'myDestinations.html';
     })
     document.addEventListener('DOMContentLoaded', function () {
         const dropDownMenu = document.querySelector('.city-dropdown');
         const cardCountries = document.querySelectorAll('.card-country');
 
-        // Загрузка списка стран
         fetch(`http://localhost:8080/api/countries/getAllCountries`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }

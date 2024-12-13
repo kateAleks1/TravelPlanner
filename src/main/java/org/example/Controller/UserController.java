@@ -138,16 +138,15 @@ if(accessTokenHeader.startsWith("Bearer ")){
     public ResponseEntity<?> getUserStatistics() {
         Calendar calendar = Calendar.getInstance();
 
-        // Дата для последней недели (7 дней назад)
         calendar.add(Calendar.DATE, -7);
         Date lastWeek = calendar.getTime();
 
-        // Дата для последнего месяца (1 месяц назад)
-        calendar = Calendar.getInstance(); // сбрасываем календарь
-        calendar.add(Calendar.MONTH, -1); // отнимаем 1 месяц
+
+        calendar = Calendar.getInstance();
+        calendar.add(Calendar.MONTH, -1);
         Date lastMonth = calendar.getTime();
 
-        // Устанавливаем миллисекунды на 0 для "сегодня"
+
        calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);

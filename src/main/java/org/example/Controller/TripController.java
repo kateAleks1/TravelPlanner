@@ -3,6 +3,7 @@ package org.example.Controller;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.example.DTO.CityStatistic;
 import org.example.DTO.TripDto;
 import org.example.DTO.UserDto;
 import org.example.Dal.Repository.TripRepository;
@@ -56,6 +57,13 @@ public ResponseEntity<?> createNewTrip(@PathVariable int userId) {
         return ResponseEntity.ok(trip);
 
     }
+    @GetMapping("/findMostCommonDestination")
+    public ResponseEntity<?> findMostCommonDestination() {
+
+        return ResponseEntity.ok(   tripService.findMostCommonDestination());
+
+    }
+
     @PostMapping("/update-statuses")
     public ResponseEntity<String> updateTripStatuses() {
         tripService.updateTripStatuses();
@@ -89,6 +97,11 @@ public ResponseEntity<?> createNewTrip(@PathVariable int userId) {
     public ResponseEntity<?> getAllTrips() {
             List<Trip> trips = tripService.getAllTrips();
             return ResponseEntity.ok(trips);
+    }
+    @GetMapping("/findAllMostCommonDestination")
+    public ResponseEntity<?> findAllMostCommonDestination() {
+    ;
+        return ResponseEntity.ok( tripService.findAllMostCommonDestination());
     }
     @DeleteMapping("/deleteTrip/{tripId}")
     public ResponseEntity<String> deleteTrip(@PathVariable int tripId) {
@@ -132,6 +145,14 @@ return ResponseEntity.ok(tripService.addDestinationToTrip(tripId,destinationId))
     @GetMapping("/getTripById/{tripId}")
     public ResponseEntity<?> getTripById(@PathVariable int tripId){
         return ResponseEntity.ok(tripService.findTripById(tripId));
+    }
+    @GetMapping("/getTripsGroups/{userID}")
+    public ResponseEntity<?> getTripsGroups(@PathVariable int userID){
+        return ResponseEntity.ok(tripService.getTripByGroup(userID));
+    }
+    @GetMapping("/getAloneTrips/{userID}")
+    public ResponseEntity<?> getAloneTrips(@PathVariable int userID){
+        return ResponseEntity.ok(tripService.getAloneTrip(userID));
     }
     @GetMapping("/getCityFromTripById/{tripId}")
     public ResponseEntity<?> getCityFromTripById(@PathVariable int tripId){

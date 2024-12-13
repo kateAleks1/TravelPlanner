@@ -55,10 +55,7 @@
             transition: 0.2s ease;
             transition-delay: 0.3s;
         }
-        .sidebar *:not(input, button, textarea, a) {
-            outline: none;
-            pointer-events: none;
-        }
+
         .sidebar.close .logo-details .logo_name{
             transition-delay: 0s;
             opacity: 0;
@@ -741,6 +738,18 @@
     </div>
 </section>
 <script>
+    document.getElementsByClassName('bx bx-heart')[0].addEventListener("click",function () {
+        window.location.href = 'myCardsDestinations.html';
+    })
+    document.getElementsByClassName('bx bx-log-out')[0].addEventListener("click",function () {
+        window.location.href = 'login.html';
+    })
+    document.getElementsByClassName('bx bx-grid-alt')[0].addEventListener("click",function () {
+        window.location.href = 'main.html';
+    })
+    document.getElementsByClassName('bx bx-compass')[0].addEventListener("click",function () {
+        window.location.href = 'myDestinations.html';
+    })
 
     let arrows = document.querySelectorAll(".arrow");
     arrows.forEach(arrow => {

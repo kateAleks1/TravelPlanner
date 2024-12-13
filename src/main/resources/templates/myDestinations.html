@@ -726,9 +726,11 @@ margin: 5px;
                 <div class="main-panel-desc">
                     <span class="text-bold">Destination:</span>
                 </div>
-                <div class="main-panel-desc">
-                    <span class="text-dest">Destination:</span>
-                </div>
+                <select id="trip-filter">
+                    <option value="alone">Alone Trip</option>
+                    <option value="group">Group Trip</option>
+                </select>
+                <button id="filter-btn">Filter</button>
             </div>
         </div>
         <div class="card-block">
@@ -929,6 +931,7 @@ margin: 5px;
                 .catch(error => console.error('Ошибка удаления поездки:', error));
         };
     });
+
     function loadDestinationsCard() {
         const tripId = localStorage.getItem("tripId");
         const block = document.querySelector('.card-block');
@@ -1228,9 +1231,10 @@ margin: 5px;
         const formattedEndDate = formatDate(endDate);
         const block = document.querySelector('.card-block');
 
-        const url = `http://localhost:8080/api/trip/filterByDate?startDate=${encodeURIComponent(formattedStartDate)}&endDate=${encodeURIComponent(formattedEndDate)}`;
 
-        fetch(url)
+
+        fetch(`http://localhost:8080/api/trip/filterByDate?startDate=${encodeURIComponent(formattedStartDate)}
+        &endDate=${encodeURIComponent(formattedEndDate)}`)
             .then(response => {
                 if (!response.ok) {
 
@@ -1364,7 +1368,215 @@ margin: 5px;
         })
 
     }
+    const filterBtn = document.getElementById('filter-btn');
 
+    filterBtn.addEventListener('click', () => {
+        const filterSelect = document.getElementById('trip-filter');
+        const selectedFilter = filterSelect.value;
+        const userId=localStorage.getItem('userId');
+        let url = selectedFilter === 'alone'
+            ? `http://localhost:8080/api/trip/getAloneTrips/${userId}`
+            : `http://localhost:8080/api/trip/getTripsGroups/${userId}`;
+        fetch(url)
+            .then(response => {
+
+                return response.json();
+            })
+            .then(data => {
+                const block = document.querySelector('.card-block');
+                block.innerHTML = '';
+
+                data.forEach(cardTrip => {
+
+                    const card = document.createElement('div');
+                    card.classList.add('card-country');
+                    card.dataset.tripId = cardTrip.tripId;
+
+
+                    const btnDelete = document.createElement('i');
+                    btnDelete.classList.add('bx', 'bx-x');
+                    card.appendChild(btnDelete);
+
+                    const btnEdit = document.createElement('i');
+                    btnEdit.classList.add('bx', 'bx-pencil');
+                    card.appendChild(btnEdit);
+                    const btnCalendar = document.createElement('i');
+                    btnCalendar.classList.add('bx', 'bx-calendar');
+                    card.appendChild(btnCalendar);
+                    btnCalendar.addEventListener('click',(event)=>{
+                        event.stopPropagation();
+                        const modalOverlay = document.createElement('div');
+                        modalOverlay.style.position = 'fixed';
+                        modalOverlay.style.top = '0';
+                        modalOverlay.style.left = '0';
+                        modalOverlay.style.width = '100%';
+                        modalOverlay.style.height = '100%';
+                        modalOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                        modalOverlay.style.display = 'flex';
+                        modalOverlay.style.justifyContent = 'center';
+                        modalOverlay.style.alignItems = 'center';
+                        modalOverlay.style.zIndex = '1000';
+
+                        const modal = document.createElement('div');
+                        modal.style.backgroundColor = '#fff';
+                        modal.style.borderRadius = '8px';
+                        modal.style.padding = '20px';
+                        modal.style.width = '300px';
+                        modal.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+                        modalOverlay.appendChild(modal);
+
+                        const title = document.createElement('h3');
+                        title.textContent = 'Trip Dates';
+                        title.style.marginBottom = '10px';
+                        modal.appendChild(title);
+
+                        const startDateLabel = document.createElement('p');
+                        startDateLabel.textContent = `Start Date: ${cardTrip.startDate}`;
+                        modal.appendChild(startDateLabel);
+
+                        const endDateLabel = document.createElement('p');
+                        endDateLabel.textContent = `End Date: ${cardTrip.endDate}`;
+                        modal.appendChild(endDateLabel);
+                        const closeButton = document.createElement('button');
+                        closeButton.textContent = 'Close';
+                        modal.appendChild(closeButton);
+                        document.body.appendChild(modalOverlay);
+
+                        closeButton.addEventListener('click', () => {
+                            modalOverlay.remove();
+                        });
+                    })
+                    btnEdit.addEventListener('click', (event) => {
+                        event.stopPropagation();
+
+                        const modalOverlay = document.createElement('div');
+                        modalOverlay.style.position = 'fixed';
+                        modalOverlay.style.top = '0';
+                        modalOverlay.style.left = '0';
+                        modalOverlay.style.width = '100%';
+                        modalOverlay.style.height = '100%';
+                        modalOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                        modalOverlay.style.display = 'flex';
+                        modalOverlay.style.justifyContent = 'center';
+                        modalOverlay.style.alignItems = 'center';
+                        modalOverlay.style.zIndex = '1000';
+
+                        const modal = document.createElement('div');
+                        modal.style.backgroundColor = '#fff';
+                        modal.style.borderRadius = '8px';
+                        modal.style.padding = '20px';
+                        modal.style.width = '300px';
+                        modal.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+                        modalOverlay.appendChild(modal);
+
+                        const title = document.createElement('h3');
+                        title.textContent = 'Edit Dates';
+                        title.style.marginBottom = '10px';
+                        modal.appendChild(title);
+
+                        const startDateLabel = document.createElement('label');
+                        startDateLabel.textContent = 'Start Date:';
+                        modal.appendChild(startDateLabel);
+
+                        const startDateInput = document.createElement('input');
+                        startDateInput.type = 'date';
+                        startDateInput.value = cardTrip.startDate;
+                        startDateInput.style.marginBottom = '10px';
+                        startDateInput.style.display = 'block';
+                        modal.appendChild(startDateInput);
+
+                        const endDateLabel = document.createElement('label');
+                        endDateLabel.textContent = 'End Date:';
+                        modal.appendChild(endDateLabel);
+
+                        const endDateInput = document.createElement('input');
+                        endDateInput.type = 'date';
+                        endDateInput.value = cardTrip.endDate;
+                        endDateInput.style.marginBottom = '10px';
+                        endDateInput.style.display = 'block';
+                        modal.appendChild(endDateInput);
+
+                        const saveButton = document.createElement('button');
+                        saveButton.textContent = 'Save';
+                        saveButton.style.marginRight = '10px';
+                        modal.appendChild(saveButton);
+
+                        const closeButton = document.createElement('button');
+                        closeButton.textContent = 'Close';
+                        modal.appendChild(closeButton);
+
+                        document.body.appendChild(modalOverlay);
+
+                        saveButton.addEventListener('click', () => {
+                            const updatedStartDate = startDateInput.value ? `${startDateInput.value} 00:00:00` : null;
+                            const updatedEndDate = endDateInput.value ? `${endDateInput.value} 00:00:00` : null;
+
+                            fetch(`http://localhost:8080/api/trip/updateTipById/${cardTrip.tripId}`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    start_date: updatedStartDate,
+                                    end_date: updatedEndDate,
+                                })
+                            })
+                                .then(response => {
+                                    if (response.ok) {
+
+                                        cardTrip.startDate = updatedStartDate;
+                                        cardTrip.endDate = updatedEndDate;
+                                        alert('Dates updated successfully!');
+                                        modalOverlay.remove();
+                                    } else {
+                                        alert('Failed to update dates.');
+                                    }
+                                })
+
+                        });
+
+
+                        closeButton.addEventListener('click', () => {
+                            modalOverlay.remove();
+                        });
+                    });
+
+                    const text = document.createElement('span');
+                    text.classList.add('text');
+                    text.textContent = `${cardTrip.tripId}  ${cardTrip.city.cityName}`;
+                    card.appendChild(text);
+
+                    block.appendChild(card);
+
+
+                    card.addEventListener("click", (event) => {
+                        if (event.target === btnDelete) return;
+                        localStorage.setItem('tripId', cardTrip.tripId);
+                        window.location.href = 'myCardsDestinations.html';
+                    });
+
+
+                    btnDelete.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        const tripId = card.dataset.tripId;
+
+                        fetch(`http://localhost:8080/api/trip/deleteTrip/${tripId}`, {
+                            method: 'DELETE',
+                            headers: { 'Content-Type': 'application/json' }
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    return Promise.reject('Failed to delete trip');
+                                }
+                                card.remove();
+                                console.log(`Trip with ID ${tripId} removed for user ${userId}`);
+                            })
+
+                    });
+                });
+            });
+
+    });
 
 </script>
 </body>

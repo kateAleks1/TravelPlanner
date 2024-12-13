@@ -472,21 +472,16 @@
         const startDate = row.cells[1].querySelector('input').value;
         const endDate = row.cells[2].querySelector('input').value;
         const userId = row.cells[3].textContent.trim();
-        const statusId = row.cells[4].querySelector('input').value;
-        if (!isValidStatusId(statusId)) {
-            alert(`Недопустимый статус ID: ${statusId}`);
-            return;
-        }
+
         const data = {
             trip_id: tripId,
             start_date: formatDateForBackend(startDate),
             end_date: formatDateForBackend(endDate),
-            status_id: parseInt(statusId, 10),
-            idDestination: 1,
+
             user_id: userId
         };
 
-        fetch(`http://localhost:8080/api/trip/updateTrips/${tripId}`, {
+        fetch(`http://localhost:8080/api/trip/updateTipById/${tripId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
@@ -494,7 +489,7 @@
             .then(response => {
                 if (!response.ok) {
                     return response.json().then(err => {
-                        alert(`Failed to update trip: ${err.message || 'Unknown error'}`);
+
                         loadTripsTable();
                     });
                 }

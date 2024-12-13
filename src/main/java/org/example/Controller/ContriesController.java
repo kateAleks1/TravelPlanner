@@ -8,12 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 @RequestMapping("/api/countries")
 @RestController
@@ -36,6 +36,13 @@ public class ContriesController {
     public ResponseEntity<?> mostCommonCountriesByPeriod() {
 
         return ResponseEntity.ok( countryService.mostCommonCountriesByPeriod());
+
+    }
+    @GetMapping("/mostCommonCountriesBySelectedPeriod")
+    public ResponseEntity<?> mostCommonCountriesByPeriod(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date startDate) {
+
+        return ResponseEntity.ok( countryService.mostCommonCountriesByUserSelectedPeriod(startDate));
 
     }
 

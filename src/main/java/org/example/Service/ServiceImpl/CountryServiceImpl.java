@@ -82,16 +82,26 @@ public class CountryServiceImpl implements CountriesService {
                 ((Number) result[1]).intValue()
         )).collect(Collectors.toList());
     }
+    @Override
+    public List<CityStatistic> mostCommonCountriesByUserSelectedPeriod(Date dateDto) {
+        Pageable pageable= PageRequest.of(0,10);
+
+        Page<Object[]> results = countriesRepository.mostCommonCountriesByPeriod(dateDto,pageable);
+        return results.stream().map(result -> new CityStatistic(
+                (String) result[0],
+                ((Number) result[1]).intValue()
+        )).collect(Collectors.toList());
+    }
 
     @Override
     public List<CityStatistic> mostCommonCountriesByAllTheTime(Pageable pageable) {
-        // Передаем pageable в репозиторий
+
         Page<Object[]> results = countriesRepository.mostCommonCountriesByAllTheTime(pageable);
 
         return results.stream()
                 .map(result -> new CityStatistic(
-                        (String) result[0],  // Название страны
-                        ((Number) result[1]).intValue()  // Количество стран
+                        (String) result[0],
+                        ((Number) result[1]).intValue()
                 ))
                 .collect(Collectors.toList());
     }

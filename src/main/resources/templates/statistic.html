@@ -93,19 +93,36 @@ height: 80%;
     <div class="statistic-section">
         <h1>Most Common Destinations</h1>
         <div class="option-block">
-            <select id="timePeriodSelect">
+      <!--      <select id="timePeriodSelect">
                 <option value="today">This week</option>
                 <option value="older">Today</option>
                 <option value="older">Last Month</option>
-            </select>
-            <span>text</span>
+            </select>-->
+            <ul id="popularDestinations">
+
+
+            </ul>
+
         </div>
 
 
     </div>
 
 </div>
+<div class="block-statistic" >
+    <div class="statistic-section">
+        <h1>Top 3 Poplar Countries by Users select Period</h1>
+        <ul id="popularCountries2">
 
+
+        </ul>
+        <label for="start-date">Start Date:</label>
+        <input id="start-date" type="date" class="date-input">
+        <button id="filter-button" class="filter-button">Filter</button>
+    </div>
+
+
+</div>
 
 <script>
     function displayStatistics(data) {
@@ -143,6 +160,29 @@ height: 80%;
                 userStatisticsDiv.appendChild(statItem);
             });
     }
+    function displayStatisticsPopularDestinations(data) {
+        const userStatisticsDiv = document.getElementById('popularDestinations');
+        let a=1;
+        data.forEach(item => {
+
+            const statItem = document.createElement('li');
+            statItem.innerHTML=`<span>Top${a}</span> ${item.cityName} <span>${item.cityCount}</span> <span>Destinations</span>`;
+            a++;
+            userStatisticsDiv.appendChild(statItem);
+        });
+    }
+
+    function mostCommonCountriesByPeriod(data) {
+        const userStatisticsDiv = document.getElementById('popularCountries2');
+        let a=1;
+        data.forEach(item => {
+
+            const statItem = document.createElement('li');
+            statItem.innerHTML=`<span>Top${a}</span> ${item.cityName} <span>${item.cityCount}</span> `;
+            a++;
+            userStatisticsDiv.appendChild(statItem);
+        });
+    }
     fetch('http://localhost:8080/api/getUserStatisticsToday')
         .then(response => response.json())
         .then(data => {
@@ -162,6 +202,44 @@ height: 80%;
 
             displayStatisticsPopularCities(data);
         })
+    fetch('http://localhost:8080/api/trip/findMostCommonDestination')
+        .then(response => response.json())
+        .then(data => {
+
+            displayStatisticsPopularDestinations(data);
+        })
+    const filterButton = document.getElementById('filter-button');
+    filterButton.addEventListener('click', () => {
+        const startDateInput = document.getElementById('start-date');
+        const startDate = startDateInput.value;
+        const formatDate = (date) => {
+            const d = new Date(date);
+            d.setMinutes(0);
+            d.setSeconds(0);
+            d.setMilliseconds(0);
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            const hours = String(d.getHours()).padStart(2, '0');
+            const minutes = String(d.getMinutes()).padStart(2, '0');
+            const seconds = String(d.getSeconds()).padStart(2, '0');
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        };
+        const formattedStartDate = formatDate(startDate);
+
+        fetch(`http://localhost:8080/api/countries/mostCommonCountriesBySelectedPeriod?startDate=${encodeURIComponent(formattedStartDate)}`)
+                .then(response => {
+            if (!response.ok) {
+                window.alert('aaa')
+            }
+            return response.json();
+        })
+            .then(data => {
+                mostCommonCountriesByPeriod(data);
+            })
+    })
+
+
 </script>
 </body>
 </html>

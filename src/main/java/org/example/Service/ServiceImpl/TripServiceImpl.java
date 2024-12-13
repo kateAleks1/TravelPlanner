@@ -2,6 +2,8 @@ package org.example.Service.ServiceImpl;
 
 import jakarta.persistence.EntityNotFoundException;
 
+import org.example.DTO.CityStatistic;
+import org.example.DTO.DestinationsStatistic;
 import org.example.DTO.TripDto;
 import org.example.Dal.Repository.*;
 import org.example.Service.TripService;
@@ -9,6 +11,9 @@ import org.example.entity.*;
 
 import org.example.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -20,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class TripServiceImpl implements TripService {
@@ -127,7 +133,19 @@ public class TripServiceImpl implements TripService {
         return tripRepository.findTripsByDateRange(startDate, endDate);
     }
 
-//    public void forceUpdateTripStatuses() {
+    @Override
+    public List<DestinationsStatistic> findMostCommonDestination() {
+        Pageable pageable= PageRequest.of(0,3);
+        Page<Object[]> results=tripRepository.findMostCommonDestination(pageable);
+        return results.stream()
+                .map(result -> new DestinationsStatistic(
+                        (String) result[1],
+                        (Long) result[0])
+                ).collect(Collectors.toList());
+
+    }
+
+    //    public void forceUpdateTripStatuses() {
 //        taskScheduler.schedule(this::updateTripStatuses, new Date());  // Немедленное выполнение
 //    }
     @Override
@@ -158,7 +176,12 @@ else{
 tripRepository.saveAll(trips);
 
 }
-@Scheduled(cron="0 0 0 * * ?")
+    @Override
+    public List<DestinationsStatistic> findAllMostCommonDestination() {
+        return tripRepository.findAllMostCommonDestination();
+    }
+
+    @Scheduled(cron="0 0 0 * * ?")
     @Override
     public void updateupreatedAtDates() {
         Random random=new Random();
@@ -228,11 +251,11 @@ tripRepository.saveAll(trips);
             Date today = dateOnlyFormat.parse(dateOnlyFormat.format(new Date()));
 
             if (startDate.after(today)) {
-                trip.setStatusTrip(tripStatusRepository.findById(2)
-                        .orElseThrow(() -> new RuntimeException("Status not found"))); // PLANNED
-            } else if (startDate.before(today) && endDate.after(today)) {
                 trip.setStatusTrip(tripStatusRepository.findById(3)
                         .orElseThrow(() -> new RuntimeException("Status not found"))); // IN_PROGRESS
+            } else if (startDate.before(today) && endDate.after(today)) {
+                trip.setStatusTrip(tripStatusRepository.findById(2)
+                        .orElseThrow(() -> new RuntimeException("Status not found"))); // PLANNED
             } else if (endDate.before(today)) {
                 trip.setStatusTrip(tripStatusRepository.findById(4)
                         .orElseThrow(() -> new RuntimeException("Status not found"))); // FINISHED
@@ -325,5 +348,13 @@ trip.setCreatedAt(tripDto.getCreatedAt());
         return tripRepository.findById(tripId).isPresent();
     }
 
+    @Override
+    public List<Trip> getAloneTrip(int userId) {
+        return tripRepository.getAloneTrip(userId).get();
+    }
 
+    @Override
+    public List<Trip> getTripByGroup(int userId) {
+        return tripRepository.getTripByGroup(userId).get();
+    }
 }

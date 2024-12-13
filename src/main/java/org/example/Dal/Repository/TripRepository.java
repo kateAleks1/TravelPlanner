@@ -1,7 +1,11 @@
 package org.example.Dal.Repository;
 
+import org.example.DTO.CityStatistic;
+import org.example.DTO.DestinationsStatistic;
 import org.example.entity.Destination;
 import org.example.entity.Trip;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -57,7 +61,10 @@ Date getCreatedAtFromTripById(@Param("tripId") int tripID);
     Optional<List<Trip>> getTripByUsersId(@Param("userId") int userId);
     @Query("SELECT t FROM Trip t JOIN TripPartcipants tp ON tp.trip = t WHERE tp.user.login = :userLogin")
     Optional<List<Trip>> getTripByUsersLogin(@Param("userLogin") String userLogin);
-
+    @Query("SELECT t FROM Trip t JOIN TripPartcipants tp ON tp.trip = t WHERE tp.isGroup=true AND tp.user.id=:userid")
+    Optional<List<Trip>> getTripByGroup(@Param("userid") int userId);
+    @Query("SELECT t FROM Trip t JOIN TripPartcipants tp ON tp.trip = t WHERE tp.isGroup=false AND tp.user.id=:userid")
+    Optional<List<Trip>> getAloneTrip(@Param("userid") int userId);
     @Query("SELECT t FROM Trip t JOIN FETCH t.participants")
     List<Trip> findAllWithParticipants();
     @Modifying
@@ -69,6 +76,16 @@ Date getCreatedAtFromTripById(@Param("tripId") int tripID);
     @Query("SELECT t FROM Trip t JOIN t.city c WHERE c.cityName LIKE %:prefix%")
     Optional<List<Trip>> findTripsByPrefix(@Param("prefix")String prefix);
 
+    @Query("SELECT COUNT(tp.destination.destinationId) AS countDestinations, " +
+            "tp.destination.name " +
+            "FROM TripDestination tp " +
+            "GROUP BY tp.destination.destinationId, tp.destination.name")
+    Page<Object[]> findMostCommonDestination(Pageable pageable);
+
+    @Query("SELECT new org.example.DTO.DestinationsStatistic(tp.destination.name, COUNT(tp.destination.destinationId)) " +
+            "FROM TripDestination tp " +
+            "GROUP BY tp.destination.destinationId, tp.destination.name")
+    List<DestinationsStatistic> findAllMostCommonDestination();
 
 }
 

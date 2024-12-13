@@ -41,7 +41,7 @@ public class CitiesServiceImpl implements CitiesService {
     @Override
     public Optional<Cities> getCitiesById(int id) {
         Optional<Cities> city = citiesRepository.findById(id);
-        return city;  // Возвращаем Optional, не вызывая .get()
+        return city;
     }
 
 
