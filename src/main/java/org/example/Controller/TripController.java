@@ -98,10 +98,14 @@ public ResponseEntity<?> createNewTrip(@PathVariable int userId) {
             List<Trip> trips = tripService.getAllTrips();
             return ResponseEntity.ok(trips);
     }
+
     @GetMapping("/findAllMostCommonDestination")
     public ResponseEntity<?> findAllMostCommonDestination() {
-    ;
-        return ResponseEntity.ok( tripService.findAllMostCommonDestination());
+        return ResponseEntity.ok( tripService.findAllMostCommonTripsByCountry());
+    }
+    @GetMapping("/findAllLeastCommonTripsByCountry")
+    public ResponseEntity<?> findAllLeastCommonTripsByCountry() {
+        return ResponseEntity.ok( tripService.findAllLeastCommonTripsByCountry());
     }
     @DeleteMapping("/deleteTrip/{tripId}")
     public ResponseEntity<String> deleteTrip(@PathVariable int tripId) {
@@ -136,6 +140,10 @@ return ResponseEntity.ok(tripService.addDestinationToTrip(tripId,destinationId))
     @GetMapping("/searchTrips")
     public ResponseEntity<?> SearchTripByPrefix(@RequestParam String query){
         return ResponseEntity.ok(tripService.SearchTripByPrefix(query));
+    }
+    @GetMapping("/findAllMostCommonTripsByCountry")
+    public ResponseEntity<?> findAllMostCommonTripsByCountry(){
+        return ResponseEntity.ok(tripService.findAllMostCommonTripsByCountry());
     }
     @DeleteMapping("/{tripId}/deleteDestinationById/{destinationId}")
     public ResponseEntity<?> deleteDestinationById(@PathVariable int tripId, @PathVariable int destinationId){

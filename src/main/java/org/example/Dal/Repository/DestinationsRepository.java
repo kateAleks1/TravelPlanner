@@ -1,6 +1,7 @@
 package org.example.Dal.Repository;
 
 import org.example.entity.Destination;
+import org.example.entity.Review;
 import org.example.entity.Trip;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,6 +15,9 @@ import java.util.Optional;
 public interface DestinationsRepository extends JpaRepository<Destination,Integer> {
 
     Optional<Destination> findByDestinationId(int integer);
+
+    @Query("SELECT t.review FROM Destination t WHERE t.destinationId = :destinationId")
+    Optional<List<Review>> findReviewByDestinationId(@Param("destinationId") int destinationId);
 
     @Query("SELECT d FROM  Destination d where d.destinationType.typeName=:typeName")
     Optional<List<Destination>> findDestinationByDestinationType(@Param("typeName") String typeName);

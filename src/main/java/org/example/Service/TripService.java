@@ -3,6 +3,7 @@ package org.example.Service;
 import org.example.DTO.CityStatistic;
 import org.example.DTO.DestinationsStatistic;
 import org.example.DTO.TripDto;
+import org.example.DTO.TripSortingCountries;
 import org.example.entity.Destination;
 import org.example.entity.Trip;
 
@@ -33,4 +34,6 @@ void updateTrip(int tripId, TripDto trip);
     List<DestinationsStatistic> findAllMostCommonDestination();
     List<Trip> getAloneTrip(int userId);
     List<Trip> getTripByGroup(int userId);
+    List<TripSortingCountries> findAllMostCommonTripsByCountry();
+    List<TripSortingCountries> findAllLeastCommonTripsByCountry();
 }

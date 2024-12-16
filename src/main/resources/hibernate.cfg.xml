@@ -22,5 +22,7 @@
     <mapping class="org.example.entity.TripPartcipants"/>
     <mapping class="org.example.entity.Cities"/>
     <mapping class="org.example.entity.Destination"/>
+    <mapping class="org.example.entity.Review"/>
+
   </session-factory>
 </hibernate-configuration>

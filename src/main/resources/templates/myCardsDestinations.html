@@ -272,12 +272,24 @@
         .card-country .bx-x.selected {
             color: black;
         }
-        .card-country .bx-x {
+        .card-country .bx-star {
             position: absolute;
-            margin: 5px;
-            top: 10px;
-            right: 10px;
-            font-size: 30px;
+            margin-right: 40px;
+
+            color: #ffffff;
+            cursor: pointer;
+        }
+        .card-country .bx-pencil {
+            position: absolute;
+            margin-right: 43%;
+
+            color: #ffffff;
+            cursor: pointer;
+        }
+        .card-country .btnselect{
+
+            margin-right: 100px;
+
             color: #ffffff;
             cursor: pointer;
         }
@@ -383,6 +395,19 @@
                 cursor: pointer;
             }
         }
+        .bx {
+            font-family: boxicons !important;
+            font-weight: 400;
+            font-style: normal;
+            font-variant: normal;
+            line-height: 1;
+            text-rendering: auto;
+            display: inline-block;
+            text-transform: none;
+            speak: none;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
         .separator {
             width: 1px;
             height: 100%;
@@ -463,10 +488,31 @@
                 color: red;
                 background-color: rgba(255, 255, 255, 0.8);
             }
+
+        .card-country .bx-star {
+            color: white;
+            background-color:  #ffdd33;
+        }
             .card-country i.selected {
                 color: white;
                 background-color: red;
             }
+        .card-country .bx-star:hover {
+            color: white;
+            background-color: #ffdd33;
+        }
+
+
+        .card-country .bx-star {
+            color: white;
+            background-color: #ffdd33;
+        }
+
+
+        .card-country i.selected {
+            color: white;
+            background-color: red;
+        }
 
         .search-input {
             padding-left: 30px;
@@ -503,7 +549,7 @@
         }
         button {
             background-color: #007BFF;
-            color: #bd3030;
+            color: #ffffff;
             border: none;
             padding: 10px 20px;
             font-size: 16px;
@@ -533,6 +579,24 @@
             padding: 10px 20px;
             border-radius: 5px;
         }
+        .card-country .rating-select {
+            position: absolute;
+            top: 10px;
+            right: 90px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: none;
+            border-radius: 5px;
+            padding: 5px;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .card-country .rating-select:focus {
+            outline: none;
+            border: 1px solid #888;
+        }
+
 
         .card-country .stars-container i {
             font-size: 18px;
@@ -873,16 +937,109 @@
                     const btnDelete = document.createElement('i');
                     btnDelete.classList.add('bx', 'bx-x');
                     card.appendChild(btnDelete);
+                    const btnStar = document.createElement('i');
+                    btnStar.classList.add('bx', 'bx-star');
+                    card.appendChild(btnStar);
+                    const ratingSelect = document.createElement('select');
+                    ratingSelect.classList.add('rating-select');
+                    for (let i = 1; i <= 5; i++) {
+                        const option = document.createElement('option');
+                        option.value = i;
+                        option.textContent = i;
+                        ratingSelect.appendChild(option);
+                    }
+                    ratingSelect.addEventListener('change', (event) => {
+                        const newRating = event.target.value;
 
+                        fetch(`/api/reviews/${reviewId}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ reviewRating: newRating })
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Failed to update rating');
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                console.log('Rating updated:', data);
+                            })
+                            .catch(error => {
+                                console.error('Error updating rating:', error);
+                            });
+                    });
+
+                    card.appendChild(ratingSelect);
+                    const btnEdit = document.createElement('i');
+                    btnEdit.classList.add('bx', 'bx-pencil');
+                    card.appendChild(btnEdit);
                     const text = document.createElement('span');
                     text.classList.add('text');
                     text.textContent = cardDestination.name;
                     card.appendChild(text);
 
+                    btnEdit.addEventListener('click', (event) => {
+                        event.stopPropagation();
+
+                        const modalOverlay = document.createElement('div');
+                        modalOverlay.style.position = 'fixed';
+                        modalOverlay.style.top = '0';
+                        modalOverlay.style.left = '0';
+                        modalOverlay.style.width = '100%';
+                        modalOverlay.style.height = '100%';
+                        modalOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                        modalOverlay.style.display = 'flex';
+                        modalOverlay.style.justifyContent = 'center';
+                        modalOverlay.style.alignItems = 'center';
+                        modalOverlay.style.zIndex = '1000';
+
+                        const modal = document.createElement('div');
+                        modal.style.backgroundColor = '#fff';
+                        modal.style.borderRadius = '8px';
+                        modal.style.padding = '20px';
+                        modal.style.width = '300px';
+                        modal.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+                        modalOverlay.appendChild(modal);
+
+                        const title = document.createElement('h3');
+                        title.textContent = 'Please leave your feedback';
+                        title.style.marginBottom = '10px';
+                        modal.appendChild(title);
+
+                        const textarea = document.createElement('textarea');
+                        textarea.placeholder = 'Type your feedback here...';
+                        textarea.style.width = '100%';
+                        textarea.style.height = '100px';
+                        textarea.style.marginBottom = '10px';
+                        textarea.style.resize = 'none';
+                        textarea.style.padding = '10px';
+                        textarea.style.borderRadius = '4px';
+                        textarea.style.border = '1px solid #ccc';
+                        modal.appendChild(textarea);
+
+                        const saveButton = document.createElement('button');
+                        saveButton.textContent = 'Save';
+                        saveButton.style.marginRight = '10px';
+                        modal.appendChild(saveButton);
+
+                        const closeButton = document.createElement('button');
+                        closeButton.textContent = 'Close';
+                        modal.appendChild(closeButton);
+
+                        document.body.appendChild(modalOverlay);
+
+                        saveButton.addEventListener('click', () => {
+
+                        });
 
 
-
-
+                        closeButton.addEventListener('click', () => {
+                            modalOverlay.remove();
+                        });
+                    });
 
                     btnDelete.addEventListener('click', (event) => {
                         event.stopPropagation();

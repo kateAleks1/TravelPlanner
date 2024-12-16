@@ -35,6 +35,8 @@
  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 
  private Set<TripPartcipants> trips = new HashSet<>();
+        @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+        private Review review;
 
 
     }

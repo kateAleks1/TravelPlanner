@@ -259,14 +259,14 @@ margin-left: 40px;
             left: 260px;
             padding: 20px;
             min-height: 100vh;
-            width: calc(100% - 260px); /* Ширина на 260px меньше от общего размера экрана */
+            width: calc(100% - 260px);
             transition: all 0.5s ease;
-            box-sizing: border-box; /* Убедитесь, что padding не увеличивает размеры */
+            box-sizing: border-box;
         }
         .main-section {
 
             position: relative;
-            background: #f1f1f1; /* Тёмный фон для внутреннего блока */
+            background: #f1f1f1;
             width: 100%;
             border-radius: 20px;
             padding: 15px;
@@ -341,14 +341,43 @@ margin-left: 40px;
                 left: 0;
             }
 
-            /* Новый стиль для бургер-меню */
+
             .home-section .home-content .bx-menu {
                 display: block;
                 margin: 0 15px;
-                font-size: 30px; /* Размер иконки меню */
+                font-size: 30px;
                 transition: all 0.3s ease;
             }
+            .card-container {
 
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px; /* Space between cards */
+                margin: 20px;
+            }
+
+            .card-country {
+                width: calc(20% - 15px); /* 5 cards per row, accounting for gap */
+                box-sizing: border-box;
+                border: 1px solid #ccc;
+                padding: 10px;
+                text-align: center;
+                background-color: #f9f9f9;
+            }
+
+            .card-country img {
+                width: 100%;
+                height: auto;
+                max-height: 150px;
+                object-fit: cover;
+            }
+
+            .card-country .text {
+                display: block;
+                margin-top: 10px;
+                font-size: 1.2em;
+                font-weight: bold;
+            }
             .sidebar.close .home-section .bx-menu {
                 display: block;
                 cursor: pointer;
@@ -357,7 +386,7 @@ margin-left: 40px;
         .separator {
             width: 1px;
             height: 100%;
-            background-color: #000; /* The color of the vertical line */
+            background-color: #000;
         }
 
         .text {
@@ -387,7 +416,7 @@ margin-left: 40px;
         .main-panel-desc {
             display: flex;
             flex-direction: column;
-            align-items: center/* Stack elements vertically */
+            align-items: center
         }
         .main-panel-desc .text-bold{
           font-size: 20px;
@@ -430,15 +459,23 @@ background: #ffffff;
             font-size: 20px;
             color: #aaa;
         }
+
         .card-block{
             display: flex;
             justify-content: space-between;
 
         }
+            .card-container{
+                display: flex;
+                justify-content: space-between;
+            }
+
+
+
 
         .card-country:hover {
-            background-color: rgba(0, 0, 0, 0.1); /* Подсветка фоном при наведении */
-            transform: scale(1.05); /* Немного увеличиваем размер для эффекта выбора */
+            background-color: rgba(0, 0, 0, 0.1);
+            transform: scale(1.05);
         }
         .card-country {
             position: relative;
@@ -459,14 +496,14 @@ background: #ffffff;
         }
         .card-country .text {
             position: absolute;
-            bottom: 10px; /* Отступ от нижней границы */
-            left: 10px; /* Отступ от левой границы */
-            color: white; /* Цвет текста */
-            font-size: 18px; /* Размер шрифта */
-            font-weight: bold; /* Сделать текст жирным */
+            bottom: 10px;
+            left: 10px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
             background-color: rgba(0, 0, 0, 0.5);
-            padding: 10px 20px; /* Отступы вокруг текста */
-            border-radius: 5px; /* Скругление фона текста */
+            padding: 10px 20px;
+            border-radius: 5px;
         }
         .city-dropdown {
             width: 200px;
@@ -636,12 +673,12 @@ background: #ffffff;
                 <div class="main-panel-desc">
                     <span class="text-bold">Filters</span>
                 </div>
-                <select  class="city-dropdown">
-                <option value="" disabled selected>Filters</option>
-                    <option value="Most popular" >Most popular</option>
-                    <option value="Most popular" >Europe</option>
-                    <option value="Most popular" >Asia</option>
-            </select>
+                <div class="filters">
+                    <button class="filter-button" data-filter="most">Most Common Trips</button>
+                    <button class="filter-button" data-filter="least">Least Common Trips</button>
+                    <button class="show-blocks-button">Показать блоки</button>
+                </div>
+
             </div>
             <div class="separator"></div>
             <div class="section right">
@@ -651,6 +688,7 @@ background: #ffffff;
                 </div>
             </div>
         </div>
+        <div class="card-container"></div>
         <div class="card-block">
             <div class="card-country" data-country="Spain">
                 <img src="http://localhost:8080/images/spain.jpg" alt="Spain">
@@ -814,6 +852,85 @@ fetch('http://localhost:8080/api/countries/getAllCountries',{
 
 
     })
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const filterButtons = document.querySelectorAll('.filter-button');
+        const showBlocksButton = document.querySelector('.show-blocks-button');
+        const cardContainer = document.querySelector('.card-container');
+        const cardBlocks = document.querySelectorAll('.card-block');
+
+
+
+        // Функция для загрузки и отображения карточек
+        function loadCards(filterType) {
+            const apiUrl = filterType === 'most'
+                ? `http://localhost:8080/api/trip/findAllMostCommonTripsByCountry`
+                : `http://localhost:8080/api/trip/findAllLeastCommonTripsByCountry`;
+            // Скрываем блоки по умолчанию
+            cardBlocks.forEach(block => block.style.display = 'none');
+            fetch(apiUrl, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Error fetching ${filterType} trips: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.length === 0) {
+                        window.alert('No trips found for this filter.');
+                        return;
+                    }
+
+                    // Сортируем данные
+                    const sortedData = data.sort((a, b) => {
+                        return filterType === 'most'
+                            ? b.cityCount - a.cityCount
+                            : a.cityCount - b.cityCount;
+                    });
+
+                    // Очищаем контейнер перед добавлением новых карточек
+                    cardContainer.innerHTML = '';
+
+                    // Создаём новые карточки
+                    sortedData.forEach(item => {
+                        const card = document.createElement('div');
+                        card.classList.add('card-country');
+                        card.dataset.country = item.cityName;
+
+                        const img = document.createElement('img');
+                        img.src = item.imageUrl;
+                        img.alt = item.cityName;
+
+                        const span = document.createElement('span');
+                        span.classList.add('text');
+                        span.textContent = item.cityName;
+
+                        card.appendChild(img);
+                        card.appendChild(span);
+
+                        cardContainer.appendChild(card);
+                    });
+                })
+                .catch(error => console.error(error.message));
+        }
+
+        // Обработчики для кнопок фильтров
+        document.querySelector('[data-filter="most"]').addEventListener('click', () => loadCards('most'));
+        document.querySelector('[data-filter="least"]').addEventListener('click', () => loadCards('least'));
+
+        // Обработчик для кнопки "Показать блоки"
+        showBlocksButton.addEventListener('click', function () {
+            cardBlocks.forEach(block => (block.style.display = 'flex'));
+            cardContainer.innerHTML = ''; // Очищаем динамический контейнер
+        });
+    });
+
+
+
+
 </script>
 
 </body>

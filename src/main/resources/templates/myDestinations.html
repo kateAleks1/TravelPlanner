@@ -834,30 +834,28 @@ margin: 5px;
         function createTripCard(trip) {
             const card = document.createElement('div');
             card.classList.add('card-country');
-            card.dataset.tripId = trip.tripId; // Сохраняем tripId в data-атрибуте
+            card.dataset.tripId = trip.tripId;
 
-            // Создание кнопки удаления
             const btnDelete = document.createElement('i');
             btnDelete.classList.add('bx', 'bx-x');
             card.appendChild(btnDelete);
 
-            // Создание содержимого карточки
+
 
             const text = document.createElement('span');
             text.classList.add('text');
             text.textContent = `${trip.tripId}  ${trip.city.cityName}`;
             card.appendChild(text);
 
-            // Добавление обработчика клика для перехода на другую страницу
+
             card.addEventListener("click", (event) => {
-                if (event.target === btnDelete) return; // Игнорируем клик на кнопке удаления
+                if (event.target === btnDelete) return;
                 localStorage.setItem('tripId', trip.tripId);
-                window.location.href = 'myCardsDestinations.html'; // Переход на другую страницу
+                window.location.href = 'myCardsDestinations.html';
             });
 
-            // Добавление обработчика клика для удаления карточки
             btnDelete.addEventListener('click', (event) => {
-                event.stopPropagation(); // Останавливаем всплытие события
+                event.stopPropagation();
                 const tripId = card.dataset.tripId;
 
                 fetch(`http://localhost:8080/api/trip/deleteTrip/${tripId}`, {
@@ -869,7 +867,7 @@ margin: 5px;
                             console.error(`Failed to delete trip: ${response.status}`);
                             return Promise.reject('Failed to delete trip');
                         }
-                        card.remove(); // Удаление карточки из DOM
+                        card.remove();
                         console.log(`Trip with ID ${tripId} deleted successfully.`);
                     })
                     .catch(error => {

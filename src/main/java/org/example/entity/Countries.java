@@ -27,5 +27,7 @@ public class Countries {
     @JsonIgnore
     @OneToMany(mappedBy = "countryId", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private  List<Cities> cities;
+    @Column(name = "image_url")
+    private String imageUrl;
 
 }

@@ -2,7 +2,9 @@ package org.example.Dal.Repository;
 
 import org.example.DTO.CityStatistic;
 import org.example.DTO.DestinationsStatistic;
+import org.example.DTO.TripSortingCountries;
 import org.example.entity.Destination;
+import org.example.entity.Review;
 import org.example.entity.Trip;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +26,6 @@ public interface TripRepository extends JpaRepository<Trip,Integer> {
 
     @Query("SELECT t.destinations FROM Trip t WHERE t.tripId = :tripId")
     Optional<List<Destination>> findDestinationsByTripId(@Param("tripId") int tripId);
-
 
 
 
@@ -86,6 +87,23 @@ Date getCreatedAtFromTripById(@Param("tripId") int tripID);
             "FROM TripDestination tp " +
             "GROUP BY tp.destination.destinationId, tp.destination.name")
     List<DestinationsStatistic> findAllMostCommonDestination();
+
+    @Query("SELECT new org.example.DTO.TripSortingCountries(co.countryName, COUNT(tp),co.imageUrl) " +
+            "FROM TripPartcipants tp " +
+            "JOIN tp.trip t " +
+            "JOIN t.city c " +
+            "JOIN c.countryId co " +
+            "GROUP BY co.countryName,co.imageUrl " +
+            "ORDER BY COUNT(tp) DESC")
+    List<TripSortingCountries> findAllMostCommonTripsByCountry();
+    @Query("SELECT new org.example.DTO.TripSortingCountries(co.countryName, COUNT(tp),co.imageUrl) " +
+            "FROM TripPartcipants tp " +
+            "JOIN tp.trip t " +
+            "JOIN t.city c " +
+            "JOIN c.countryId co " +
+            "GROUP BY co.countryName,co.imageUrl " +
+            "ORDER BY COUNT(tp) ASC ")
+    List<TripSortingCountries> findAllLeastCommonTripsByCountry();
 
 }
 

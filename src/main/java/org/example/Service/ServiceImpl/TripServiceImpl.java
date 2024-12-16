@@ -5,6 +5,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.example.DTO.CityStatistic;
 import org.example.DTO.DestinationsStatistic;
 import org.example.DTO.TripDto;
+import org.example.DTO.TripSortingCountries;
 import org.example.Dal.Repository.*;
 import org.example.Service.TripService;
 import org.example.entity.*;
@@ -90,6 +91,15 @@ public class TripServiceImpl implements TripService {
         tripRepository.save(trip);
     }
 
+    @Override
+    public List<TripSortingCountries> findAllMostCommonTripsByCountry() {
+        return tripRepository.findAllMostCommonTripsByCountry();
+    }
+
+    @Override
+    public List<TripSortingCountries> findAllLeastCommonTripsByCountry() {
+        return tripRepository.findAllLeastCommonTripsByCountry();
+    }
 
     @Override
     public List<Trip> getAllTrips() {
