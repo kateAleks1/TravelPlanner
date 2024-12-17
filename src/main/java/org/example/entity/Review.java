@@ -34,14 +34,13 @@ public class Review {
     @Column(name="creating_date")
     private Date creatingDate;
     @Column(name="rating")
-
-    @Min(1)
-    @Max(5)
     private int reviewRating;
     @OneToOne
+    @JsonIgnore
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "destination_id", referencedColumnName = "destination_id")
     private Destination destinationId;
 
