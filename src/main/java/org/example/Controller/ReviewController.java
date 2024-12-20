@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/review")
 
@@ -18,14 +20,30 @@ public class ReviewController {
 
 
 
-    @PostMapping("/createNewTrip")
+    @PostMapping("/createNewReview")
     public ResponseEntity<?> createNewTrip(@RequestBody ReviewDto reviewDto) {
 
         Review review= reviewService.createReview(reviewDto);
-
-        return ResponseEntity.ok(review);
+        Map<String,Integer> map=Map.of("reviewId",review.getReviewId());
+        return ResponseEntity.ok(map);
 
     }
+    @GetMapping("findReviewByDestinationIdAndUserId/{destinationId}/{userId}")
+    public ResponseEntity<?> findReviewByDestinationIdAndUserId(@PathVariable int destinationId,@PathVariable int userId) {
+        return ResponseEntity.ok(reviewService.findReviewByDestinationIdAndUserId(destinationId,userId));
+
+    }
+    @PutMapping("update/{destinationId}/{userId}")
+    public ResponseEntity<?> update(@PathVariable int destinationId,@PathVariable int userId,@RequestBody ReviewDto reviewDto) {
+        return ResponseEntity.ok(reviewService.updateReview(destinationId,userId,reviewDto));
+
+    }
+    @GetMapping("findReviewRatingByDestinationIdAndUserId/{destinationId}/{userId}")
+    public ResponseEntity<?> findReviewRatingByDestinationIdAndUserId(@PathVariable int destinationId,@PathVariable int userId) {
+        return ResponseEntity.ok(reviewService.findReviewRatingByDestinationIdAndUserId(destinationId,userId));
+
+    }
+
     @GetMapping("getAllReviews")
     public ResponseEntity<?> getAllReviews() {
 

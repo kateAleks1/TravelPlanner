@@ -37,7 +37,7 @@ public class Destination {
     @ManyToOne
     @JoinColumn(name = "type_id")
     private DestinationType destinationType;
-    @OneToMany(mappedBy = "destinationId")
+    @OneToMany(mappedBy = "destination")
     private List<Review> review;
 }
 

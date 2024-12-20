@@ -867,7 +867,7 @@
     function loadDestinationsCard() {
         const tripId = localStorage.getItem("tripId");
         const block = document.querySelector('.card-block');
-
+        const userId = localStorage.getItem("tripId");
         fetch(`http://localhost:8080/api/trip/getDestinations/${tripId}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
@@ -950,26 +950,35 @@
                     }
                     ratingSelect.addEventListener('change', (event) => {
                         const newRating = event.target.value;
-
-                        fetch(`/api/reviews/${reviewId}`, {
-                            method: 'PUT',
+                        const currentDate = new Date();
+                        const formattedDate = currentDate.toISOString()
+                            .slice(0, 19)
+                            .replace("T", " ");
+                        const userId = localStorage.getItem('userId');
+                      const data=  {
+                            creatingDate: formattedDate,
+                            reviewRating: newRating,
+                            userId: userId,
+                            destinationId: destId
+                        };
+                        fetch(`http://localhost:8080/api/review/createNewReview`, {
+                            method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
                             },
-                            body: JSON.stringify({ reviewRating: newRating })
+                            body: JSON.stringify(data)
                         })
                             .then(response => {
                                 if (!response.ok) {
-                                    throw new Error('Failed to update rating');
+                                   window.alert('Failed to update rating');
                                 }
                                 return response.json();
                             })
                             .then(data => {
+                                localStorage.setItem("reviewId",data.reviewId)
                                 console.log('Rating updated:', data);
                             })
-                            .catch(error => {
-                                console.error('Error updating rating:', error);
-                            });
+
                     });
 
                     card.appendChild(ratingSelect);
@@ -1035,6 +1044,24 @@
                             const formattedDate = currentDate.toISOString()
                                 .slice(0, 19)
                                 .replace("T", " ");
+                            const textareaValue=textarea.value;
+                            const userId = localStorage.getItem('userId');
+                            fetch(`http://localhost:8080/api/review/update/${cardDestination.destinationId}/${userId}`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(textareaValue)
+                            })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        window.alert('Failed to update rating');
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    console.log('Rating updated:', data);
+                                })
                         });
 
 
@@ -1071,6 +1098,271 @@
                 });
             })
 
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+        cityName();
+        loadCityId();
+        loadDestinationsCard();
+    });
+
+    function loadDestinationsCard() {
+        const tripId = localStorage.getItem("tripId");
+        const block = document.querySelector('.card-block');
+        const userId = localStorage.getItem("userId");
+
+        fetch(`http://localhost:8080/api/trip/getDestinations/${tripId}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        console.warn("No destinations found for this trip.");
+                        displayNoDestinationsMessage(block);
+                        return [];
+                    }
+                }
+                return response.json();
+            })
+            .then(data => {
+                block.innerHTML = '';
+                if (!data || data.length === 0) {
+                    displayNoDestinationsMessage(block);
+                    return;
+                }
+                data.forEach(cardDestination => {
+                    createDestinationCard(cardDestination, block, userId);
+                });
+            });
+    }
+
+    function displayNoDestinationsMessage(block) {
+        block.innerHTML = '<p style="margin-top: 30px;">No destinations found. Add one to start planning your trip!</p>';
+        const btn = document.createElement('button');
+        btn.textContent = 'Add Destination';
+        btn.classList.add('add-destination-btn');
+        btn.addEventListener('click', () => {
+            window.location.href = 'CardDestinations.html';
+        });
+        block.appendChild(btn);
+    }
+
+    function createDestinationCard(cardDestination, block, userId) {
+        const card = document.createElement('div');
+        card.classList.add('card-country');
+        card.style.backgroundImage = `url('${cardDestination.imageUrl}')`;
+        card.style.backgroundSize = 'cover';
+        card.style.backgroundPosition = 'center';
+        card.style.height = '200px';
+        card.style.width = '300px';
+
+        const destId = cardDestination.destinationId;
+
+        const btnDelete = document.createElement('i');
+        btnDelete.classList.add('bx', 'bx-x');
+        card.appendChild(btnDelete);
+
+        const btnStar = document.createElement('i');
+        btnStar.classList.add('bx', 'bx-star');
+        card.appendChild(btnStar);
+
+        const ratingSelect = createRatingSelect(destId, userId);
+        card.appendChild(ratingSelect);
+
+        const btnEdit = document.createElement('i');
+        btnEdit.classList.add('bx', 'bx-pencil');
+        card.appendChild(btnEdit);
+
+        const text = document.createElement('span');
+        text.classList.add('text');
+        text.textContent = cardDestination.name;
+        card.appendChild(text);
+
+        btnEdit.addEventListener('click', (event) => {
+            event.stopPropagation();
+            showFeedbackModal(destId, userId);
+        });
+
+        btnDelete.addEventListener('click', (event) => {
+            event.stopPropagation();
+            deleteDestination(destId, card, block);
+        });
+
+        block.appendChild(card);
+
+        loadReviewData(destId, userId, ratingSelect);
+    }
+
+    function createRatingSelect(destId, userId) {
+        const ratingSelect = document.createElement('select');
+        ratingSelect.classList.add('rating-select');
+        for (let i = 1; i <= 5; i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = i;
+            ratingSelect.appendChild(option);
+        }
+        ratingSelect.addEventListener('change', (event) => {
+            const newRating = event.target.value;
+            const currentDate = new Date().toISOString().slice(0, 19).replace("T", " ");
+            const data = {
+                creatingDate: currentDate,
+                reviewRating: newRating,
+                userId: userId,
+                destinationId: destId
+            };
+            fetch(`http://localhost:8080/api/review/createNewReview`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        window.alert('Failed to update rating');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    localStorage.setItem("reviewId", data.reviewId);
+                    console.log('Rating updated:', data);
+                });
+        });
+        return ratingSelect;
+    }
+
+    function loadReviewData(destId, userId, ratingSelect) {
+        fetch(`http://localhost:8080/api/review/findReviewByDestinationIdAndUserId/${destId}/${userId}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    console.warn(`No review found for destinationId ${destId} and userId ${userId}`);
+                    return null;
+                }
+                return response.json();
+            })
+            .then(review => {
+                if (review) {
+                    ratingSelect.value = review.reviewRating;
+                }
+            });
+    }
+
+    function showFeedbackModal(destId, userId) {
+        const modalOverlay = document.createElement('div');
+        modalOverlay.style.position = 'fixed';
+        modalOverlay.style.top = '0';
+        modalOverlay.style.left = '0';
+        modalOverlay.style.width = '100%';
+        modalOverlay.style.height = '100%';
+        modalOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        modalOverlay.style.display = 'flex';
+        modalOverlay.style.justifyContent = 'center';
+        modalOverlay.style.alignItems = 'center';
+        modalOverlay.style.zIndex = '1000';
+
+        const modal = document.createElement('div');
+        modal.style.backgroundColor = '#fff';
+        modal.style.borderRadius = '8px';
+        modal.style.padding = '20px';
+        modal.style.width = '300px';
+        modal.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+        modalOverlay.appendChild(modal);
+
+        const title = document.createElement('h3');
+        title.textContent = 'Please leave your feedback';
+        title.style.marginBottom = '10px';
+        modal.appendChild(title);
+
+        const textarea = document.createElement('textarea');
+        textarea.placeholder = 'Type your feedback here...';
+        textarea.style.width = '100%';
+        textarea.style.height = '100px';
+        textarea.style.marginBottom = '10px';
+        textarea.style.resize = 'none';
+        textarea.style.padding = '10px';
+        textarea.style.borderRadius = '4px';
+        textarea.style.border = '1px solid #ccc';
+        modal.appendChild(textarea);
+
+        fetch(`http://localhost:8080/api/review/findReviewByDestinationIdAndUserId/${destId}/${userId}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+                return null;
+            })
+            .then(review => {
+                if (review) {
+                    textarea.value = review.reviewDesc || '';
+                }
+            });
+
+        const saveButton = document.createElement('button');
+        saveButton.textContent = 'Save';
+        saveButton.style.marginRight = '10px';
+        modal.appendChild(saveButton);
+
+        const closeButton = document.createElement('button');
+        closeButton.textContent = 'Close';
+        modal.appendChild(closeButton);
+
+        document.body.appendChild(modalOverlay);
+
+        saveButton.addEventListener('click', () => {
+            const reviewDesc = textarea.value;
+            let ratingSelect = document.querySelector('.rating-select');
+            const newRating = parseInt(event.target.value);
+            const currentDate = new Date().toISOString().slice(0, 19).replace("T", " ");
+            const data = {
+                reviewDesc: reviewDesc,
+                creatingDate: currentDate,
+                reviewRating: newRating,
+                userId: userId,
+                destinationId: destId
+            };
+            fetch(`http://localhost:8080/api/review/update/${destId}/${userId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        window.alert('Failed to update review');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Review updated:', data);
+                    modalOverlay.remove();
+                });
+        });
+
+        closeButton.addEventListener('click', () => {
+            modalOverlay.remove();
+        });
+    }
+
+    function deleteDestination(destId, card, block) {
+        const tripId = localStorage.getItem("tripId");
+        fetch(`http://localhost:8080/api/trip/${tripId}/deleteDestinationById/${destId}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return Promise.reject(`Failed to delete destination with ID ${destId}`);
+                }
+                card.remove();
+                console.log(`Destination with ID ${destId} removed from trip ${tripId}`);
+                if (!block.querySelector('.card-country')) {
+                    displayNoDestinationsMessage(block);
+                }
+            });
     }
 
 

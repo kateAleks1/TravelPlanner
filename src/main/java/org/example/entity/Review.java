@@ -19,10 +19,7 @@ import java.util.Date;
 @Builder
 @Entity
 @Table(
-        name = "reviews",
-        uniqueConstraints = @UniqueConstraint(
-                columnNames = {"user_id", "destination_id"}
-        )
+        name = "reviews"
 )
 public class Review {
     @Id
@@ -42,6 +39,6 @@ public class Review {
     @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "destination_id", referencedColumnName = "destination_id")
-    private Destination destinationId;
+    private Destination destination;
 
 }

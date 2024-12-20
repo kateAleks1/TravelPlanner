@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ReviewServiceImpl implements ReviewService {
@@ -19,7 +20,12 @@ public class ReviewServiceImpl implements ReviewService {
     private UserRepository userRepository;
     private DestinationsRepository destinationsRepository;
 
-@Autowired
+    @Override
+    public Review findReviewByDestinationIdAndUserId(int destinationId, int userId) {
+        return reviewRepository.findReviewByDestinationIdAndUserId(destinationId,userId).get();
+    }
+
+    @Autowired
     public ReviewServiceImpl(ReviewRepository reviewRepository, UserRepository userRepository, DestinationsRepository destinationsRepository) {
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
@@ -43,7 +49,7 @@ public class ReviewServiceImpl implements ReviewService {
         Destination destination = destinationsRepository.findById(reviewDto.getDestinationId())
                 .orElseThrow(() -> new RuntimeException("Destination not found"));
 
-        review.setDestinationId(destination);
+        review.setDestination(destination);
 
         return reviewRepository.save(review);
     }
@@ -51,5 +57,31 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public List<Review> getAllEReviews() {
         return reviewRepository.findAll();
+    }
+
+    @Override
+    public Review updateReview(int destinationId, int userId, ReviewDto reviewDto) {
+        Review review = reviewRepository.findReviewByDestinationIdAndUserId(destinationId, userId)
+                .orElseThrow(() -> new RuntimeException("Review not found"));
+
+
+        if (reviewDto.getReviewDesc() != null) {
+            review.setReviewDesc(reviewDto.getReviewDesc());
+        }
+
+        if (reviewDto.getReviewRating() != null) {
+            review.setReviewRating(reviewDto.getReviewRating());
+        }
+
+
+        return reviewRepository.save(review);
+    }
+
+    @Override
+    public int findReviewRatingByDestinationIdAndUserId(int destinationId, int userId) {
+        Review review=reviewRepository.findReviewByDestinationIdAndUserId(destinationId,userId).get();
+
+
+        return review.getReviewRating();
     }
 }
