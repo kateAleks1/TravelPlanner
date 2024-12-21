@@ -15,4 +15,6 @@ import java.util.Optional;
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
    @Query("SELECT r FROM Review r WHERE r.destination.destinationId = :destinationId AND r.user.id = :userId")
    Optional<Review> findReviewByDestinationIdAndUserId(@Param("destinationId") int destinationId, @Param("userId") int userId);
+   @Query("SELECT AVG(r.reviewRating) AS ratingAvg FROM Review r where r.destination.destinationId=:destinationId")
+   Double averageRatingFromDestinationId(@Param("destinationId") int destinationId);
 }

@@ -49,6 +49,7 @@ public ResponseEntity<?> createNewTrip(@PathVariable int userId) {
     List<Trip> trips = tripService.getTripByUsersId(userId);
     return ResponseEntity.ok(trips);
 }
+
     @PostMapping("/createNewTrip")
     public ResponseEntity<?> createNewTrip(@RequestBody TripDto tripDto) {
 

@@ -115,19 +115,25 @@
             },
             body: JSON.stringify(data)
         })
-            .then(response => {
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 if (data.AccessToken) {
-                    localStorage.setItem('userId',data.userid);
+                    localStorage.setItem('userId', data.userid);
                     localStorage.setItem('AccessToken', data.AccessToken);
-                    window.location.href = 'main.html';
+
+                    if (data.userid === "admin") {
+                        window.location.href = 'adminPanel.html';
+                    } else {
+                        window.location.href = 'main.html';
+                    }
                 } else {
                     alert('Токен не получен!');
                 }
-
             })
+            .catch(error => {
+                console.error('Ошибка при авторизации:', error);
+            });
+
 
     });
 

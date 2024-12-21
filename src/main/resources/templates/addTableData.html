@@ -416,8 +416,12 @@
                 .then(response => {
                     if (!response.ok) {
                         resetFields(startDateInput, endDateInput);
-                        window.alert(`Error: ${response.status}`);
-                        throw new Error(`Server error: ${response.status}`);
+                        return response.json().then(errorData => {
+                            // Отображаем ошибку через alert
+                            window.alert(`Error: ${errorData.error || 'Unknown error'}`);
+                            throw new Error(errorData.error || 'Unknown error');
+                        });
+
                     }
                     return response.json();
                 })

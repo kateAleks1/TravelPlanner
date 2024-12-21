@@ -33,6 +33,11 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.findReviewByDestinationIdAndUserId(destinationId,userId));
 
     }
+    @GetMapping("averageRatingFromDestinationId/{destinationId}")
+    public ResponseEntity<?> averageRatingFromDestinationId(@PathVariable int destinationId) {
+        return ResponseEntity.ok(reviewService.averageRatingFromDestinationId(destinationId));
+
+    }
     @PutMapping("update/{destinationId}/{userId}")
     public ResponseEntity<?> update(@PathVariable int destinationId,@PathVariable int userId,@RequestBody ReviewDto reviewDto) {
         return ResponseEntity.ok(reviewService.updateReview(destinationId,userId,reviewDto));

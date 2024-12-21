@@ -84,4 +84,15 @@ public class ReviewServiceImpl implements ReviewService {
 
         return review.getReviewRating();
     }
+
+    @Override
+    public Double averageRatingFromDestinationId(int destinationId) {
+
+        if(destinationsRepository.findByDestinationId(destinationId).isPresent()){
+
+            return reviewRepository.averageRatingFromDestinationId(destinationId);
+        }
+
+        return 0.0;
+    }
 }

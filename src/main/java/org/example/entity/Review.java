@@ -32,7 +32,7 @@ public class Review {
     private Date creatingDate;
     @Column(name="rating")
     private int reviewRating;
-    @OneToOne
+    @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;

@@ -569,7 +569,6 @@
         }
         .card-country .text {
             position: absolute;
-
             bottom: 10px;
             left: 10px;
             color: white;
@@ -578,6 +577,17 @@
             background-color: rgba(0, 0, 0, 0.5);
             padding: 10px 20px;
             border-radius: 5px;
+        }
+        .card-country .avgRating {
+            position: absolute;
+            margin-top: 10px;
+            left: 10px;
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: bold;
+            background-color: rgba(83, 118, 152, 0.5);
+            padding: 10px 20px;
+            border-radius: 25px;
         }
         .card-country .rating-select {
             position: absolute;
@@ -1187,6 +1197,25 @@
             event.stopPropagation();
             deleteDestination(destId, card, block);
         });
+        const avgRating = document.createElement('span');
+        avgRating.classList.add('avgRating');
+        fetch(`http://localhost:8080/api/review/averageRatingFromDestinationId/${destId}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+
+        })
+            .then(response => {
+                if (!response.ok) {
+                    window.alert('Failed to update rating');
+                }
+                return response.json();
+            })
+            .then(data => {
+                avgRating.textContent = data;
+
+            });
+
+        card.appendChild(avgRating);
 
         block.appendChild(card);
 

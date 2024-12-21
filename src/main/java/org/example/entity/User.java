@@ -33,12 +33,9 @@
         @Column(name="created_at")
         private Date createdAt;
  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-
  private Set<TripPartcipants> trips = new HashSet<>();
-        @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-        private Review review;
+        @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,orphanRemoval = true)
+        private Set<Review> review;
 
 
     }
-
-// make for each user only 10 trip so 1 trip one country that means that trip cannot be more than 10

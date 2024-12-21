@@ -761,6 +761,16 @@
                 </thead>
                 <tbody></tbody>
             </table>
+            <table class="tableCountries hidden">
+                <thead>
+                <tr class="stringLine">
+                    <th>countryId</th>
+                    <th>countryName</th>
+                </tr>
+
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
 
 
@@ -968,6 +978,29 @@
                 });
             });
     }
+    function loadCountries() {
+        const destinationsTable = document.querySelector('.tableCountries tbody');
+        destinationsTable.innerHTML = '';
+        fetch('http://localhost:8080/api/countries/getAllCountries', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(city => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+    <td>${city.countryId}</td>
+    <td>${city.countryName}</td>
+
+
+`;
+                    destinationsTable.appendChild(tr);
+                });
+            });
+    }
     function deleteDestination(){
 
     }
@@ -1132,6 +1165,7 @@
     const tripsTable = document.querySelector('.tableTrips');
     const destinationTable=document.querySelector('.tableDestination')
     const citiesTable=document.querySelector('.tableCities')
+    const countriesTable=document.querySelector('.tableCountries')
     dropDownOptions.addEventListener('change', (event) => {
         const selectedValue = event.target.value;
 
@@ -1155,6 +1189,10 @@
             selectedTable.textContent = 'Cities';
             citiesTable.classList.remove('hidden');
             loadDestinationCities();
+        }else if(selectedValue==='Countries'){
+            selectedTable.textContent = 'Countries';
+            countriesTable.classList.remove('hidden');
+            loadCountries();
         }
     });
 </script>
