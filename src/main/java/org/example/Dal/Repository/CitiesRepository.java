@@ -22,6 +22,7 @@ public interface CitiesRepository extends JpaRepository<Cities, Integer> {
             "GROUP BY c.cityId, c.cityName " +
             "ORDER BY cityCount DESC")
     Page<Object[]> findTopThreeCities(Pageable pageable);
-
+    @Query("SELECT c.countryId.countryName FROM Cities c where c.cityId=:cityId")
+String getCountryNamefromCityByCityName(@Param("cityId") int cityName);
 
 }

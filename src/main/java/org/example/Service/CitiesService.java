@@ -12,4 +12,5 @@ public interface CitiesService {
     Optional<List<Cities>> getCitiesByCountryId(int id);
     Optional<List<Cities>> getCitiesByCountryName(String countryName);
      List<CityStatistic> findTopThreeCities();
+    String getCountryNamefromCityByCityName( int cityId);
 }

@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 @Service
 public class CitiesServiceImpl implements CitiesService {
 
+
     private final CitiesRepository citiesRepository;
     private final CountryServiceImpl countryService;
     private final CountriesRepository countriesRepository;
@@ -32,7 +33,10 @@ public class CitiesServiceImpl implements CitiesService {
         this.countriesRepository = countriesRepository;
         this.entityManager = entityManager;
     }
-
+    @Override
+    public String getCountryNamefromCityByCityName(  int cityId) {
+        return citiesRepository.getCountryNamefromCityByCityName(cityId);
+    }
     @Override
     public List<Cities> getCities() {
         return citiesRepository.findAll();

@@ -756,6 +756,7 @@
                 <tr class="stringLine">
                     <th>cityId</th>
                     <th>cityName</th>
+                    <th>Country</th>
                 </tr>
 
                 </thead>
@@ -959,6 +960,7 @@
     function loadDestinationCities() {
         const destinationsTable = document.querySelector('.tableCities tbody');
         destinationsTable.innerHTML = '';
+
         fetch('http://localhost:8080/api/cities/getAllCities', {
             method: 'GET',
             headers: {
@@ -966,18 +968,33 @@
             }
         })
             .then(response => response.json())
-            .then(data => {
-                data.forEach(city => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-    <td>${city.cityId}</td>
-    <td>${city.cityName}</td>
+            .then(cities => {
 
-`;
-                    destinationsTable.appendChild(tr);
+                cities.forEach(city => {
+
+                    fetch(`http://localhost:8080/api/cities/getAllCountriesNamefromCities/${city.cityId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                        .then(response => response.text())
+                        .then(country => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                            <td>${city.cityId}</td>
+                            <td>${city.cityName}</td>
+                            <td>${country}</td>
+                        `;
+                            destinationsTable.appendChild(tr);
+                        })
+
                 });
-            });
+            })
+
     }
+
+
     function loadCountries() {
         const destinationsTable = document.querySelector('.tableCountries tbody');
         destinationsTable.innerHTML = '';
@@ -1173,6 +1190,7 @@
         tripsTable.classList.add('hidden');
         destinationTable.classList.add('hidden');
         citiesTable.classList.add('hidden');
+        countriesTable.classList.add('hidden');
         if (selectedValue === 'Users') {
             selectedTable.textContent = 'Users';
             usersTable.classList.remove('hidden');

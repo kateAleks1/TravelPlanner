@@ -26,6 +26,10 @@ public class CitiesController {
     public ResponseEntity<?> getAllCitiesByCountryName(@PathVariable String countryName){
        return ResponseEntity.ok(citiesService.getCitiesByCountryName(countryName));
     }
+    @GetMapping("/getAllCountriesNamefromCities/{cityId}")
+    public ResponseEntity<?> getAllCountriesNamefromCities(@PathVariable int cityId){
+        return ResponseEntity.ok(citiesService.getCountryNamefromCityByCityName(cityId));
+    }
     @GetMapping("/getCityById/{cityId}")
     public ResponseEntity<?> getCityNameById(@PathVariable int cityId) {
         Optional<Cities> city = citiesService.getCitiesById(cityId);
