@@ -27,7 +27,7 @@ public class Destination {
     @JoinColumn(name = "city_id", nullable = false)
     private Cities cities;
     private String description;
-    @Column(name = "image_url", nullable = false)
+    @Column(name = "image_url")
     private String imageUrl;
 
     @ManyToMany(mappedBy = "destinations", cascade = CascadeType.ALL)

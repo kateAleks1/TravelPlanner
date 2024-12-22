@@ -927,6 +927,7 @@
     function loadDestinationTable() {
         const destinationsTable = document.querySelector('.tableDestination tbody');
         destinationsTable.innerHTML = '';
+
         fetch('http://localhost:8080/api/destination/getAllDestination', {
             method: 'GET',
             headers: {
@@ -938,25 +939,100 @@
                 data.forEach(destination => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-    <td>${destination.destinationId}</td>
-    <td>${destination.name}</td>
-    <td>${destination.cities ? destination.cities.cityName : 'N/A'}</td>
-    <td>${destination.description}</td>
-    <td>
-        <input type="file" class="uploadImage" accept="image/jpeg" style="display: none;" />
-        <button class="LoadImageBtn" onclick="loadImage(this)">Load Image</button>
-        <img src="#" alt="Preview" class="previewImage" style="max-width: 100px; display: none;" />
-        <button class="DeleteImageBtn" onclick="deleteImage(this)">Delete Image</button>
-    </td>
-         <td>
-                    <button class="SaveBtn" onclick="validateAndSaveDestination(${destination.destinationId}, this)">Save</button>
-                    <button class="DeleteBtn" onclick="deleteDestination(${destination.destinationId}, this)">Delete</button>
-                </td>
-`;
+                    <td>${destination.destinationId}</td>
+                    <td>${destination.name}</td>
+                    <td>${destination.cities ? destination.cities.cityName : 'N/A'}</td>
+                    <td>${destination.description}</td>
+                    <td>
+                        <input type="file" class="uploadImage" accept="image/jpeg" style="display: none;" />
+                        <button class="LoadImageBtn" onclick="loadImage(this)">Load Image</button>
+
+                       <div class="previewImage"
+                         style="width: 100px; height: 100px; background-image: url('${destination.imageUrl || '#'}'); background-size: cover; background-position: center;
+                         ${destination.imageUrl ? 'display:block;' : 'display:none;'}">
+                    </div>
+                        <button class="DeleteImageBtn" onclick="deleteImage(this, ${destination.destinationId})">Delete Image</button>
+                    </td>
+                    <td>
+                        <button class="SaveBtn" onclick="validateAndSaveDestination(${destination.destinationId}, this)">Save</button>
+                        <button class="DeleteBtn" onclick="deleteDestination(${destination.destinationId}, this)">Delete</button>
+                    </td>
+                `;
+
                     destinationsTable.appendChild(tr);
                 });
             });
     }
+
+    function uploadImage(button) {
+        const fileInput = button.closest('td').querySelector('.uploadImage');
+        const file = fileInput.files[0];
+        const destinationId = button.closest('tr').querySelector('td').textContent.trim();
+
+        if (file) {
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('destinationId', destinationId);
+
+            fetch("http://localhost:8080/api/destination/uploadImage", {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) throw new Error("Failed to upload image");
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        alert('Image uploaded successfully!');
+                        const imageUrl = "http://localhost:8080" + data.filePath;
+
+                        // Обновляем превью
+                        const previewImage = button.closest('td').querySelector('.previewImage');
+                        previewImage.src = imageUrl;
+                        previewImage.style.display = 'block';
+                    } else {
+                        alert('Failed to upload image');
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("Error uploading image");
+                });
+        } else {
+            alert('Please select an image first');
+        }
+    }
+
+
+
+    function deleteImage(button, destinationId) {
+        const fileInput = button.previousElementSibling.previousElementSibling;
+        const preview = button.previousElementSibling;
+
+        fetch(`http://localhost:8080/api/destination/deleteImageUrl/${destinationId}`, {
+            method: 'PUT'
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert('Изображение успешно удалено');
+
+                    fileInput.value = "";
+                    preview.src = "#";
+                    preview.style.display = "none";
+
+                    button.closest('tr').querySelector('.previewImage').style.display = 'none';
+                } else {
+                    alert('Не удалось удалить изображение');
+                }
+            })
+
+        fileInput.value = "";
+        preview.src = "#";
+        preview.style.display = "none";
+    }
+
+
     function loadDestinationCities() {
         const destinationsTable = document.querySelector('.tableCities tbody');
         destinationsTable.innerHTML = '';
@@ -1021,19 +1097,7 @@
     function deleteDestination(){
 
     }
-    function deleteImage(button) {
-        const fileInput = button.previousElementSibling.previousElementSibling;
-        const preview = button.previousElementSibling;
 
-
-        fileInput.value = "";
-
-
-        preview.src = "#";
-        preview.style.display = "none";
-
-        alert("Изображение удалено.");
-    }
 
     function loadImage(button) {
         const fileInput = button.previousElementSibling;
@@ -1085,18 +1149,39 @@
     }
     function validateAndSaveDestination(destinationId, button) {
         const row = button.closest('tr');
-        const login = row.cells[1].textContent.trim();
-        const email = row.cells[2].textContent.trim();
+        const imageUrl = row.querySelector('.previewImage').src;
 
-        if (!login || !email || !validateEmail(email)) {
-            alert("Введите корректные данные для логина и email.");
-            loadUsersTable();
-            return;
-        }
+        const destinationData = {
+            destinationId: destinationId,
+            imageUrl: imageUrl.includes('default-image.jpg') ? '' : imageUrl
+        };
 
+// Преобразование объекта в строку для application/x-www-form-urlencoded
+        const formBody = new URLSearchParams(destinationData).toString();
 
-        //updateUser(userId, button);
+        fetch('http://localhost:8080/api/destination/uploadImage', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: formBody
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Destination saved successfully!');
+                } else {
+                    alert('Failed to save destination');
+                }
+            })
+            .catch(error => {
+                console.error('Error saving destination:', error);
+                alert('Error saving destination');
+            });
+
     }
+
+
     function deleteTrip(tripId, button) {
         if (confirm('Вы уверены, что хотите удалить эту поездку?')) {
             fetch(`http://localhost:8080/api/trip/deleteTrip/${tripId}`, {

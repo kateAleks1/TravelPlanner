@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface DestinationService {
     List<Destination> getAllDestinations();
@@ -20,4 +21,8 @@ List<Destination> getAllDestinationByName(String name);
     List<Destination> findDestinationByDestinationType( String typeName);
     List<Destination> findDestinationByCityAndDByDestinationType(String typeName, int cityId);
     List<Destination> findDestinationByPrefix(int cityId,String prefix);
+Destination setDestinationImageByDestinationId(String imageUrl, int destinationId);
+    void deleteDestinationImageUrlByDestinationId( int destinationId);
+    void updateImageUrl(int destinationId, String imageUrl);
+    public void saveDestination(Destination destination) ;
 }

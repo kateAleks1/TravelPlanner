@@ -1,5 +1,6 @@
 package org.example.Service.ServiceImpl;
 
+import jakarta.transaction.Transactional;
 import org.example.DTO.TripDto;
 import org.example.Dal.Repository.DestinationsRepository;
 import org.example.Service.DestinationService;
@@ -13,11 +14,41 @@ import java.util.List;
 public class DestinationServiceImpl implements DestinationService {
     private final DestinationsRepository destinationsRepository;
 
-@Autowired
+
+
+    @Autowired
     public DestinationServiceImpl(DestinationsRepository destinationsRepository) {
         this.destinationsRepository = destinationsRepository;
     }
+    @Transactional
+    @Override
+    public void deleteDestinationImageUrlByDestinationId(int destinationId) {
 
+        destinationsRepository.deleteDestinationImageUrlByDestinationId(destinationId);
+
+
+    }
+    @Override
+    public void saveDestination(Destination destination) {
+        // Проверяем, если destination существует, обновляем, если нет, сохраняем новый
+        if (destination.getDestinationId() != null) {
+            destinationsRepository.save(destination); // Обновляем или создаем новую запись
+        } else {
+            destinationsRepository.save(destination);
+        }
+    }
+    @Override
+    public void updateImageUrl(int destinationId, String imageUrl) {
+        destinationsRepository.updateImageUrl(destinationId, imageUrl);
+    }
+
+    @Override
+    public Destination setDestinationImageByDestinationId(String imageUrl, int destinationId) {
+        if(destinationsRepository.findByDestinationId(destinationId).isPresent()){
+           return destinationsRepository.setDestinationImageByDestinationId(imageUrl,destinationId).get();
+        }
+        return null;
+    }
     @Override
     public List<Destination> getAllDestinations() {
         return destinationsRepository.findAll();

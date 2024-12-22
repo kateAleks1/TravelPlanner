@@ -5,6 +5,7 @@ import org.example.entity.Review;
 import org.example.entity.Trip;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -32,10 +33,17 @@ Optional<List<Destination>> findDestinationByTripsAndDestinationId(@Param("id") 
 
     @Query("SELECT d FROM Trip t JOIN t.destinations d WHERE t.tripId = :tripId AND d.destinationType.typeName = :typeName")
     List<Destination> findDestinationsByTypeByTripId(@Param("tripId") int tripId, @Param("typeName") String typeName);
+    @Modifying
+    @Query("UPDATE Destination d SET d.imageUrl = NULL WHERE d.destinationId = :destinationId")
+    void deleteDestinationImageUrlByDestinationId(@Param("destinationId") int destinationId);
+    @Modifying
+    @Query("UPDATE Destination d SET d.imageUrl = :imageUrl WHERE d.destinationId = :destinationId")
+    int updateImageUrl(@Param("destinationId") int destinationId, @Param("imageUrl") String imageUrl);
 
     @Query("SELECT d FROM Destination d JOIN d.cities c WHERE c.cityId=:cityId and d.name LIKE %:prefix%")
     Optional<List<Destination>> findDestinationByPrefix(@Param("cityId") int cityId,@Param("prefix")String prefix);
-
+    @Query("update  Destination set imageUrl=:imageUrl WHERE destinationId = :destinationId")
+    Optional<Destination> setDestinationImageByDestinationId(@Param("imageUrl") String imageUrl,@Param("destinationId") int destinationId);
 
 
 }
