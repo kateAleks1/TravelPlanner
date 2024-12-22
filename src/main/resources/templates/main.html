@@ -861,12 +861,12 @@ fetch('http://localhost:8080/api/countries/getAllCountries',{
 
 
 
-        // Функция для загрузки и отображения карточек
+
         function loadCards(filterType) {
             const apiUrl = filterType === 'most'
                 ? `http://localhost:8080/api/trip/findAllMostCommonTripsByCountry`
                 : `http://localhost:8080/api/trip/findAllLeastCommonTripsByCountry`;
-            // Скрываем блоки по умолчанию
+
             cardBlocks.forEach(block => block.style.display = 'none');
             fetch(apiUrl, {
                 method: 'GET',
@@ -884,17 +884,16 @@ fetch('http://localhost:8080/api/countries/getAllCountries',{
                         return;
                     }
 
-                    // Сортируем данные
                     const sortedData = data.sort((a, b) => {
                         return filterType === 'most'
                             ? b.cityCount - a.cityCount
                             : a.cityCount - b.cityCount;
                     });
 
-                    // Очищаем контейнер перед добавлением новых карточек
+
                     cardContainer.innerHTML = '';
 
-                    // Создаём новые карточки
+
                     sortedData.forEach(item => {
                         const card = document.createElement('div');
                         card.classList.add('card-country');
@@ -917,14 +916,14 @@ fetch('http://localhost:8080/api/countries/getAllCountries',{
                 .catch(error => console.error(error.message));
         }
 
-        // Обработчики для кнопок фильтров
+
         document.querySelector('[data-filter="most"]').addEventListener('click', () => loadCards('most'));
         document.querySelector('[data-filter="least"]').addEventListener('click', () => loadCards('least'));
 
-        // Обработчик для кнопки "Показать блоки"
+
         showBlocksButton.addEventListener('click', function () {
             cardBlocks.forEach(block => (block.style.display = 'flex'));
-            cardContainer.innerHTML = ''; // Очищаем динамический контейнер
+            cardContainer.innerHTML = '';
         });
     });
 

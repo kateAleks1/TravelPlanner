@@ -70,10 +70,7 @@
             transition: 0.2s ease;
             transition-delay: 0.3s;
         }
-        .sidebar *:not(input, button, textarea, a) {
-            outline: none;  /* Убирает обводку при клике */
-            pointer-events: none; /* Убирает возможность фокусировки */
-        }
+
         .sidebar.close .logo-details .logo_name{
             transition-delay: 0s;
             opacity: 0;
@@ -963,7 +960,9 @@
                 });
             });
     }
-
+    document.getElementsByClassName('bx bx-log-out')[0].addEventListener("click",function () {
+        window.location.href = 'login.html';
+    })
     function uploadImage(button) {
         const fileInput = button.closest('td').querySelector('.uploadImage');
         const file = fileInput.files[0];
