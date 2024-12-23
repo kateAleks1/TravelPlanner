@@ -30,9 +30,9 @@ public class DestinationServiceImpl implements DestinationService {
     }
     @Override
     public void saveDestination(Destination destination) {
-        // Проверяем, если destination существует, обновляем, если нет, сохраняем новый
+
         if (destination.getDestinationId() != null) {
-            destinationsRepository.save(destination); // Обновляем или создаем новую запись
+            destinationsRepository.save(destination);
         } else {
             destinationsRepository.save(destination);
         }

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -46,44 +47,48 @@ public class DestinationController {
         destinationService.deleteDestinationImageUrlByDestinationId(destinationId);
         return ResponseEntity.ok("Image URL deleted successfully for destinationId ");
     }
-    @PostMapping("/uploadImage")
-    public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile image,
-                                         @RequestParam("destinationId") int destinationId) {
+    @PostMapping("/uploadBase64Image")
+    public ResponseEntity<?> uploadBase64Image(@RequestBody Map<String, Object> payload) {
         try {
-            // Проверка, что файл был выбран
-            if (image.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No file selected");
+            // Извлекаем данные из JSON
+            String base64Image = (String) payload.get("image");
+            int destinationId = (Integer) payload.get("destinationId");
+
+            if (base64Image == null || base64Image.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No image provided");
             }
 
+            // Убираем префикс data:image/jpeg;base64, если он есть
+            String base64ImageData = base64Image.replaceFirst("^data:image/[^;]+;base64,", "");
+
+            // Декодируем Base64 в байты
+            byte[] imageBytes = Base64.getDecoder().decode(base64ImageData);
+
             // Указываем абсолютный путь для сохранения файла
-            // Пример: /path/to/your/project/src/main/resources/static/images/destinations/
             String directory = "src/main/resources/static/images/destinations/";
-
-            // Генерация уникального имени для файла (чтобы не перезаписывать файлы с одинаковыми именами)
-            String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
-
-            // Полный путь для сохранения файла
+            String fileName = System.currentTimeMillis() + ".jpg";
             Path path = Path.of(directory + fileName);
 
             // Создаем директорию, если она не существует
             Files.createDirectories(path.getParent());
 
-            // Сохраняем файл на сервере
-            Files.copy(image.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+            // Сохраняем файл
+            Files.write(path, imageBytes);
 
-            // Формируем URL для доступа к файлу
-            String fileUrl = "/images/destinations/" + fileName;
+            // Формируем URL для изображения
+            String fileUrl = "http://localhost:8080/images/destinations/" + fileName;
 
             // Обновляем URL изображения в базе данных
             destinationService.updateImageUrl(destinationId, fileUrl);
 
             // Возвращаем успешный ответ с URL изображения
             return ResponseEntity.ok().body(Map.of("success", true, "filePath", fileUrl));
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading file");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading image");
         }
     }
+
 
 
     @GetMapping("/getAllDestination")

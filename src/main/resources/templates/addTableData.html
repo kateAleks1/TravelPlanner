@@ -417,9 +417,11 @@
                     if (!response.ok) {
                         resetFields(startDateInput, endDateInput);
                         return response.json().then(errorData => {
-                            // Отображаем ошибку через alert
+
                             window.alert(`Error: ${errorData.error || 'Unknown error'}`);
-                            throw new Error(errorData.error || 'Unknown error');
+                            if(errorData.error==='This city has already exist'){
+                                window.location.href = "myDestinations.html";
+                            }
                         });
 
                     }

@@ -363,11 +363,11 @@
                 left: 0;
             }
 
-            /* Новый стиль для бургер-меню */
+
             .home-section .home-content .bx-menu {
                 display: block;
                 margin: 0 15px;
-                font-size: 30px; /* Размер иконки меню */
+                font-size: 30px;
                 transition: all 0.3s ease;
             }
 
@@ -379,7 +379,7 @@
         .separator {
             width: 1px;
             height: 100%;
-            background-color: #000; /* The color of the vertical line */
+            background-color: #000;
         }
 
         .text {
@@ -721,7 +721,7 @@
                     </thead>
                     <tbody></tbody>
                 </table>
-            <table class="tableTrips hidden ">
+            <table class="tableTrips hidden">
                 <thead>
                 <tr class="stringLine">
                     <th>tripId</th>
@@ -963,19 +963,59 @@
     document.getElementsByClassName('bx bx-log-out')[0].addEventListener("click",function () {
         window.location.href = 'login.html';
     })
-    function uploadImage(button) {
+    function loadImage(button) {
+        const fileInput = button.previousElementSibling;
+        const preview = button.nextElementSibling;
+
+        fileInput.click();
+
+        fileInput.onchange = (event) => {
+            const file = event.target.files[0];
+            if (file && file.type === 'image/jpeg') {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    console.log('FileReader result:', e.target.result);
+                    preview.style.backgroundImage = `url('${e.target.result}')`;
+                    preview.style.display = 'block';
+                };
+
+                reader.onerror = (err) => {
+                    console.error('Ошибка при чтении файла:', err);
+                };
+
+                reader.readAsDataURL(file);
+            } else {
+                alert("Пожалуйста, выберите файл формата JPEG.");
+            }
+        };
+    }
+
+    function uploadBase64Image(button) {
+
         const fileInput = button.closest('td').querySelector('.uploadImage');
-        const file = fileInput.files[0];
-        const destinationId = button.closest('tr').querySelector('td').textContent.trim();
+        const file = fileInput.files[0]; // Получаем файл
+        const destinationId = button.closest('tr').querySelector('td').textContent.trim(); // Ищем destinationId в строке
 
-        if (file) {
-            const formData = new FormData();
-            formData.append('image', file);
-            formData.append('destinationId', destinationId);
+        if (!file) {
+            alert('Please select an image first');
+            return;
+        }
 
-            fetch("http://localhost:8080/api/destination/uploadImage", {
+        const reader = new FileReader();
+
+        // Когда файл загружен
+        reader.onload = (e) => {
+            const base64Image = e.target.result;
+
+            fetch("http://localhost:8080/api/destination/uploadBase64Image", {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    image: base64Image,
+                    destinationId: destinationId,
+                }),
             })
                 .then(response => {
                     if (!response.ok) throw new Error("Failed to upload image");
@@ -986,10 +1026,13 @@
                         alert('Image uploaded successfully!');
                         const imageUrl = "http://localhost:8080" + data.filePath;
 
-                        // Обновляем превью
+                        // Обновляем preview изображение
                         const previewImage = button.closest('td').querySelector('.previewImage');
-                        previewImage.src = imageUrl;
+                        previewImage.style.backgroundImage = `url('${imageUrl}')`;
                         previewImage.style.display = 'block';
+
+                        // Очищаем input файла после загрузки
+                        fileInput.value = '';
                     } else {
                         alert('Failed to upload image');
                     }
@@ -998,9 +1041,14 @@
                     console.error("Error:", error);
                     alert("Error uploading image");
                 });
-        } else {
-            alert('Please select an image first');
-        }
+        };
+
+        reader.onerror = (err) => {
+            console.error('Ошибка при чтении файла:', err);
+        };
+
+        // Читаем файл как Base64
+        reader.readAsDataURL(file);
     }
 
 
@@ -1098,25 +1146,7 @@
     }
 
 
-    function loadImage(button) {
-        const fileInput = button.previousElementSibling;
-        const preview = button.nextElementSibling;
 
-        fileInput.click();
-        fileInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file && file.type === 'image/jpeg') {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            } else {
-                alert("Пожалуйста, выберите файл формата JPEG.");
-            }
-        });
-    }
     function deleteUser(userId, button) {
         if (confirm('Вы уверены, что хотите удалить этого пользователя?')) {
             fetch(`http://localhost:8080/api/deleteUser/${userId}`, {
@@ -1146,39 +1176,7 @@
 
         updateUser(userId, button);
     }
-    function validateAndSaveDestination(destinationId, button) {
-        const row = button.closest('tr');
-        const imageUrl = row.querySelector('.previewImage').src;
 
-        const destinationData = {
-            destinationId: destinationId,
-            imageUrl: imageUrl.includes('default-image.jpg') ? '' : imageUrl
-        };
-
-// Преобразование объекта в строку для application/x-www-form-urlencoded
-        const formBody = new URLSearchParams(destinationData).toString();
-
-        fetch('http://localhost:8080/api/destination/uploadImage', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: formBody
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Destination saved successfully!');
-                } else {
-                    alert('Failed to save destination');
-                }
-            })
-            .catch(error => {
-                console.error('Error saving destination:', error);
-                alert('Error saving destination');
-            });
-
-    }
 
 
     function deleteTrip(tripId, button) {
@@ -1269,7 +1267,6 @@
     const countriesTable=document.querySelector('.tableCountries')
     dropDownOptions.addEventListener('change', (event) => {
         const selectedValue = event.target.value;
-
         usersTable.classList.add('hidden');
         tripsTable.classList.add('hidden');
         destinationTable.classList.add('hidden');
