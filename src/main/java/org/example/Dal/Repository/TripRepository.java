@@ -28,11 +28,23 @@ public interface TripRepository extends JpaRepository<Trip,Integer> {
     Optional<List<Destination>> findDestinationsByTripId(@Param("tripId") int tripId);
 
 
+@Query("SELECT d FROM TripPartcipants tp " +
+        "JOIN tp.trip t " +
+        "JOIN t.destinations d " +
+        "WHERE tp.user.id = :userId")
+Optional<List<Destination>> findAllLikedDestinations(@Param("userId") int userId);
+
 
     @Query("SELECT t FROM Trip t WHERE t.startDate >= :startDate AND t.endDate >= :endDate")
+
     List<Trip> findTripsByDateRange(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
-
-
+    @Query("SELECT t FROM Trip t " +
+            "JOIN TripPartcipants tp ON tp.trip = t " +
+            "WHERE t.startDate >= :startDate AND t.endDate <= :endDate " +
+            "AND tp.user.id = :userId")
+    Optional<List<Trip>> getTripsByUserIdAndDateRange(@Param("startDate") Date startDate,
+                                                      @Param("endDate") Date endDate,
+                                                      @Param("userId") int userId);
     @Modifying
     @Transactional
     @Query(value = "DELETE FROM trip_destinations WHERE trip_id = :tripId AND destination_id = :destinationId", nativeQuery = true)

@@ -28,7 +28,7 @@ void updateTrip(int tripId, TripDto trip);
     List<Trip> getTripByUsersId(int userId);
     List<Trip> findTripsByUserIdAndCountryName( int userId,String countryName);
     List<Trip> SearchTripByPrefix(int userId,String loginPrefix);
-    List<Trip> filterTripsByDate(Date startDate, Date endDate);
+    List<Trip> filterTripsByDate(Date startDate, Date endDate,int userId);
      void updateTripStatuses();
     void updateupreatedAtDates();
     List<Object[]> getMostPopularTrips();
@@ -39,4 +39,5 @@ void updateTrip(int tripId, TripDto trip);
     List<TripSortingCountries> findAllMostCommonTripsByCountry();
     List<TripSortingCountries> findAllLeastCommonTripsByCountry();
  String findAllTripBackgroundImagesByCityId( int userId,int tripId);
+ List<Destination>  findAllLikedDestinations( int userId);
 }

@@ -122,18 +122,22 @@ public ResponseEntity<?> createNewTrip(@PathVariable int userId) {
     public ResponseEntity<?> getAllDestinationsFromTrip(@PathVariable int tripId){
         return ResponseEntity.ok(tripService.getAllDestinationsByTripId(tripId));
     }
-    @GetMapping("/filterByDate")
+    @GetMapping("/filterByDate/{userId}")
     public ResponseEntity<List<Trip>> filterTripsByDate(
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date startDate,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endDate) {
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endDate,@PathVariable int userId) {
         if (startDate.after(endDate)) {
             return ResponseEntity.badRequest().body(Collections.emptyList());
         }
 
-        List<Trip> trips = tripService.filterTripsByDate(startDate, endDate);
+        List<Trip> trips = tripService.filterTripsByDate(startDate, endDate,userId);
         return ResponseEntity.ok(trips);
     }
 
+    @GetMapping("/findAllLikedDestinations/{userId}")
+    public ResponseEntity<?> findAllLikedDestinations(@PathVariable int userId){
+        return ResponseEntity.ok(tripService.findAllLikedDestinations(userId));
+    }
     @PutMapping("/{tripId}/addDestination/{destinationId}")
     public ResponseEntity<?> addDestinationToTrip(@PathVariable int tripId, @PathVariable int destinationId){
 return ResponseEntity.ok(tripService.addDestinationToTrip(tripId,destinationId));

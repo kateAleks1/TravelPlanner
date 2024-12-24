@@ -39,6 +39,11 @@ public class TripServiceImpl implements TripService {
      return   trip;
     }
 
+    @Override
+    public List<Trip> filterTripsByDate(Date startDate, Date endDate, int userId) {
+        return tripRepository.getTripsByUserIdAndDateRange(startDate,endDate,userId).get();
+    }
+
     private final TripRepository tripRepository;
     private final CitiesRepository citiesRepository;
     private final DestinationsRepository destinationsRepository;
@@ -134,7 +139,7 @@ public class TripServiceImpl implements TripService {
          tripRepository.deleteDestinationFromTrip(tripId,destinationId);
     }
 
-    @Override
+
     public List<Trip> filterTripsByDate(Date startDate, Date endDate) {
         if (startDate.after(endDate)) {
             throw new IllegalArgumentException("Start date must be before or equal to end date");
@@ -341,6 +346,11 @@ trip.setCreatedAt(tripDto.getCreatedAt());
     public List<Destination> getAllDestinationsByTripId(int tripId) {
 
         return  tripRepository.findDestinationsByTripId(tripId).get();
+    }
+
+    @Override
+    public List<Destination> findAllLikedDestinations(int userId) {
+        return tripRepository.findAllLikedDestinations(userId).get();
     }
 
     @Override
