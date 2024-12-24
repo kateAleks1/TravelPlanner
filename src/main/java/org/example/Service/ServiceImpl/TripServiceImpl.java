@@ -329,8 +329,8 @@ trip.setCreatedAt(tripDto.getCreatedAt());
       return tripRepository.save(trip);
 
     }
-    public List<Trip> SearchTripByPrefix(String loginPrefix){
-        return tripRepository.findTripsByPrefix(loginPrefix).get();
+    public List<Trip> SearchTripByPrefix(int userId,String loginPrefix){
+        return tripRepository.findTripsByPrefix(userId,loginPrefix).get();
     }
 
     @Override
@@ -341,6 +341,11 @@ trip.setCreatedAt(tripDto.getCreatedAt());
     public List<Destination> getAllDestinationsByTripId(int tripId) {
 
         return  tripRepository.findDestinationsByTripId(tripId).get();
+    }
+
+    @Override
+    public String findAllTripBackgroundImagesByCityId(int userId, int tripId) {
+        return tripRepository.findAllTripBackgroundImagesByCityId(userId,tripId).get();
     }
 
     @Override

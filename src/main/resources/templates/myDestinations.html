@@ -881,54 +881,93 @@ margin: 5px;
     document.addEventListener('DOMContentLoaded', function () {
         const input = document.querySelector('#search-input');
         const resultsDiv = document.querySelector('.card-block');
+        const userId = localStorage.getItem('userId');
 
         input.addEventListener('input', () => {
             const prefix = input.value.trim();
             if (prefix) {
-                fetch(`http://localhost:8080/api/trip/searchTrips?query=${prefix}`)
+                fetch(`http://localhost:8080/api/trip/searchTrips/${userId}?query=${prefix}`)
                     .then(response => {
-
+                        if (!response.ok) throw new Error(`Ошибка поиска: ${response.status}`);
                         return response.json();
                     })
                     .then(data => {
-
-                        resultsDiv.innerHTML = data
-                            .map(trip => createTripCardHTML(trip))
-                            .join('');
+                        resultsDiv.innerHTML = ''; // Очищаем предыдущие результаты
+                        data.forEach(trip => {
+                            createTripCard(trip);
+                        });
                     })
-
+                    .catch(error => console.error('Ошибка поиска поездок:', error));
             } else {
-                resultsDiv.innerHTML = '';
+                resultsDiv.innerHTML = ''; // Если поле пустое, очищаем результаты
             }
         });
 
-
-        document.getElementsByClassName('bx bx-grid-alt')[0].addEventListener("click",function () {
+        document.getElementsByClassName('bx bx-grid-alt')[0].addEventListener("click", function () {
             window.location.href = 'main.html';
-        })
-        function createTripCardHTML(trip) {
-            return `
-            <div class="card-country" data-trip-id="${trip.tripId}">
-                <i class="bx bx-x" onclick="deleteTrip(${trip.tripId})"></i>
-                <span class="text">${trip.tripId} ${trip.city.cityName}</span>
-            </div>
-        `;
+        });
+
+        function createTripCard(trip) {
+            const card = document.createElement('div');
+            card.classList.add('card-country');
+            card.setAttribute('data-trip-id', trip.tripId);
+
+            // Устанавливаем фон карточки
+            fetch(`http://localhost:8080/api/trip/findAllTripBackgroundImagesByCityId/${userId}/${trip.tripId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        console.error(`Ошибка загрузки изображения для поездки ${trip.tripId}: ${response.status}`);
+                        return null; // Используем дефолтное изображение, если ошибка
+                    }
+                    return response.text();
+                })
+                .then(imageUrl => {
+                    card.style.backgroundImage = `url('${imageUrl || 'default-image.jpg'}')`;
+                    card.style.backgroundSize = 'cover';
+                    card.style.backgroundPosition = 'center';
+                    card.style.height = '200px';
+                    card.style.width = '300px';
+                });
+
+            // Кнопка удаления
+            const btnDelete = document.createElement('i');
+            btnDelete.classList.add('bx', 'bx-x');
+            btnDelete.addEventListener('click', (event) => {
+                event.stopPropagation();
+                deleteTrip(trip.tripId, card);
+            });
+            card.appendChild(btnDelete);
+
+            // Текстовая информация
+            const text = document.createElement('span');
+            text.classList.add('text');
+            text.textContent = `${trip.tripId} ${trip.city.cityName}`;
+            card.appendChild(text);
+
+            // Добавляем карточку в контейнер
+            resultsDiv.appendChild(card);
+
+            // Обработчик клика по карточке
+            card.addEventListener('click', () => {
+                localStorage.setItem('tripId', trip.tripId);
+                window.location.href = 'myCardsDestinations.html';
+            });
         }
 
-        window.deleteTrip = function (tripId) {
+        function deleteTrip(tripId, card) {
             fetch(`http://localhost:8080/api/trip/deleteTrip/${tripId}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' }
             })
                 .then(response => {
                     if (!response.ok) throw new Error(`Ошибка удаления: ${response.status}`);
-
-                    const card = document.querySelector(`.card-country[data-trip-id="${tripId}"]`);
-                    if (card) card.remove();
+                    card.remove(); // Удаляем карточку из DOM
+                    console.log(`Поездка с ID ${tripId} успешно удалена`);
                 })
-                .catch(error => console.error('Ошибка удаления поездки:', error));
-        };
+
+        }
     });
+
 
     function loadDestinationsCard() {
         const tripId = localStorage.getItem("tripId");
@@ -1005,16 +1044,27 @@ margin: 5px;
 
                     const card = document.createElement('div');
                     card.classList.add('card-country');
-                    card.dataset.tripId = cardTrip.tripId;
                     card.setAttribute('data-type', cardTrip.type);
-                    card.style.backgroundImage = cardTrip.imageUrl
-                        ? `url('${cardTrip.imageUrl}')`
-                        : "url('default-image.jpg')";
-                    card.style.backgroundSize = 'cover';
-                    card.style.backgroundPosition = 'center';
-                    card.style.height = '200px';
-                    card.style.width = '300px';
-                    card.classList.add('card-country');
+                    fetch(`http://localhost:8080/api/trip/findAllTripBackgroundImagesByCityId/${userId}/${cardTrip.tripId}`, {
+                        method: 'GET',
+                        headers: { 'Content-Type': 'application/json' }
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                window.alert(`Error: ${response.status}`);
+
+                            }
+                            return response.text();
+                        })
+                        .then(data => {
+
+                            const imageUrl = data || 'default-image.jpg';
+                            card.style.backgroundImage = `url('${imageUrl}')`;
+                            card.style.backgroundSize = 'cover';
+                            card.style.backgroundPosition = 'center';
+                            card.style.height = '200px';
+                            card.style.width = '300px';
+                        })
 
                     const btnDelete = document.createElement('i');
                     btnDelete.classList.add('bx', 'bx-x');

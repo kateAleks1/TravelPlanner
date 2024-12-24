@@ -138,9 +138,9 @@ public ResponseEntity<?> createNewTrip(@PathVariable int userId) {
     public ResponseEntity<?> addDestinationToTrip(@PathVariable int tripId, @PathVariable int destinationId){
 return ResponseEntity.ok(tripService.addDestinationToTrip(tripId,destinationId));
     }
-    @GetMapping("/searchTrips")
-    public ResponseEntity<?> SearchTripByPrefix(@RequestParam String query){
-        return ResponseEntity.ok(tripService.SearchTripByPrefix(query));
+    @GetMapping("/searchTrips/{userID}")
+    public ResponseEntity<?> SearchTripByPrefix(@RequestParam String query,@PathVariable int userID){
+        return ResponseEntity.ok(tripService.SearchTripByPrefix(userID,query));
     }
     @GetMapping("/findAllMostCommonTripsByCountry")
     public ResponseEntity<?> findAllMostCommonTripsByCountry(){
@@ -170,6 +170,12 @@ return ResponseEntity.ok(tripService.addDestinationToTrip(tripId,destinationId))
     @GetMapping("/getAllTripByUserId/{userId}")
     public ResponseEntity<?> getAllTripByUserId(@PathVariable int userId){
         return ResponseEntity.ok(tripService.getAllDestinationsByUserId(userId));
+    }
+    @GetMapping("/findAllTripBackgroundImagesByCityId/{userId}/{tripId}")
+    public ResponseEntity<?> findAllTripBackgroundImagesByCityId(
+            @PathVariable int userId,
+            @PathVariable int tripId) {
+        return ResponseEntity.ok(tripService.findAllTripBackgroundImagesByCityId(userId,tripId));
     }
     @GetMapping("/findTripsByCountryName/{userId}/{countryName}")
     public ResponseEntity<?> findTripsByCountryName(@PathVariable int userId,@PathVariable String countryName){
@@ -231,6 +237,8 @@ public ResponseEntity<?> getAllTripsFromUserId(@PathVariable String userId) {
 //        } catch (NumberFormatException e) {
 //            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid user ID format");
      //   }
+
+
     }
 
 

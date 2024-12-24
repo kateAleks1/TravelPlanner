@@ -60,6 +60,15 @@ public interface TripRepository extends JpaRepository<Trip,Integer> {
 Date getCreatedAtFromTripById(@Param("tripId") int tripID);
     @Query("SELECT t FROM Trip t JOIN TripPartcipants tp ON tp.trip = t WHERE tp.user.id = :userId")
     Optional<List<Trip>> getTripByUsersId(@Param("userId") int userId);
+
+    @Query("SELECT c.imageUrl FROM TripPartcipants tp " +
+            "JOIN tp.trip t " +
+            "JOIN t.city c " +
+            "WHERE tp.user.id = :userId " +
+            "AND tp.trip.tripId = :tripId")
+    Optional<String> findAllTripBackgroundImagesByCityId(@Param("userId") int userId, @Param("tripId") int tripId);
+
+
     @Query("SELECT t FROM Trip t JOIN TripPartcipants tp ON tp.trip = t WHERE tp.user.login = :userLogin")
     Optional<List<Trip>> getTripByUsersLogin(@Param("userLogin") String userLogin);
     @Query("SELECT t FROM Trip t JOIN TripPartcipants tp ON tp.trip = t WHERE tp.isGroup=true AND tp.user.id=:userid")
@@ -74,8 +83,9 @@ Date getCreatedAtFromTripById(@Param("tripId") int tripID);
     @Modifying
     @Transactional
     void deleteByTripId(int tripId);
-    @Query("SELECT t FROM Trip t JOIN t.city c WHERE c.cityName LIKE %:prefix%")
-    Optional<List<Trip>> findTripsByPrefix(@Param("prefix")String prefix);
+    @Query("SELECT t FROM Trip t JOIN t.participants tp JOIN t.city c WHERE tp.user.id = :userId AND c.cityName LIKE %:prefix%")
+    Optional<List<Trip>> findTripsByPrefix(@Param("userId") int userId, @Param("prefix") String prefix);
+
 
     @Query("SELECT COUNT(tp.destination.destinationId) AS countDestinations, " +
             "tp.destination.name " +

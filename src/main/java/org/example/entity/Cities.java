@@ -35,4 +35,6 @@ public class Cities {
             joinColumns = @JoinColumn(name = "city_id"),
             inverseJoinColumns = @JoinColumn(name = "trip_id"))
     private Set<Trip> trips = new HashSet<>();
+    @Column(name = "image_url")
+    private String imageUrl;
 }

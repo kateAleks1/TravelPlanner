@@ -6,9 +6,11 @@ import org.example.DTO.TripDto;
 import org.example.DTO.TripSortingCountries;
 import org.example.entity.Destination;
 import org.example.entity.Trip;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public interface TripService {
     Trip createTrip(TripDto tripDto);
@@ -25,7 +27,7 @@ void updateTrip(int tripId, TripDto trip);
    void deleteDestinationById(int tripId,int destinationId);
     List<Trip> getTripByUsersId(int userId);
     List<Trip> findTripsByUserIdAndCountryName( int userId,String countryName);
-    List<Trip> SearchTripByPrefix(String loginPrefix);
+    List<Trip> SearchTripByPrefix(int userId,String loginPrefix);
     List<Trip> filterTripsByDate(Date startDate, Date endDate);
      void updateTripStatuses();
     void updateupreatedAtDates();
@@ -36,4 +38,5 @@ void updateTrip(int tripId, TripDto trip);
     List<Trip> getTripByGroup(int userId);
     List<TripSortingCountries> findAllMostCommonTripsByCountry();
     List<TripSortingCountries> findAllLeastCommonTripsByCountry();
+ String findAllTripBackgroundImagesByCityId( int userId,int tripId);
 }
