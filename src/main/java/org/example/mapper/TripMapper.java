@@ -12,10 +12,10 @@ import java.util.Set;
 //@Mapper(componentModel = "spring")
 public interface TripMapper {
     @Mapping(target = "users", expression = "java(trip.getUsers().size())")
-    @Mapping(target = "tripId", source = "tripId")  // Убедитесь, что имя поля совпадает
+    @Mapping(target = "tripId", source = "tripId")
     TripDto toDTO(Trip trip);
 
     @Mapping(target = "users", ignore = true)
-    @Mapping(target = "tripId", ignore = true) // Убедитесь, что вы не повторяете tripId
+    @Mapping(target = "tripId", ignore = true)
     Trip toEntity(TripDto tripDto);
 }

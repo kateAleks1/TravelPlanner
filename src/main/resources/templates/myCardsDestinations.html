@@ -931,9 +931,17 @@
 
                 data.forEach(cardDestination => {
                     const card = document.createElement('div');
-                    card.classList.add('card-country');
-                    card.style.backgroundImage = `url('${cardDestination.imageUrl}')`;
+
+                    card.setAttribute('data-type', cardDestination.type);
+                    card.style.backgroundImage = cardDestination.imageUrl
+                        ? `url('${cardDestination.imageUrl}')`
+                        : "url('default-image.jpg')";
                     card.style.backgroundSize = 'cover';
+                    card.style.backgroundPosition = 'center';
+                    card.style.height = '200px';
+                    card.style.width = '300px';
+                    card.classList.add('card-country');
+
 
                     card.style.backgroundPosition = 'center';
                     card.style.height = '200px';

@@ -954,28 +954,23 @@ margin: 5px;
                     const card = document.createElement('div');
                     card.classList.add('card-country');
                     card.style.backgroundImage = `url('${cardDestination.imageUrl}')`;
-                    card.style.backgroundSize = 'cover'; // Масштабировать изображение
-                    card.style.backgroundPosition = 'center'; // Центрировать изображение
-                    card.style.height = '200px'; // Задайте высоту карточки
+                    card.style.backgroundSize = 'cover';
+                    card.style.backgroundPosition = 'center';
+                    card.style.height = '200px';
                     card.style.width = '300px';
 
-
-
-                    // Создание иконки
                     const icon = document.createElement('i');
                     icon.classList.add('bx', 'bx-heart');
                     card.appendChild(icon);
 
-                    // Создание текста
                     const text = document.createElement('span');
                     text.classList.add('text');
-                    text.textContent = cardDestination.name; // Название направления
+                    text.textContent = cardDestination.name;
                     card.appendChild(text);
 
-                    // Добавление карточки в контейнер
                     block.appendChild(card);
                     icon.addEventListener('click', () => {
-                        icon.classList.toggle('selected'); // Переключение класса 'selected'
+                        icon.classList.toggle('selected');
                     });
 
                 });
@@ -1011,7 +1006,15 @@ margin: 5px;
                     const card = document.createElement('div');
                     card.classList.add('card-country');
                     card.dataset.tripId = cardTrip.tripId;
-
+                    card.setAttribute('data-type', cardTrip.type);
+                    card.style.backgroundImage = cardTrip.imageUrl
+                        ? `url('${cardTrip.imageUrl}')`
+                        : "url('default-image.jpg')";
+                    card.style.backgroundSize = 'cover';
+                    card.style.backgroundPosition = 'center';
+                    card.style.height = '200px';
+                    card.style.width = '300px';
+                    card.classList.add('card-country');
 
                     const btnDelete = document.createElement('i');
                     btnDelete.classList.add('bx', 'bx-x');

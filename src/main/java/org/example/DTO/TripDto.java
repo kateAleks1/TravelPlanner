@@ -34,5 +34,6 @@ import java.util.Set;
     private List<Integer> userIds;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 private Date createdAt;
+    private String imageUrl;
 
 }
