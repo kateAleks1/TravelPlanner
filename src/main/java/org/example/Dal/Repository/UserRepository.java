@@ -45,6 +45,8 @@ Optional<List<User>> findUserByPrefix(@Param("prefix")String prefix);
                                           @Param("lastMonth") Date lastMonth,
                                           @Param("today") Date today);
 
+
+
     @Query("SELECT new org.example.DTO.UserStatistic(" +
             "CASE " +
             "    WHEN function('DATE', u.createdAt) = function('DATE', :today) THEN 'Today' " +

@@ -271,10 +271,14 @@ map.put("creatAt",claims.getIssuedAt().toString());
 
 
     }
-@GetMapping("/search")
-public ResponseEntity<?> SearchUsersByPrefix(@RequestParam String query){
+@GetMapping("/searchLogin")
+public ResponseEntity<?> SearchUsersLoginByPrefix(@RequestParam String query){
 return ResponseEntity.ok(userService.SearchUsersByPrefix(query).stream().map(User::getLogin).toList());
 }
+    @GetMapping("/search")
+    public ResponseEntity<?> SearchUsersByPrefix(@RequestParam String query){
+        return ResponseEntity.ok(userService.SearchUsersByPrefix(query));
+    }
     @GetMapping("/items")
     public ResponseEntity<List<UserDto>> getUsers(
             @RequestParam(defaultValue = "0") int page,

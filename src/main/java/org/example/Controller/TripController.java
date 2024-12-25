@@ -138,6 +138,7 @@ public ResponseEntity<?> createNewTrip(@PathVariable int userId) {
         return ResponseEntity.ok(trips);
     }
 
+
     @GetMapping("/findAllLikedDestinations/{userId}")
     public ResponseEntity<?> findAllLikedDestinations(@PathVariable int userId){
         return ResponseEntity.ok(tripService.findAllLikedDestinations(userId));

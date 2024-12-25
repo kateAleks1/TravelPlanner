@@ -263,7 +263,9 @@
             font-weight: 500;
             white-space: nowrap;
         }
-
+.profile_name{
+    margin-left: 20px;
+}
         .sidebar.close .profile-details i,
         .sidebar.close .profile-details .profile_name,
         .sidebar.close .profile-details .job {
@@ -281,14 +283,14 @@
             left: 260px;
             padding: 20px;
             min-height: 100vh;
-            width: calc(100% - 260px); /* Ширина на 260px меньше от общего размера экрана */
+            width: calc(100% - 260px);
             transition: all 0.5s ease;
-            box-sizing: border-box; /* Убедитесь, что padding не увеличивает размеры */
+            box-sizing: border-box;
         }
         .main-section {
 
             position: relative;
-            background: #f1f1f1; /* Тёмный фон для внутреннего блока */
+            background: #f1f1f1;
             width: 100%;
             border-radius: 20px;
             padding: 15px;
@@ -399,13 +401,7 @@
             justify-content: space-between;
             align-items: center;
         }
-        .home-content-user-profile{
-            background: #0a0808;
-            height: 40px;
-            width: 40px;
-            border-radius: 50%;
 
-        }
         .home-content-user-profile img{
             margin: 30%;
         }
@@ -497,7 +493,12 @@
             transition: all 0.3s ease;
             margin: 30px;
         }
-
+.selected-table-text{
+    margin-left: 20px;
+    font-weight: 600;
+    font-size: 20px;
+    color: #30530f;
+}
         .card-country img {
             width: 100%;
             height: 100%;
@@ -618,36 +619,15 @@
                 <i class='bx bx-compass' ></i>
                 <span class="link_name">Explore</span>
             </a>
-            <ul class="sub-menu blank">
-                <li><a class="link_name" href="#">Explore</a></li>
-            </ul>
+
         </li>
-        <li>
-            <a href="#">
-                <i class='bx bx-history'></i>
-                <span class="link_name">History</span>
-            </a>
-            <ul class="sub-menu blank">
-                <li><a class="link_name" href="#">History</a></li>
-            </ul>
-        </li>
-        <li>
-            <a href="#">
-                <i class='bx bx-cog' ></i>
-                <span class="link_name">Setting</span>
-            </a>
-            <ul class="sub-menu blank">
-                <li><a class="link_name" href="#">Setting</a></li>
-            </ul>
-        </li>
+
         <li>
             <div class="profile-details">
-                <div class="profile-content">
-                    <img src="http://localhost:8080/images/PlannerTripLogo21.png" alt="profileImg">
-                </div>
+
                 <div class="name-job">
-                    <div class="profile_name">Lisa</div>
-                    <div class="job">Web Desginer</div>
+                    <div class="profile_name">Admin</div>
+
                 </div>
                 <i class='bx bx-log-out' ></i>
             </div>
@@ -662,9 +642,7 @@
             <span class="selected-table-text">Users</span>
 
         </div>
-        <div class="home-content-user-profile">
-            <img src="#">
-        </div>
+
     </div>
     <!--recent new users-->
     <div class="main-section">
@@ -688,9 +666,8 @@
                     <span class="text-bold">Filters</span>
                 </div>
                 <select  class="city-dropdown">
-
-                    <option value="Destinations" >Destinations</option>
                     <option value="Users" >Users</option>
+                    <option value="Destinations" >Destinations</option>
                     <option value="Trip" >Trip</option>
                     <option value="Cities" >Cities</option>
                     <option value="Countries" >Countries</option>
@@ -703,7 +680,7 @@
                     <i class='bx bx-map-pin' ></i>
                 </div>
                 <div class="main-panel-desc">
-                    <span class="text-bold">Destination:</span>
+                    <span class="text-bold">Reports:</span>
                 </div>
                 <button id="downloadBtn">Download Trip Report</button>
             </div>
@@ -889,6 +866,49 @@
             });
 
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const input = document.querySelector('#search-input');
+        const tableBody = document.querySelector('.tableUsers tbody');
+
+        input.addEventListener('input', () => {
+            const prefix = input.value.trim();
+
+
+                fetch(`http://localhost:8080/api/search?query=${prefix}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                    .then(response => {
+                        return response.json(); // Parse the response as JSON
+                    })
+                    .then(data => {
+                        tableBody.innerHTML = ''; // Clear previous results
+
+                        // Check if data is an array
+                        if (Array.isArray(data)) {
+                            data.forEach(user => {
+                                const tr = document.createElement('tr');
+                                tr.innerHTML = `
+                                <td class="user-id">${user.id}</td>
+                                <td class="user-login" contenteditable="true">${user.login}</td>
+                                <td contenteditable="true">${user.email}</td>
+                                <td>
+                                    <button class="SaveBtn" onclick="validateAndSaveUser(${user.id}, this)">Save</button>
+                                    <button class="DeleteBtn" onclick="deleteUser(${user.id}, this)">Delete</button>
+                                </td>
+                            `;
+                                tableBody.appendChild(tr);
+                            });
+                        }
+                    })
+
+
+        });
+    });
+
 
 
     function loadTripTable() {
@@ -1200,21 +1220,15 @@
         const startDate = row.cells[1].querySelector('input').value;
         const endDate = row.cells[2].querySelector('input').value;
         const userId = row.cells[3].textContent.trim();
-        const statusId = row.cells[4].querySelector('input').value;
-        if (!isValidStatusId(statusId)) {
-            alert(`Недопустимый статус ID: ${statusId}`);
-            return;
-        }
+
         const data = {
             trip_id: tripId,
             start_date: formatDateForBackend(startDate),
             end_date: formatDateForBackend(endDate),
-            status_id: parseInt(statusId, 10),
-            idDestination: 1,
             user_id: userId
         };
 
-        fetch(`http://localhost:8080/api/trip/updateTrips/${tripId}`, {
+        fetch(`http://localhost:8080/api/trip/updateTipById/${tripId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
@@ -1272,28 +1286,37 @@
         destinationTable.classList.add('hidden');
         citiesTable.classList.add('hidden');
         countriesTable.classList.add('hidden');
+
+        const downloadBtn = document.getElementById('downloadBtn'); // Получаем кнопку
+
         if (selectedValue === 'Users') {
             selectedTable.textContent = 'Users';
             usersTable.classList.remove('hidden');
             loadUsersTable();
+            downloadBtn.textContent = 'Download Users Report'; // Меняем текст кнопки
         } else if (selectedValue === 'Trip') {
             selectedTable.textContent = 'Trip';
             tripsTable.classList.remove('hidden');
             loadTripTable();
-        }else if(selectedValue==='Destinations'){
+            downloadBtn.textContent = 'Download Trip Report'; // Меняем текст кнопки
+        } else if (selectedValue === 'Destinations') {
             selectedTable.textContent = 'Destinations';
             destinationTable.classList.remove('hidden');
             loadDestinationTable();
-        }else if(selectedValue==='Cities'){
+            downloadBtn.textContent = 'Download Destinations Report'; // Меняем текст кнопки
+        } else if (selectedValue === 'Cities') {
             selectedTable.textContent = 'Cities';
             citiesTable.classList.remove('hidden');
             loadDestinationCities();
-        }else if(selectedValue==='Countries'){
+            downloadBtn.textContent = 'Download Cities Report'; // Меняем текст кнопки
+        } else if (selectedValue === 'Countries') {
             selectedTable.textContent = 'Countries';
             countriesTable.classList.remove('hidden');
             loadCountries();
+            downloadBtn.textContent = 'Download Countries Report'; // Меняем текст кнопки
         }
     });
+
 </script>
 </body>
 </html>
