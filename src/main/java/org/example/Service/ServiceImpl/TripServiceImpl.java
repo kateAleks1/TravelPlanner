@@ -349,6 +349,11 @@ trip.setCreatedAt(tripDto.getCreatedAt());
     }
 
     @Override
+    public List<Destination> findDestinationsByPrefix(int tripId, String prefix) {
+        return tripRepository.findDestinationsByPrefix(tripId,prefix).get();
+    }
+
+    @Override
     public List<Destination> findAllLikedDestinations(int userId) {
         return tripRepository.findAllLikedDestinations(userId).get();
     }

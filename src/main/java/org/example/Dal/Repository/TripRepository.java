@@ -98,6 +98,12 @@ Date getCreatedAtFromTripById(@Param("tripId") int tripID);
     @Query("SELECT t FROM Trip t JOIN t.participants tp JOIN t.city c WHERE tp.user.id = :userId AND c.cityName LIKE %:prefix%")
     Optional<List<Trip>> findTripsByPrefix(@Param("userId") int userId, @Param("prefix") String prefix);
 
+    @Query("SELECT d FROM Trip t JOIN t.destinations d " +
+            "WHERE t.tripId = :tripId AND d.name LIKE %:prefix%")
+    Optional<List<Destination>> findDestinationsByPrefix(@Param("tripId") int tripId, @Param("prefix") String prefix);
+
+
+
 
     @Query("SELECT COUNT(tp.destination.destinationId) AS countDestinations, " +
             "tp.destination.name " +

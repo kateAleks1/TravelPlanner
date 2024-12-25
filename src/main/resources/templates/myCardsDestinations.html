@@ -754,7 +754,7 @@
         <div class="home-content">
             <i class='bx bx-menu'></i>
             <span class="text">Trip City:  </span>
-
+            <span class="city-dropdown-text">Trip</span>
         </div>
         <div class="home-content-user-profile">
             <img src="#">
@@ -763,13 +763,7 @@
 
     <div class="main-section">
         <div class="main-filter-search-block">
-            <div class="section right">
-                <div class="search-container">
-                    <i class='bx bx-user'></i>
-                    <input id="search-input" class="search-input" type="text" placeholder="Search">
-                    <ul id="search-results" class="search-results"></ul>
-                </div>
-            </div>
+
             <div class="separator"></div>
             <div class="section middle">
                 <div class="section-icon">
@@ -780,13 +774,13 @@
                 </div>
                 <select  class="city-dropdown">
                     <option value="" disabled selected>Filters</option>
-                    <option value="Most popular" >Most popular</option>
-                    <option value="Most popular" >Europe</option>
-                    <option value="Most popular" >Asia</option>
+                    <option value="Most popular" >Most liked</option>
+                    <option value="Most popular"> Least liked</option>
+                    <option value="Most popular" >All</option>
                 </select>
             </div>
             <div class="separator"></div>
-            <div class="section left">
+      <!--      <div class="section left">
                 <div class="section-icon">
                     <i class='bx bx-map-pin' ></i>
                 </div>
@@ -796,7 +790,7 @@
                 <div class="main-panel-desc">
                     <span class="text-dest">Destination:</span>
                 </div>
-            </div>
+            </div>-->
         </div>
         <div class="card-block">
 
@@ -1406,6 +1400,9 @@
         loadCityId();
         loadDestinationsCard()
     });
+
+
+
 </script>
 
 </body>

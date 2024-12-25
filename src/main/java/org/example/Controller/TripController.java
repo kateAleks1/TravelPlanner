@@ -122,6 +122,10 @@ public ResponseEntity<?> createNewTrip(@PathVariable int userId) {
     public ResponseEntity<?> getAllDestinationsFromTrip(@PathVariable int tripId){
         return ResponseEntity.ok(tripService.getAllDestinationsByTripId(tripId));
     }
+    @GetMapping("/searchDestinations/{tripId}")
+    public ResponseEntity<?> searchDestinationsByPrefix(@RequestParam String query,@PathVariable int tripId){
+        return ResponseEntity.ok(tripService.findDestinationsByPrefix(tripId,query));
+    }
     @GetMapping("/filterByDate/{userId}")
     public ResponseEntity<List<Trip>> filterTripsByDate(
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date startDate,

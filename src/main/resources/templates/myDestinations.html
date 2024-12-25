@@ -569,6 +569,7 @@ margin: 5px;
             margin-left: 15px;
         }
     </style>
+
 </head>
 <body>
 <div class="sidebar close">
@@ -719,6 +720,7 @@ margin: 5px;
                 </div>
             </div>
             <div class="separator"></div>
+            <div class="separator"></div>
             <div class="section left">
                 <div class="section-icon">
                     <i class='bx bx-map-pin' ></i>
@@ -727,6 +729,7 @@ margin: 5px;
                     <span class="text-bold">Destination:</span>
                 </div>
                 <select id="trip-filter">
+                    <option value="allTrips">All Trips</option>
                     <option value="alone">Alone Trip</option>
                     <option value="group">Group Trip</option>
                 </select>
@@ -1233,7 +1236,7 @@ margin: 5px;
                         event.stopPropagation();
                         const tripId = card.dataset.tripId;
 
-                        fetch(`http://localhost:8080/api/trip/deleteTrip/${tripId}`, {
+                        fetch(`http://localhost:8080/api/trip/deleteTrip/${cardTrip.tripId}`, {
                             method: 'DELETE',
                             headers: { 'Content-Type': 'application/json' }
                         })
@@ -1345,9 +1348,8 @@ margin: 5px;
 
                     btnDelete.addEventListener('click', (event) => {
                         event.stopPropagation();
-                        const tripId = card.dataset.tripId;
 
-                        fetch(`http://localhost:8080/api/trip/deleteTrip/${tripId}`, {
+                        fetch(`http://localhost:8080/api/trip/deleteTrip/${cardTrip.tripId}`, {
                             method: 'DELETE',
                             headers: { 'Content-Type': 'application/json' }
                         })
@@ -1449,6 +1451,15 @@ margin: 5px;
         let url = selectedFilter === 'alone'
             ? `http://localhost:8080/api/trip/getAloneTrips/${userId}`
             : `http://localhost:8080/api/trip/getTripsGroups/${userId}`;
+
+        if (selectedFilter === 'alone') {
+            url = `http://localhost:8080/api/trip/getAloneTrips/${userId}`;
+        } else if (selectedFilter === 'groups') {
+            url = `http://localhost:8080/api/trip/getTripsGroups/${userId}`;
+        } else if (selectedFilter === 'allTrips') {
+            getAllTripByUserId(userId);
+            return;
+        }
         fetch(url)
             .then(response => {
 

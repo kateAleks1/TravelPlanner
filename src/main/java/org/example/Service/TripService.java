@@ -40,4 +40,5 @@ void updateTrip(int tripId, TripDto trip);
     List<TripSortingCountries> findAllLeastCommonTripsByCountry();
  String findAllTripBackgroundImagesByCityId( int userId,int tripId);
  List<Destination>  findAllLikedDestinations( int userId);
+ List<Destination> findDestinationsByPrefix( int tripId, String prefix);
 }
