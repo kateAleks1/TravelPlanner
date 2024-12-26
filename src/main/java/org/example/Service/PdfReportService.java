@@ -21,23 +21,20 @@ public class PdfReportService {
         PdfWriter.getInstance(document, out);
         document.open();
 
-        // Заголовок
         Font font = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 20);
         Paragraph title = new Paragraph("Отчет о путешествиях для пользователя: " + userName, font);
         title.setAlignment(Element.ALIGN_CENTER);
         document.add(title);
 
-        document.add(new Paragraph("\n")); // Пропуск строки
+        document.add(new Paragraph("\n"));
 
-        // Таблица для отображения поездок
+
         PdfPTable table = new PdfPTable(4);
         table.setWidthPercentage(100);
         table.setWidths(new int[]{3, 3, 4, 3});
 
-        // Заголовок таблицы
         addTableHeader(table, "Поездка", "Старт", "Финиш", "Статус");
 
-        // Данные поездок
         for (Trip trip : trips) {
             table.addCell(trip.getCity().getCityName());
             table.addCell(trip.getStartDate().toString());
