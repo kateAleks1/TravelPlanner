@@ -1,9 +1,11 @@
 package org.example.Dal.Repository;
 
+import org.example.DTO.DestinationTypeDto;
 import org.example.DTO.UserStatistic;
 import org.example.DTO.UserStatisticProjection;
 import org.example.entity.Trip;
 import org.example.entity.User;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -45,6 +47,12 @@ Optional<List<User>> findUserByPrefix(@Param("prefix")String prefix);
                                           @Param("lastMonth") Date lastMonth,
                                           @Param("today") Date today);
 
+
+
+    @Query("SELECT tp.user.id AS userId, COUNT(tp.user.id) AS tripsCreated " +
+            "FROM TripPartcipants tp " +
+            "GROUP BY tp.user.id ")
+    List<Object[]> getMostActiveUsers();
 
 
     @Query("SELECT new org.example.DTO.UserStatistic(" +

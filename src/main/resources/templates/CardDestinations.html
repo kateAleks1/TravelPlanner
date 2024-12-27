@@ -568,9 +568,7 @@
             </div>
             <ul class="sub-menu">
                 <li><a class="link_name" href="#">Posts</a></li>
-                <li><a href="#">Web Design</a></li>
-                <li><a href="#">Login Form</a></li>
-                <li><a href="#">Card Design</a></li>
+
             </ul>
         </li>
 
@@ -578,15 +576,12 @@
             <div class="iocn-link">
                 <a href="#">
                     <i class='bx bx-heart' ></i>
-                    <span class="link_name">Plugins</span>
+                    <span class="link_name">Saved</span>
                 </a>
                 <i class='bx bxs-chevron-down arrow' ></i>
             </div>
             <ul class="sub-menu">
-                <li><a class="link_name" href="#">Plugins</a></li>
-                <li><a href="#">UI Face</a></li>
-                <li><a href="#">Pigments</a></li>
-                <li><a href="#">Box Icons</a></li>
+                <li><a class="link_name" href="#">Saved</a></li>
             </ul>
         </li>
         <li>
@@ -636,7 +631,7 @@
             <i class='bx bx-menu'></i>
             <span class="text">Trip City:  </span>
             <span class="city-dropdown-text-city">Trip</span>
-            <div class="city-dropdown-text-cityId">CityId</div>
+      <div class="city-dropdown-text-cityId">CityId</div>
             <div class="city-dropdown-text"> TripId:=></div>
             <div class="city-dropdown-text-tripId">TripId:=></div>
         </div>
@@ -832,7 +827,9 @@
                     });
             }
         });
-
+        document.getElementsByClassName('bx bx-heart')[0].addEventListener("click",function () {
+            window.location.href = 'AllLikedDestinations.html';
+        })
         function createCard(destination) {
             const card = document.createElement('div');
             card.classList.add('card-country');
@@ -1002,10 +999,13 @@
         });
     });
     document.getElementsByClassName('bx bx-heart')[0].addEventListener("click",function () {
-        window.location.href = 'myCardsDestinations.html';
+        window.location.href = 'AllLikedDestinations.html';
     })
     document.getElementsByClassName('bx bx-log-out')[0].addEventListener("click",function () {
         window.location.href = 'login.html';
+    })
+    document.getElementsByClassName('bx bx-book-alt')[0].addEventListener("click",function () {
+        window.location.href = 'userStatistics.html';
     })
     document.getElementsByClassName('bx bx-grid-alt')[0].addEventListener("click",function () {
         window.location.href = 'main.html';

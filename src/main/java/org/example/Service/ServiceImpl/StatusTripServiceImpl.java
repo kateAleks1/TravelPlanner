@@ -2,6 +2,7 @@ package org.example.Service.ServiceImpl;
 
 import org.example.Dal.Repository.TripStatusRepository;
 import org.example.Service.StatusTripService;
+import org.example.entity.Trip;
 import org.example.entity.Trip_Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,5 +27,10 @@ public class StatusTripServiceImpl implements StatusTripService {
     @Override
     public List<Trip_Status> getAllTrips() {
         return tripStatusRepository.findAll();
+    }
+
+    @Override
+    public List<Trip> findPlannedTripsForUser(int userId, String statusName) {
+        return tripStatusRepository.findPlannedTripsForUser(userId,statusName);
     }
 }

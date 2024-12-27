@@ -59,8 +59,6 @@ Optional<List<Destination>> findAllLikedDestinations(@Param("userId") int userId
     @Query("select t.city.cityId from Trip t where t.tripId=:tripId")
     Optional<Integer> getCityFromTripById(@Param("tripId") int tripID);
 
-   // select trips.* from trips inner JOIN cities c on c.city_id=trips.city_id
-   // join travels.countries c2 on c2.country_id = c.country_id where country_name='Austria'
    @Transactional
    @Query("SELECT t FROM Trip t " +
            "JOIN t.city c " +

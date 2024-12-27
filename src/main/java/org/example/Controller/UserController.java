@@ -200,7 +200,19 @@ if(accessTokenHeader.startsWith("Bearer ")){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
+    @GetMapping("/mostActiveUser")
+    public ResponseEntity<?> getMostFrequentTrips() {
 
+
+        List<Object[]> mostActiveUsers = userRepository.getMostActiveUsers();
+
+        for (Object[] row : mostActiveUsers) {
+            Long userId = (Long) row[0];
+            Long count = (Long) row[1];
+            System.out.println("User ID: " + userId + ", Trips Count: " + count);
+        }
+        return ResponseEntity.ok(mostActiveUsers);
+    }
     @GetMapping("user-login")
     public ResponseEntity<List<String>> getUsersLogin() {
         return ResponseEntity.ok(userService.getAllUsers().stream().map(user -> user.getLogin()).toList());
@@ -279,6 +291,7 @@ return ResponseEntity.ok(userService.SearchUsersByPrefix(query).stream().map(Use
     public ResponseEntity<?> SearchUsersByPrefix(@RequestParam String query){
         return ResponseEntity.ok(userService.SearchUsersByPrefix(query));
     }
+
     @GetMapping("/items")
     public ResponseEntity<List<UserDto>> getUsers(
             @RequestParam(defaultValue = "0") int page,

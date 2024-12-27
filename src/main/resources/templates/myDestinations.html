@@ -597,9 +597,7 @@ margin: 5px;
             </div>
             <ul class="sub-menu">
                 <li><a class="link_name" href="#">Category</a></li>
-                <li><a href="#">HTML & CSS</a></li>
-                <li><a href="#">JavaScript</a></li>
-                <li><a href="#">PHP & MySQL</a></li>
+
             </ul>
         </li>
         <li>
@@ -612,9 +610,7 @@ margin: 5px;
             </div>
             <ul class="sub-menu">
                 <li><a class="link_name" href="#">Posts</a></li>
-                <li><a href="#">Web Design</a></li>
-                <li><a href="#">Login Form</a></li>
-                <li><a href="#">Card Design</a></li>
+
             </ul>
         </li>
 
@@ -622,15 +618,13 @@ margin: 5px;
             <div class="iocn-link">
                 <a href="#">
                     <i class='bx bx-heart' ></i>
-                    <span class="link_name">Plugins</span>
+                    <span class="link_name">Liked</span>
                 </a>
                 <i class='bx bxs-chevron-down arrow' ></i>
             </div>
             <ul class="sub-menu">
-                <li><a class="link_name" href="#">Plugins</a></li>
-                <li><a href="#">UI Face</a></li>
-                <li><a href="#">Pigments</a></li>
-                <li><a href="#">Box Icons</a></li>
+                <li><a class="link_name" href="#">Liked</a></li>
+
             </ul>
         </li>
         <li>
@@ -830,56 +824,68 @@ margin: 5px;
             }
 
 
-
-        });
-
-
-        function createTripCard(trip) {
-            const card = document.createElement('div');
-            card.classList.add('card-country');
-            card.dataset.tripId = trip.tripId;
-
-            const btnDelete = document.createElement('i');
-            btnDelete.classList.add('bx', 'bx-x');
-            card.appendChild(btnDelete);
+            function createTripCard(trip) {
+                const card = document.createElement('div');
+                card.classList.add('card-country');
+                card.setAttribute('data-trip-id', trip.tripId);
 
 
+                fetch(`http://localhost:8080/api/trip/findAllTripBackgroundImagesByCityId/${userId}/${trip.tripId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            console.error(`Ошибка загрузки изображения для поездки ${trip.tripId}: ${response.status}`);
+                            return null;
+                        }
+                        return response.text();
+                    })
+                    .then(imageUrl => {
+                        card.style.backgroundImage = `url('${imageUrl || 'default-image.jpg'}')`;
+                        card.style.backgroundSize = 'cover';
+                        card.style.backgroundPosition = 'center';
+                        card.style.height = '200px';
+                        card.style.width = '300px';
+                    });
 
-            const text = document.createElement('span');
-            text.classList.add('text');
-            text.textContent = `${trip.tripId}  ${trip.city.cityName}`;
-            card.appendChild(text);
+
+                const btnDelete = document.createElement('i');
+                btnDelete.classList.add('bx', 'bx-x');
+                btnDelete.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    deleteTrip(trip.tripId, card);
+                });
+                card.appendChild(btnDelete);
 
 
-            card.addEventListener("click", (event) => {
-                if (event.target === btnDelete) return;
-                localStorage.setItem('tripId', trip.tripId);
-                window.location.href = 'myCardsDestinations.html';
-            });
+                const text = document.createElement('span');
+                text.classList.add('text');
+                text.textContent = `${trip.tripId} ${trip.city.cityName}`;
+                card.appendChild(text);
 
-            btnDelete.addEventListener('click', (event) => {
-                event.stopPropagation();
-                const tripId = card.dataset.tripId;
 
+
+
+
+                card.addEventListener('click', () => {
+                    localStorage.setItem('tripId', trip.tripId);
+                    window.location.href = 'myCardsDestinations.html';
+                });
+                return card;
+            }
+
+            function deleteTrip(tripId, card) {
                 fetch(`http://localhost:8080/api/trip/deleteTrip/${tripId}`, {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' }
                 })
                     .then(response => {
-                        if (!response.ok) {
-                            console.error(`Failed to delete trip: ${response.status}`);
-                            return Promise.reject('Failed to delete trip');
-                        }
+                        if (!response.ok) throw new Error(`Ошибка удаления: ${response.status}`);
                         card.remove();
-                        console.log(`Trip with ID ${tripId} deleted successfully.`);
+                        console.log(`Поездка с ID ${tripId} успешно удалена`);
                     })
-                    .catch(error => {
-                        console.error('Error deleting trip:', error);
-                    });
-            });
 
-            return card;
-        }
+            }
+        });
+
     });
     document.addEventListener('DOMContentLoaded', function () {
         const input = document.querySelector('#search-input');
@@ -895,14 +901,14 @@ margin: 5px;
                         return response.json();
                     })
                     .then(data => {
-                        resultsDiv.innerHTML = ''; // Очищаем предыдущие результаты
+                        resultsDiv.innerHTML = '';
                         data.forEach(trip => {
                             createTripCard(trip);
                         });
                     })
                     .catch(error => console.error('Ошибка поиска поездок:', error));
             } else {
-                resultsDiv.innerHTML = ''; // Если поле пустое, очищаем результаты
+                resultsDiv.innerHTML = '';
             }
         });
 
@@ -915,12 +921,12 @@ margin: 5px;
             card.classList.add('card-country');
             card.setAttribute('data-trip-id', trip.tripId);
 
-            // Устанавливаем фон карточки
+
             fetch(`http://localhost:8080/api/trip/findAllTripBackgroundImagesByCityId/${userId}/${trip.tripId}`)
                 .then(response => {
                     if (!response.ok) {
                         console.error(`Ошибка загрузки изображения для поездки ${trip.tripId}: ${response.status}`);
-                        return null; // Используем дефолтное изображение, если ошибка
+                        return null;
                     }
                     return response.text();
                 })
@@ -932,7 +938,7 @@ margin: 5px;
                     card.style.width = '300px';
                 });
 
-            // Кнопка удаления
+
             const btnDelete = document.createElement('i');
             btnDelete.classList.add('bx', 'bx-x');
             btnDelete.addEventListener('click', (event) => {
@@ -941,16 +947,16 @@ margin: 5px;
             });
             card.appendChild(btnDelete);
 
-            // Текстовая информация
+
             const text = document.createElement('span');
             text.classList.add('text');
             text.textContent = `${trip.tripId} ${trip.city.cityName}`;
             card.appendChild(text);
 
-            // Добавляем карточку в контейнер
+
             resultsDiv.appendChild(card);
 
-            // Обработчик клика по карточке
+
             card.addEventListener('click', () => {
                 localStorage.setItem('tripId', trip.tripId);
                 window.location.href = 'myCardsDestinations.html';
@@ -964,7 +970,7 @@ margin: 5px;
             })
                 .then(response => {
                     if (!response.ok) throw new Error(`Ошибка удаления: ${response.status}`);
-                    card.remove(); // Удаляем карточку из DOM
+                    card.remove();
                     console.log(`Поездка с ID ${tripId} успешно удалена`);
                 })
 
@@ -1442,6 +1448,12 @@ margin: 5px;
         })
 
     }
+    document.getElementsByClassName('bx bx-heart')[0].addEventListener("click",function () {
+        window.location.href = 'AllLikedDestinations.html';
+    })
+    document.getElementsByClassName('bx bx-book-alt')[0].addEventListener("click",function () {
+        window.location.href = 'userStatistics.html';
+    })
     const filterBtn = document.getElementById('filter-btn');
 
     filterBtn.addEventListener('click', () => {

@@ -561,9 +561,7 @@ background: #ffffff;
             </div>
             <ul class="sub-menu">
                 <li><a class="link_name" href="#">Category</a></li>
-                <li><a href="#">HTML & CSS</a></li>
-                <li><a href="#">JavaScript</a></li>
-                <li><a href="#">PHP & MySQL</a></li>
+
             </ul>
         </li>
         <li>
@@ -576,9 +574,7 @@ background: #ffffff;
             </div>
             <ul class="sub-menu">
                 <li><a class="link_name" href="#">Posts</a></li>
-                <li><a href="#">Web Design</a></li>
-                <li><a href="#">Login Form</a></li>
-                <li><a href="#">Card Design</a></li>
+
             </ul>
         </li>
 
@@ -586,15 +582,13 @@ background: #ffffff;
                 <div class="iocn-link">
                 <a href="#">
                     <i class='bx bx-heart' ></i>
-                    <span class="link_name">Saved</span>
+                    <span class="link_name">Liked</span>
                 </a>
                 <i class='bx bxs-chevron-down arrow' ></i>
             </div>
             <ul class="sub-menu">
-                <li><a class="link_name" href="#">Plugins</a></li>
-                <li><a href="#">UI Face</a></li>
-                <li><a href="#">Pigments</a></li>
-                <li><a href="#">Box Icons</a></li>
+                <li><a class="link_name" href="#">Liked</a></li>
+
             </ul>
         </li>
         <li>
@@ -794,8 +788,11 @@ fetch('http://localhost:8080/api/countries/getAllCountries',{
     document.getElementsByClassName('bx bx-grid-alt')[0].addEventListener("click",function () {
         window.location.href = 'main.html';
     })
-    document.getElementsByClassName('bx bx-heart')[0].addEventListener("click",function () {
-        window.location.href = 'myCardsDestinations.html';
+    document.getElementsByClassName('bx bx-grid-alt')[0].addEventListener("click",function () {
+        window.location.href = 'main.html';
+    })
+    document.getElementsByClassName('bx bx-book-alt')[0].addEventListener("click",function () {
+        window.location.href = 'userStatistics.html';
     })
     document.getElementsByClassName('bx bx-compass')[0].addEventListener("click",function () {
         window.location.href = 'myDestinations.html';

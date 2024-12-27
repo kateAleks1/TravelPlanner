@@ -27,4 +27,8 @@ public class StatusTripController {
     public ResponseEntity<?> getStatusTripById(@PathVariable int statusId){
         return ResponseEntity.ok(statusTripService.findStatusTripById(statusId));
     }
+    @GetMapping("/getStatusTripByIdStatus/{userId}/{statusName}")
+    public ResponseEntity<?> getStatusTripByIdStatus(@PathVariable int userId,@PathVariable String statusName){
+        return ResponseEntity.ok(statusTripService.findPlannedTripsForUser(userId,statusName));
+    }
 }

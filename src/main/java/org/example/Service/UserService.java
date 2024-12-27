@@ -2,6 +2,7 @@ package org.example.Service;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.Temporal;
+import org.example.DTO.DestinationTypeDto;
 import org.example.DTO.UserDto;
 import org.example.DTO.UserStatistic;
 import org.example.DTO.UserStatisticProjection;
@@ -201,4 +202,17 @@ public List<User> SearchUsersByPrefix(String loginPrefix){
             throw new UsernameNotFoundException("login not found"+user.getLogin());
         }    return new UserDetailsImpl(user);
     }
+
+//  public  void getMostActiveUsers(){
+//      Pageable top3 = PageRequest.of(0, 3); // Ограничение на 3 записи
+//      List<Object[]> mostActiveUsers = userRepository.getMostActiveUsers(top3);
+//
+//      for (Object[] row : mostActiveUsers) {
+//          Long userId = (Long) row[0];
+//          Long count = (Long) row[1];
+//          System.out.println("User ID: " + userId + ", Trips Count: " + count);
+//      }
+//
+//  }
+
 }
