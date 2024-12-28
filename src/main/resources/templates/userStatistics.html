@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Card Destinations</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            user-select: none;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 260px;
+            background: #11101d;
+            z-index: 100;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar.close {
+            width: 78px;
+        }
+
+        .sidebar .logo-details {
+            height: 60px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar .logo-details i {
+            font-size: 30px;
+            color: #fff;
+            height: 50px;
+            min-width: 78px;
+            text-align: center;
+            line-height: 50px;
+        }
+
+        .sidebar .logo-details .logo_name{
+            font-size: 22px;
+            color: #fff;
+            font-weight: 600;
+            margin-left: 40px;
+            margin-top: 40px;
+            transition: 0.2s ease;
+            transition-delay: 0.3s;
+        }
+
+        .sidebar.close .logo-details .logo_name{
+            transition-delay: 0s;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .sidebar .nav-links {
+            height: 100%;
+            padding: 30px 0 150px 0;
+            overflow: auto;
+        }
+
+        .sidebar.close .nav-links {
+            overflow: visible;
+        }
+
+        .sidebar .nav-links::-webkit-scrollbar {
+            display: none;
+        }
+
+        .sidebar .nav-links li {
+            position: relative;
+            list-style: none;
+            transition: all 0.4s ease;
+        }
+
+        .sidebar .nav-links li:hover {
+            background: #1d1b31;
+        }
+
+        .sidebar .nav-links li .iocn-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .add-destination-btn {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 30px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .add-destination-btn:hover {
+            background-color: #0056b3;
+        }
+        .sidebar.close .nav-links li .iocn-link {
+            display: block;
+        }
+
+        .sidebar .nav-links li i {
+            height: 50px;
+            min-width: 78px;
+            text-align: center;
+            line-height: 50px;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar .nav-links li.showMenu i.arrow {
+            transform: rotate(-180deg);
+        }
+
+        .sidebar.close .nav-links i.arrow {
+            display: none;
+        }
+
+        .sidebar .nav-links li a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .sidebar .nav-links li a .link_name {
+            font-size: 18px;
+            font-weight: 400;
+            color: #fff;
+            transition: all 0.4s ease;
+        }
+
+        .sidebar.close .nav-links li a .link_name {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .sidebar .nav-links li .sub-menu {
+            padding: 6px 6px 14px 80px;
+            margin-top: -10px;
+            background: #1d1b31;
+            display: none;
+        }
+
+        .sidebar .nav-links li.showMenu .sub-menu {
+            display: block;
+        }
+
+        .sidebar .nav-links li .sub-menu a {
+            color: #fff;
+            font-size: 15px;
+            padding: 5px 0;
+            white-space: nowrap;
+            opacity: 0.6;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar .nav-links li .sub-menu a:hover {
+            opacity: 1;
+        }
+
+        .sidebar.close .nav-links li .sub-menu {
+            position: absolute;
+            left: 100%;
+            top: -10px;
+            margin-top: 0;
+            padding: 10px 20px;
+            border-radius: 0 6px 6px 0;
+            opacity: 0;
+            display: block;
+            pointer-events: none;
+            transition: 0s;
+        }
+
+        .sidebar.close .nav-links li:hover .sub-menu {
+            top: 0;
+            opacity: 1;
+            pointer-events: auto;
+            transition: all 0.4s ease;
+        }
+
+        .sidebar .nav-links li .sub-menu .link_name {
+            display: none;
+        }
+
+        .sidebar.close .nav-links li .sub-menu .link_name {
+            font-size: 18px;
+            opacity: 1;
+            display: block;
+        }
+
+        .sidebar .nav-links li .sub-menu.blank {
+            opacity: 1;
+            pointer-events: auto;
+            padding: 3px 20px 6px 16px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .sidebar .nav-links li:hover .sub-menu.blank {
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .sidebar .profile-details {
+            position: fixed;
+            bottom: 0;
+            width: 260px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #1d1b31;
+            padding: 12px 0;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar.close .profile-details {
+            background: none;
+        }
+
+        .sidebar.close .profile-details {
+            width: 78px;
+        }
+
+        .sidebar .profile-details .profile-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar .profile-details img {
+            height: 52px;
+            width: 52px;
+            object-fit: cover;
+            border-radius: 16px;
+            margin: 0 14px 0 12px;
+            background: #1d1b31;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar.close .profile-details img {
+            padding: 10px;
+        }
+
+        .sidebar .profile-details .profile_name,
+        .sidebar .profile-details .job {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .sidebar.close .profile-details i,
+        .sidebar.close .profile-details .profile_name,
+        .sidebar.close .profile-details .job {
+            display: none;
+        }
+
+        .sidebar .profile-details .job {
+            font-size: 12px;
+        }
+        .card-country .bx-x.selected {
+            color: black;
+        }
+        .card-country .bx-star {
+            position: absolute;
+            margin-right: 40px;
+
+            color: #ffffff;
+            cursor: pointer;
+        }
+        .card-country .bx-pencil {
+            position: absolute;
+            margin-right: 43%;
+
+            color: #ffffff;
+            cursor: pointer;
+        }
+        .card-country .btnselect{
+
+            margin-right: 100px;
+
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        .home-section {
+            position: relative;
+            background: #E4E9F7;
+            height: 100%;
+            left: 260px;
+            padding: 20px;
+            min-height: 100vh;
+            width: calc(100% - 260px);
+            transition: all 0.5s ease;
+            box-sizing: border-box;
+        }
+        .main-section {
+
+            position: relative;
+            background: #f1f1f1;
+            width: 100%;
+            border-radius: 20px;
+            padding: 15px;
+            height: auto;
+            min-height: 100%;
+            box-sizing: border-box
+        }
+        .main-filter-search-block{
+            background: #bababa;
+            width: 100%;
+            height: 20%;
+            display: flex;
+
+            padding: 15px;
+            border-radius: 20px;
+        }
+        .section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            flex: 1;
+        }
+        .sidebar.close ~ .home-section {
+            left: 78px;
+            width: calc(100% - 78px);
+        }
+
+        .home-section .home-content {
+            height: 60px;
+            display: flex;
+            align-items: center;
+        }
+
+        .home-section .home-content .bx-menu,
+        .home-section .home-content .text {
+            color: #11101d;
+            font-size: 35px;
+        }
+
+        .home-section .home-content .bx-menu {
+            margin: 0 15px;
+            cursor: pointer;
+        }
+
+        .home-section .home-content .text {
+            font-size: 26px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 400px) {
+            .sidebar.close .nav-links li .sub-menu {
+                display: none;
+            }
+
+            .sidebar {
+                width: 78px;
+            }
+
+            .sidebar.close {
+                width: 0;
+            }
+
+            .home-section {
+                left: 78px;
+                width: calc(100% - 78px);
+                z-index: 100;
+            }
+
+            .sidebar.close ~ .home-section {
+                width: 100%;
+                left: 0;
+            }
+
+            .home-section .home-content .bx-menu {
+                display: block;
+                margin: 0 15px;
+                font-size: 30px;
+                transition: all 0.3s ease;
+            }
+
+            .sidebar.close .home-section .bx-menu {
+                display: block;
+                cursor: pointer;
+            }
+        }
+        .bx {
+            font-family: boxicons !important;
+            font-weight: 400;
+            font-style: normal;
+            font-variant: normal;
+            line-height: 1;
+            text-rendering: auto;
+            display: inline-block;
+            text-transform: none;
+            speak: none;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .separator {
+            width: 1px;
+            height: 100%;
+            background-color: #000;
+        }
+
+        .text {
+            font-size: 16px;
+            color: #333;
+        }
+        .city-dropdown-text{
+            font-size: 16px;
+            color: #333;
+        }
+        .left, .middle, .right {
+            padding: 0 20px;
+        }
+
+        .home-content-wrapper{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .home-content-user-profile{
+            background: #0a0808;
+            height: 40px;
+            width: 40px;
+            border-radius: 50%;
+
+        }
+        .home-content-user-profile img{
+            margin: 30%;
+        }
+        .main-panel-desc {
+            display: flex;
+            flex-direction: column;
+            align-items: center
+        }
+        .main-panel-desc .text-bold{
+            font-size: 20px;
+            font-weight: 500;
+
+        }
+        .section left{
+            justify-content: space-between;
+            align-items: center;
+
+        }
+        .section-icon{
+            padding: 15px;
+        }
+        input{
+            background: #ffffff;
+            width: 80%;
+            height: 80%;
+            border-radius: 20px;
+            border-style: none;
+        }
+        .search-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .card-country i {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .card-country i:hover {
+            color: red;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+
+        .card-country .bx-star {
+            color: white;
+            background-color:  #ffdd33;
+        }
+        .card-country i.selected {
+            color: white;
+            background-color: red;
+        }
+        .card-country .bx-star:hover {
+            color: white;
+            background-color: #ffdd33;
+        }
+
+
+        .card-country .bx-star {
+            color: white;
+            background-color: #ffdd33;
+        }
+
+
+        .card-country i.selected {
+            color: white;
+            background-color: red;
+        }
+
+        .search-input {
+            padding-left: 30px;
+            padding-right: 10px;
+            height: 50px;
+            width: 100%;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+        }
+
+        .search-container i {
+            position: absolute;
+            left: 10px;
+            font-size: 20px;
+            color: #aaa;
+        }
+        .card-block {
+            display: grid
+        ;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .card-country:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+            transform: scale(1.05);
+        }
+        .card-country {
+            width: 90%;
+            height: 300px;
+            background-color: white;
+            border-radius: 20px;
+            margin-top: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        button {
+            background-color: #007BFF;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+        .card-country img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 20px;
+            transition: all 0.5s ease;
+        }
+        .card-country .text {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+        .card-country .avgRating {
+            position: absolute;
+            margin-top: 10px;
+            left: 10px;
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: bold;
+            background-color: rgba(83, 118, 152, 0.5);
+            padding: 10px 20px;
+            border-radius: 25px;
+        }
+        .card-country .rating-select {
+            position: absolute;
+            top: 10px;
+            right: 90px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: none;
+            border-radius: 5px;
+            padding: 5px;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .card-country .rating-select:focus {
+            outline: none;
+            border: 1px solid #888;
+        }
+
+
+        .card-country .stars-container i {
+            font-size: 18px;
+            color: gold;
+            transition: color 0.3s ease;
+        }
+
+        .card-country .stars-container i:hover {
+            color: orange;
+        }
+        #city-dropdown {
+            width: 200px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            cursor: pointer;
+            margin-left: 20px;
+            transition: all 0.3s ease;
+        }
+
+        #city-dropdown:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        #city-dropdown option {
+
+            padding: 10px;
+        }
+        .section-icon .bx-filter{
+            border-style: none;
+            background: none;
+            height: 40px;
+            width: 40px;
+        }
+    </style>
+</head>
+<body>
+<div class="sidebar close">
+    <div class="logo-details">
+
+        <span class="logo_name">Trip Planner</span>
+    </div>
+    <ul class="nav-links">
+        <li>
+            <a href="#">
+                <i class='bx bx-grid-alt' ></i>
+                <span class="link_name">Main</span>
+            </a>
+            <ul class="sub-menu blank">
+                <li><a class="link_name" href="#">Trips</a></li>
+            </ul>
+        </li>
+        <li>
+            <div class="iocn-link">
+                <a href="#">
+
+                    <i class='bx bx-collection' ></i>
+                    <span class="link_name">Category</span>
+                </a>
+                <i class='bx bxs-chevron-down arrow' ></i>
+            </div>
+            <ul class="sub-menu">
+                <li><a class="link_name" href="#">Category</a></li>
+
+            </ul>
+        </li>
+        <li>
+            <div class="iocn-link">
+                <a href="#">
+                    <i class='bx bx-book-alt' ></i>
+                    <span class="link_name">Posts</span>
+                </a>
+                <i class='bx bxs-chevron-down arrow' ></i>
+            </div>
+            <ul class="sub-menu">
+                <li><a class="link_name" href="#">Posts</a></li>
+
+            </ul>
+        </li>
+
+        <li>
+            <div class="iocn-link">
+                <a href="#">
+                    <i class='bx bx-heart' ></i>
+                    <span class="link_name">Liked</span>
+                </a>
+                <i class='bx bxs-chevron-down arrow' ></i>
+            </div>
+            <ul class="sub-menu">
+                <li><a class="link_name" href="#">Liked</a></li>
+
+            </ul>
+        </li>
+        <li>
+            <a href="#">
+                <i class='bx bx-compass' ></i>
+                <span class="link_name" id="link_name_explore">Explore</span>
+            </a>
+            <ul class="sub-menu blank">
+                <li><a class="link_name"   href="#">Explore</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#">
+                <i class='bx bx-history'></i>
+                <span class="link_name">History</span>
+            </a>
+            <ul class="sub-menu blank">
+                <li><a class="link_name" href="#">History</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#">
+                <i class='bx bx-cog' ></i>
+                <span class="link_name">Setting</span>
+            </a>
+            <ul class="sub-menu blank">
+                <li><a class="link_name" href="#">Setting</a></li>
+            </ul>
+        </li>
+        <li>
+            <div class="profile-details">
+                <div class="profile-content">
+                    <img src="http://localhost:8080/images/PlannerTripLogo21.png" alt="profileImg">
+                </div>
+                <div class="name-job">
+
+                </div>
+                <i class='bx bx-log-out' ></i>
+            </div>
+        </li>
+    </ul>
+</div>
+<section class="home-section">
+    <div class="home-content-wrapper">
+        <div class="home-content">
+            <i class='bx bx-menu'></i>
+            <span class="text">Trip Status</span>
+
+        </div>
+
+    </div>
+
+    <div class="main-section">
+        <div class="main-filter-search-block">
+
+            <div class="separator"></div>
+            <div class="section middle">
+                <div class="section-icon">
+                    <button class='bx bx-filter'></button>
+                </div>
+                <div class="main-panel-desc">
+                    <span class="text-bold">Filters</span>
+                </div>
+                <select  id="city-dropdown">
+                    <option value="" disabled selected>Filters</option>
+
+                </select>
+            </div>
+            <div class="separator"></div>
+
+        </div>
+        <div class="card-block">
+
+
+
+
+        </div>
+
+
+    </div>
+</section>
+<script>
+    document.getElementsByClassName('bx bx-book-alt')[0].addEventListener("click",function () {
+        window.location.href = 'userStatistics.html';
+    })
+    document.getElementsByClassName('bx bx-compass')[0].addEventListener("click",function () {
+        window.location.href = 'myDestinations.html';
+    })
+    document.getElementsByClassName('bx bx-log-out')[0].addEventListener("click",function () {
+        window.location.href = 'login.html';
+    })
+    document.getElementsByClassName('bx bx-grid-alt')[0].addEventListener("click",function () {
+        window.location.href = 'main.html';
+    })
+    document.getElementsByClassName('bx bx-grid-alt')[0].addEventListener("click",function () {
+        window.location.href = 'main.html';
+    })
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const homeContent = document.querySelector('.home-content');
+
+
+        const container = document.createElement('div');
+        container.style.display = 'flex';
+        container.style.alignItems = 'center';
+        container.style.gap = '10px';
+        container.style.marginLeft = 'auto';
+        container.style.paddingLeft = '10px';
+        homeContent.appendChild(container);
+
+        const dateBlock = document.createElement('div');
+        dateBlock.style.padding = '10px';
+        dateBlock.style.backgroundColor = '#333';
+        dateBlock.style.color = '#fff';
+        dateBlock.style.fontSize = '18px';
+        dateBlock.style.borderRadius = '5px';
+        dateBlock.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.2)';
+        container.appendChild(dateBlock);
+
+        const timeBlock = document.createElement('div');
+        timeBlock.style.padding = '10px';
+        timeBlock.style.backgroundColor = '#333';
+        timeBlock.style.color = '#fff';
+        timeBlock.style.fontSize = '18px';
+        timeBlock.style.borderRadius = '5px';
+        timeBlock.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.2)';
+        container.appendChild(timeBlock);
+
+        function updateDateTime() {
+            const now = new Date();
+
+            const day = now.getDate().toString().padStart(2, '0');
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const year = now.getFullYear();
+            const dateString = `${day}.${month}.${year}`;
+            dateBlock.textContent = dateString;
+
+            // Обновление времени
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            const timeString = `${hours}:${minutes}:${seconds}`;
+            timeBlock.textContent = timeString;
+        }
+
+        setInterval(updateDateTime, 1000);
+
+        updateDateTime();
+    });
+
+
+
+    document.getElementsByClassName('bx bx-heart')[0].addEventListener("click",function () {
+        window.location.href = 'myCardsDestinations.html';
+    })
+    document.getElementsByClassName('bx bx-log-out')[0].addEventListener("click",function () {
+        window.location.href = 'login.html';
+    })
+    document.getElementsByClassName('bx bx-grid-alt')[0].addEventListener("click",function () {
+        window.location.href = 'main.html';
+    })
+    document.getElementsByClassName('bx bx-compass')[0].addEventListener("click",function () {
+        window.location.href = 'myDestinations.html';
+    })
+
+    let arrows = document.querySelectorAll(".arrow");
+    arrows.forEach(arrow => {
+        arrow.addEventListener("click", (e) => {
+            let arrowParent = e.target.parentElement.parentElement;
+            arrowParent.classList.toggle("showMenu");
+        });
+    });
+
+    let sidebar = document.querySelector(".sidebar");
+    let sidebarBtn = document.querySelector(".bx-menu");
+    sidebarBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("close");
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Загружаем данные для выпадающего списка
+        fetch('http://localhost:8080/api/trip_status/getStatusTrip')
+            .then(response => response.json())
+            .then(data => {
+                const selectElement = document.getElementById('city-dropdown');
+
+                data.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.statusName; // Используем statusName как значение
+                    option.textContent = item.statusName; // Текст для отображения
+                    selectElement.appendChild(option);
+                });
+
+                // Загружаем карточки по умолчанию
+                loadTripsByStatus(data[0]?.statusName || '');
+            });
+
+        // Добавляем обработчик события для изменения значения выпадающего списка
+        document.getElementById('city-dropdown').addEventListener('change', (event) => {
+            const selectedStatus = event.target.value;
+            loadTripsByStatus(selectedStatus);
+        });
+
+        // Выход из аккаунта
+        document.querySelector('.bx-log-out').addEventListener('click', () => {
+            window.location.href = 'login.html';
+        });
+    });
+
+    function loadTripsByStatus(statusName) {
+        const block = document.querySelector('.card-block');
+        const userId = localStorage.getItem('userId');
+
+        if (!userId) {
+            console.error('User ID is not found!');
+            return;
+        }
+
+        fetch(`http://localhost:8080/api/trip_status/getStatusTripByIdStatus/${userId}/${statusName}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    window.alert(`Error: ${response.status}`);
+                    return Promise.reject('Failed to fetch trips');
+                }
+                return response.json();
+            })
+            .then(data => {
+                block.innerHTML = ''; // Очищаем блок перед загрузкой новых данных
+
+                data.forEach(cardTrip => {
+                    const card = document.createElement('div');
+                    card.classList.add('card-country');
+                    card.setAttribute('data-type', cardTrip.type);
+
+                    fetch(`http://localhost:8080/api/trip/findAllTripBackgroundImagesByCityId/${userId}/${cardTrip.tripId}`, {
+                        method: 'GET',
+                        headers: { 'Content-Type': 'application/json' }
+                    })
+                        .then(response => response.text())
+                        .then(imageUrl => {
+                            card.style.backgroundImage = `url('${imageUrl || 'default-image.jpg'}')`;
+                            card.style.backgroundSize = 'cover';
+                            card.style.backgroundPosition = 'center';
+                            card.style.height = '200px';
+                            card.style.width = '300px';
+                        });
+
+                    const text = document.createElement('span');
+                    text.classList.add('text');
+                    text.textContent = `${cardTrip.tripId}  ${cardTrip.city.cityName}`;
+                    card.appendChild(text);
+
+                    // Добавляем карточку в блок
+                    block.appendChild(card);
+
+                    // Добавить дополнительную функциональность карточек (например, удаление или редактирование) можно по аналогии с вашим кодом.
+                });
+            })
+
+    }
+
+
+
+</script>
+
+</body>
+</html>
